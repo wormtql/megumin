@@ -1,0 +1,173 @@
+//
+// Created by 58413 on 2023/4/14.
+//
+
+#include <cassert>
+#include <initializer_list>
+
+#include "Bitvec.h"
+
+inline int64_t get_mask(int size) {
+    if (size == 64) {
+        return ~0ll;
+    } else {
+        return (1ll << size) - 1;
+    }
+}
+
+namespace arm {
+    bits bits::from_bools(std::initializer_list<bool> args) {
+        int64_t result = 0;
+        for (bool i: args) {
+            result = (result << 1) | (int)i;
+        }
+        return bits{(int)args.size(), result};
+    }
+
+    bits bits::ones(int size) {
+        return bits{size, (1 << size) - 1};
+    }
+
+    bits bits::concat(const bits& op) {
+        int64_t result = data0;
+        result = (result << size) | (op.data0 & ((1 << op.size) - 1));
+        return bits{size + op.size, result};
+    }
+
+    bits::bits(int size, int64_t init): size(size) {
+        data0 = init & get_mask(size);
+    }
+
+    bits::bits(int size): size(size), data0(0) {}
+
+    bool bits::is_set(int index) const {
+        assert(index < size);
+        return (data0 >> index) & 1;
+    }
+
+    bits bits::get_range(int low, int high) const {
+        assert(low < size && high < size);
+        int64_t temp = (data0) & get_mask(high);
+        temp = temp >> low;
+        return bits{high - low, temp};
+    }
+
+    int32_t bits::as_i32() const {
+        auto mask = ((1ll << 32) - 1);
+        return static_cast<int32_t>(mask & data0);
+    }
+
+    int64_t bits::as_i64() const {
+        return data0;
+    }
+
+    uint32_t bits::as_u32() const {
+        auto mask = ((1ll << 32) - 1);
+        return static_cast<uint32_t>(mask & data0);
+    }
+
+    uint64_t bits::as_u64() const {
+        return data0;
+    }
+
+    bool bits::operator==(const bits& other) const {
+        assert(size == other.size);
+        return data0 == other.data0;
+    }
+
+    bool bits::operator==(int64_t other) const {
+        int64_t mask = get_mask(size);
+        return data0 == (other & mask);
+    }
+
+    bits bits::operator>>(int size) const {
+        int64_t result = data0 >> size;
+        return bits{this->size, result};
+    }
+
+    bits bits::operator<<(int size) const {
+        int64_t result = data0 << size;
+        return bits{this->size, result};
+    }
+
+    bits bits::operator&(int64_t other) const {
+        int64_t result = data0 & other;
+        return bits{this->size,  result};
+    }
+
+    bits bits::operator&(const bits& other) const {
+        assert(size == other.size);
+        return bits{ size, data0 & other.data0 };
+    }
+
+    bits bits::operator|(const bits &other) const {
+        assert(size == other.size);
+        return bits{size, data0 | other.data0};
+    }
+
+    bits bits::operator^(const bits &other) const {
+        assert(size == other.size);
+        return bits{size, data0 ^ other.data0};
+    }
+
+    bits bits::operator+(int64_t other) const {
+        int64_t result = data0 + other;
+        result &= get_mask(size);
+        return bits{size,  result};
+    }
+
+    bits bits::operator~() const {
+        int64_t result = ~data0;
+        result &= get_mask(size);
+        return bits{size, result};
+    }
+
+    bits& bits::append_bit(bool bit) {
+        int b = bit;
+        data0 = (data0 << 1) | b;
+        size += 1;
+        return *this;
+    }
+
+    bits bits::zero_extend(int size) {
+        assert(size >= this->size);
+        return bits{size, data0};
+    }
+
+    bits bits::resize(int size) {
+        int64_t result = data0 & get_mask(size);
+        return bits{size, result};
+    }
+
+    void bits::set_value(int64_t value) {
+        data0 = value & get_mask(size);
+    }
+
+    void bits::set_value(const bits &value) {
+        assert(size == value.size);
+        data0 = value.data0;
+    }
+
+    bits& bits::set_bit(int index, bool value) {
+        assert(index < size);
+        if (value) {
+            data0 |= (1 << index);
+        } else {
+            data0 &= ~(1 << index);
+        }
+        return *this;
+    }
+
+    bits& bits::set_range(int low, int high, int64_t value) {
+        assert(low < size && high < size);
+        int64_t mask = ~0ll;
+        mask <<= high;
+        mask |= get_mask(low);
+
+        data0 &= mask;
+        value <<= low;
+        value &= ~mask;
+        data0 |= value;
+        return *this;
+    }
+}

@@ -1,0 +1,56 @@
+//
+// Created by 58413 on 2023/4/14.
+//
+
+#ifndef MEGUMIN_BITVEC_H
+#define MEGUMIN_BITVEC_H
+
+#include <cstdint>
+#include <initializer_list>
+
+namespace arm {
+    class bits {
+    private:
+
+    public:
+        int64_t data0 = 0;
+        int size = 0;
+
+        explicit bits(int size, int64_t init);
+        explicit bits(int size);
+        bits() = default;
+
+        [[nodiscard]] bool is_set(int index) const;
+        [[nodiscard]] bits get_range(int low, int high) const;
+        void set_value(int64_t value);
+        void set_value(const bits& value);
+
+        [[nodiscard]] int32_t as_i32() const;
+        [[nodiscard]] int64_t as_i64() const;
+        [[nodiscard]] uint32_t as_u32() const;
+        [[nodiscard]] uint64_t as_u64() const;
+
+        bits& append_bit(bool bit);
+        bits zero_extend(int size);
+        bits resize(int size);
+
+        bool operator==(const bits& other) const;
+        bool operator==(int64_t other) const;
+        bits operator>>(int size) const;
+        bits operator<<(int size) const;
+        bits operator&(int64_t other) const;
+        bits operator&(const bits& other) const;
+        bits operator|(const bits& other) const;
+        bits operator^(const bits& other) const;
+        bits operator+(int64_t other) const;
+        bits operator~() const;
+
+        bits concat(const bits& op);
+        bits& set_bit(int index, bool value);
+        bits& set_range(int low, int high, int64_t value);
+        static bits ones(int size);
+        static bits from_bools(std::initializer_list<bool> args);
+    };
+}
+
+#endif //MEGUMIN_BITVEC_H
