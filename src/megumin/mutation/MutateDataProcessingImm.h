@@ -53,20 +53,24 @@ namespace megumin {
     };
 
     class MutateDataProcessingImmAddSub: public Mutation {
+    public:
+        struct Prob {
+            double w_s = 1.0;
+            double w_width = 1.0;
+            double w_operator = 1.0;
+            double w_rd = 5.0;
+            double w_rn = 5.0;
+            double w_imm12 = 10.0;
+            double w_sh = 1.0;
+        };
     private:
-        double w_s;
-        double w_width;
-        double w_operator;
-        double w_rd;
-        double w_rn;
-        double w_imm12;
-        double w_sh;
-
         std::mt19937& generator;
         std::discrete_distribution<> dist;
         std::vector<Mutation*> mutations;
     public:
-        MutateDataProcessingImmAddSub(std::mt19937& generator, std::map<string, double> weights);
+        MutateDataProcessingImmAddSub(std::mt19937& generator, Prob probs);
+        explicit MutateDataProcessingImmAddSub(std::mt19937& generator): MutateDataProcessingImmAddSub(generator, {}) {}
+        ~MutateDataProcessingImmAddSub() override;
 
         arm::Instruction mutate(const arm::Instruction &instruction) override;
     };

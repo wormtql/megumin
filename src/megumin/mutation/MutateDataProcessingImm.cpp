@@ -56,26 +56,10 @@ namespace megumin {
         return result;
     }
 
-    MutateDataProcessingImmAddSub::MutateDataProcessingImmAddSub(std::mt19937 &generator,
-                                                                 std::map<string, double> weights): generator(generator) {
-        w_s = weights["w_s"];
-        w_width = weights["w_width"];
-        w_operator = weights["w_operator"];
-        w_rd = weights["w_rd"];
-        w_rn = weights["w_rn"];
-        w_imm12 = weights["w_imm12"];
-        w_sh = weights["w_sh"];
-
-        dist = std::discrete_distribution{{
-                                                  w_s,
-                                                  w_width,
-                                                  w_operator,
-                                                  w_rd,
-                                                  w_rn,
-                                                  w_imm12,
-                                                  w_sh,
-                                          }};
-
+    MutateDataProcessingImmAddSub::MutateDataProcessingImmAddSub(std::mt19937 &generator, Prob prob)
+        : dist{{ prob.w_s, prob.w_width, prob.w_operator, prob.w_rd, prob.w_rn, prob.w_imm12, prob.w_sh }},
+          generator(generator)
+    {
         mutations.push_back(new MutateDataProcessingImmAddSubS());
         mutations.push_back(new MutateDataProcessingImmAddSubWidth());
         mutations.push_back(new MutateDataProcessingImmAddSubOperator());
@@ -83,6 +67,12 @@ namespace megumin {
         mutations.push_back(new MutateDataProcessingImmAddSubRn());
         mutations.push_back(new MutateDataProcessingImmAddSubImm12());
         mutations.push_back(new MutateDataProcessingImmAddSubSh());
+    }
+
+    MutateDataProcessingImmAddSub::~MutateDataProcessingImmAddSub() {
+        for (Mutation* m: mutations) {
+            delete m;
+        }
     }
 
     arm::Instruction MutateDataProcessingImmAddSub::mutate(const arm::Instruction &instruction) {

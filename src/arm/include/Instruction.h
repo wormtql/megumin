@@ -34,22 +34,27 @@ namespace arm {
     private:
         arm::bits instruction;
 
-        void execute_data_processing_imm(MachineState& state);
-        void execute_data_processing_imm_add_sub_imm(MachineState& state);
-        void execute_data_processing_imm_add_sub_imm_with_tags(MachineState& state);
-        void execute_data_processing_imm_logical_imm(MachineState& state);
+        void execute_data_processing_imm(MachineState& state) const;
+        void execute_data_processing_imm_add_sub_imm(MachineState& state) const;
+        void execute_data_processing_imm_add_sub_imm_with_tags(MachineState& state) const;
+        void execute_data_processing_imm_logical_imm(MachineState& state) const;
 //        void execute_data_processing_imm_move_wide_imm(MachineState& state);
 
-        void execute_data_processing_reg(MachineState& state);
+        void execute_data_processing_reg(MachineState& state) const;
     public:
         explicit Instruction(bits instruction);
-        InstructionType get_type();
-        InstructionType2 get_type2();
+        Instruction(): instruction{32, 0} {}
+        static Instruction nop() { return Instruction{bits{32, 0}}; }
+        [[nodiscard]] InstructionType get_type() const;
+        InstructionType2 get_type2() const;
 
         void set_bit(int index, bool value);
         void set_range(int low, int high, int64_t value);
-        bool get_bit(int index) const;
-        void execute(MachineState& state);
+        [[nodiscard]] bool get_bit(int index) const;
+        void execute(MachineState& state) const;
+        void set_as_nop();
+        [[nodiscard]] bool is_nop() const;
+        [[nodiscard]] bits get_range(int low, int high) const { return instruction.get_range(low, high); }
     };
 }
 

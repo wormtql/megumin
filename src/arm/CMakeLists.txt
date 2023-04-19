@@ -8,7 +8,11 @@ target_sources(arm_asm
         include/Bitvec.h
         include/ArmUtils.h
         dispatch/InstructionDispatch.h
+        include/Program.h
+        dispatch/InstructionPrint.h
         PRIVATE
+        dispatch/InstructionPrint.cpp
+        Program.cpp
         dispatch/InstructionDispatch.cpp
         MachineState.cpp
         RegBank.cpp

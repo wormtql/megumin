@@ -31,6 +31,8 @@ namespace arm {
 
         MachineState();
         MachineState(const MachineState& other);
+
+        void fill_gp_random();
     };
 }
 

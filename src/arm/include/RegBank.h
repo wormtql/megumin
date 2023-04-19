@@ -17,6 +17,14 @@ namespace arm {
         GPRegBank();
         GPRegBank(const GPRegBank& other);
 
+        [[nodiscard]] const bits& get_ref(int index) const {
+            return bank[index];
+        }
+
+        [[nodiscard]] bits& get_mut_ref(int index) {
+            return bank[index];
+        }
+
         bits get32(int index) {
 //            return bank[index] & ((1ll << 32) - 1);
             return bank[index].resize(32);
@@ -37,7 +45,7 @@ namespace arm {
 
         // will zero high 32 bits
         void set32(int index, bits data) {
-            bank[index].set_value(data.resize(32));
+            bank[index].set_value(data.resize(32).zero_extend(64));
         };
         void set64(int index, bits data) {
             bank[index].set_value(data.resize(64));

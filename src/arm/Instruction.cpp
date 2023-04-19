@@ -9,7 +9,7 @@
 namespace arm {
     Instruction::Instruction(bits instruction): instruction(instruction) {}
 
-    InstructionType Instruction::get_type() {
+    InstructionType Instruction::get_type() const {
 //        Bitvec op0 = get_range(instruction, 25, 29);
         bits op0 = instruction.get_range(25, 29);
         if (op0 == 0) {
@@ -53,7 +53,7 @@ namespace arm {
 //    }
 
     // https://developer.arm.com/documentation/ddi0596/2021-12/Index-by-Encoding/Data-Processing----Immediate?lang=en#addsub_imm
-    void Instruction::execute_data_processing_imm_add_sub_imm(MachineState &state) {
+    void Instruction::execute_data_processing_imm_add_sub_imm(MachineState &state) const {
         bool sf = this->instruction.is_set(31);
         bool op = this->instruction.is_set(30);
         bool sh = this->instruction.is_set(22);
@@ -67,13 +67,13 @@ namespace arm {
             if (!sf) {
                 // 32
                 bits operand1 = state.gp.get32(rn.as_i32());
-                bits imm = sh ? (imm12 << 12).zero_extend(32) : imm12.zero_extend(32);
+                bits imm = sh ? (imm12.zero_extend(32) << 12) : imm12.zero_extend(32);
                 auto result = ArmUtils::add_with_carry(operand1, imm, false);
                 state.gp.set32(rd.as_i32(), result.first);
             } else {
                 // 64
                 bits operand1 = state.gp.get64(rn.as_i32());
-                bits imm = sh ? (imm12 << 12).zero_extend(64) : imm12.zero_extend(64);
+                bits imm = sh ? (imm12.zero_extend(64) << 12) : imm12.zero_extend(64);
                 auto result = ArmUtils::add_with_carry(operand1, imm, false);
                 state.gp.set64(rd.as_i32(), result.first);
             }
@@ -82,14 +82,14 @@ namespace arm {
             if (!sf) {
                 // 32
                 bits operand1 = state.gp.get32(rn.as_i32());
-                bits imm = sh ? (imm12 << 12).zero_extend(32) : imm12.zero_extend(32);
+                bits imm = sh ? (imm12.zero_extend(32) << 12) : imm12.zero_extend(32);
                 auto result = ArmUtils::add_with_carry(operand1, imm, false);
                 state.gp.set32(rd.as_i32(), result.first);
                 state.p_state.set_nzcv(result.second);
             } else {
                 // 64
                 bits operand1 = state.gp.get64(rn.as_i32());
-                bits imm = sh ? (imm12 << 12).zero_extend(64) : imm12.zero_extend(64);
+                bits imm = sh ? (imm12.zero_extend(64) << 12) : imm12.zero_extend(64);
                 auto result = ArmUtils::add_with_carry(operand1, imm, false);
                 state.gp.set64(rd.as_i32(), result.first);
                 state.p_state.set_nzcv(result.second);
@@ -98,14 +98,14 @@ namespace arm {
             if (!sf) {
                 // 32
                 bits operand1 = state.gp.get32(rn.as_i32());
-                bits imm = sh ? (imm12 << 12).zero_extend(32) : imm12.zero_extend(32);
+                bits imm = sh ? (imm12.zero_extend(32) << 12) : imm12.zero_extend(32);
                 bits operand2 = ~imm;
                 auto result = ArmUtils::add_with_carry(operand1, operand2, true);
                 state.gp.set32(rd.as_i32(), result.first);
             } else {
                 // 64
                 bits operand1 = state.gp.get64(rn.as_i32());
-                bits imm = sh ? (imm12 << 12).zero_extend(64) : imm12.zero_extend(64);
+                bits imm = sh ? (imm12.zero_extend(64) << 12) : imm12.zero_extend(64);
                 bits operand2 = ~imm;
                 auto result = ArmUtils::add_with_carry(operand1, operand2, true);
                 state.gp.set64(rd.as_i32(), result.first);
@@ -114,14 +114,14 @@ namespace arm {
             // subs
             if (!sf) {
                 bits operand1 = state.gp.get32(rn.as_i32());
-                bits imm = sh ? (imm12 << 12).zero_extend(32) : imm12.zero_extend(32);
+                bits imm = sh ? (imm12.zero_extend(32) << 12) : imm12.zero_extend(32);
                 bits operand2 = ~imm;
                 auto result = ArmUtils::add_with_carry(operand1, operand2, true);
                 state.gp.set32(rd.as_i32(), result.first);
                 state.p_state.set_nzcv(result.second);
             } else {
                 bits operand1 = state.gp.get64(rn.as_i32());
-                bits imm = sh ? (imm12 << 12).zero_extend(64) : imm12.zero_extend(64);
+                bits imm = sh ? (imm12.zero_extend(64) << 12) : imm12.zero_extend(64);
                 bits operand2 = ~imm;
                 auto result = ArmUtils::add_with_carry(operand1, operand2, true);
                 state.gp.set64(rd.as_i32(), result.first);
@@ -130,11 +130,11 @@ namespace arm {
         }
     }
 
-    void Instruction::execute_data_processing_imm_add_sub_imm_with_tags(MachineState &state) {
+    void Instruction::execute_data_processing_imm_add_sub_imm_with_tags(MachineState &state) const {
 
     }
 
-    void Instruction::execute_data_processing_imm_logical_imm(MachineState &state) {
+    void Instruction::execute_data_processing_imm_logical_imm(MachineState &state) const {
         bits opc = instruction.get_range(29, 31);
         bool sf = instruction.is_set(31);
         bool N = instruction.is_set(22);
@@ -229,12 +229,12 @@ namespace arm {
         }
     }
 
-    void Instruction::execute_data_processing_reg(MachineState &state) {
+    void Instruction::execute_data_processing_reg(MachineState &state) const {
 
     }
 
     // https://developer.arm.com/documentation/ddi0596/2021-12/Index-by-Encoding/Data-Processing----Immediate
-    void Instruction::execute_data_processing_imm(MachineState &state) {
+    void Instruction::execute_data_processing_imm(MachineState &state) const {
         bits op0 = this->instruction.get_range(23, 26);
         if (op0 == 0b010) {
             execute_data_processing_imm_add_sub_imm(state);
@@ -251,7 +251,11 @@ namespace arm {
         }
     }
 
-    void Instruction::execute(MachineState &state) {
+    void Instruction::execute(MachineState &state) const {
+        if (instruction.data0 == 0) {
+            // nop
+            return;
+        }
         auto type = get_type();
         if (type == InstructionType::DataProcessingImm) {
             execute_data_processing_imm(state);
@@ -271,5 +275,13 @@ namespace arm {
 
     void Instruction::set_range(int low, int high, int64_t value) {
         instruction.set_range(low, high, value);
+    }
+
+    void Instruction::set_as_nop() {
+        instruction.data0 = 0;
+    }
+
+    bool Instruction::is_nop() const {
+        return instruction.data0 == 0;
     }
 }

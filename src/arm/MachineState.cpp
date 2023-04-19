@@ -3,6 +3,7 @@
 //
 
 #include <cassert>
+#include <cstdlib>
 
 #include "MachineState.h"
 
@@ -21,5 +22,13 @@ namespace arm {
 
     MachineState::MachineState(const MachineState &other) {
         this->gp = other.gp;
+    }
+
+    void MachineState::fill_gp_random() {
+        for (int i = 0; i < 32; i++) {
+            auto r = (int64_t) rand();
+            r = (r << 32) | rand();
+            gp.get_mut_ref(i).set_value(r);
+        }
     }
 }
