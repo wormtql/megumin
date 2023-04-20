@@ -5,10 +5,13 @@
 #ifndef MEGUMIN_MUTATION_H
 #define MEGUMIN_MUTATION_H
 
+#include <random>
 #include <Instruction.h>
 
 namespace megumin {
     class Mutation {
+    protected:
+//        static std::uniform_int_distribution<> dist;
     public:
         Mutation() = default;
         virtual ~Mutation() = default;

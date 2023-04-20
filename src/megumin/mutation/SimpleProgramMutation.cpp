@@ -14,6 +14,7 @@ namespace megumin {
             result.set_instruction_nop(delete_index);
         } else if (index == 1) {
             // change
+            // 替换为全新指令
             int change_index = uniform_int_dist(generator) % program.get_size();
             arm::Instruction new_inst = random_instruction_dispatch->random_instruction();
             result.set_instruction(change_index, new_inst);
@@ -23,9 +24,17 @@ namespace megumin {
             int i2 = uniform_int_dist(generator) % program.get_size();
             result.swap_instructions(i1, i2);
         } else if (index == 3) {
+            // 类内变换
             int mutate_index = uniform_int_dist(generator) % program.get_size();
-            arm::Instruction new_inst = instruction_mutation->mutate(program.get_instruction_const(mutate_index));
-            result.set_instruction(mutate_index, new_inst);
+
+            if (program.get_instruction_const(mutate_index).is_nop()) {
+                // if is nop, perform 'change'
+                arm::Instruction new_inst = random_instruction_dispatch->random_instruction();
+                result.set_instruction(mutate_index, new_inst);
+            } else {
+                arm::Instruction new_inst = instruction_mutation->mutate(program.get_instruction_const(mutate_index));
+                result.set_instruction(mutate_index, new_inst);
+            }
         }
 
         return result;

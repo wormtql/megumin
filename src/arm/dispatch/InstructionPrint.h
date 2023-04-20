@@ -16,6 +16,12 @@ namespace arm {
         explicit InstructionPrint(std::ostream& os): os(os) {}
 
         void dispatch_data_processing_imm_add_sub(const Instruction &instruction) override;
+
+        void dispatch_data_processing_imm_logical(const Instruction& instruction) override;
+
+        void dispatch_data_processing_move_wide(const Instruction &instruction) override;
+
+        void dispatch_nop(const Instruction &instruction) override;
     };
 }
 

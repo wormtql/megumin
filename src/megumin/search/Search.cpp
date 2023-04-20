@@ -13,6 +13,10 @@ namespace megumin {
 
     void Search::do_search(SearchState &state) const {
         for (int i = 0; i < max_iteration; i++) {
+//            if (i % 100000 == 0) {
+//                printf("%d\n", i);
+//                fflush(stdout);
+//            }
             arm::Program new_program = program_mutation->mutate(state.current);
 
             const double p = uniform_distribution(generator);
@@ -31,8 +35,10 @@ namespace megumin {
             if (state.current_best_cost > new_cost) {
                 state.current_best_cost = new_cost;
                 state.current_best = new_program;
+                std::cout << "iteration: " << i << "\n";
                 new_program.print();
-                std::cout << new_cost << std::endl;
+                std::cout << "\n";
+                std::cout << new_cost << "\n\n";
             }
 
             if (new_cost < state.current_correct_best_cost && is_correct) {

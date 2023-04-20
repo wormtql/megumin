@@ -38,7 +38,7 @@ namespace arm {
         void execute_data_processing_imm_add_sub_imm(MachineState& state) const;
         void execute_data_processing_imm_add_sub_imm_with_tags(MachineState& state) const;
         void execute_data_processing_imm_logical_imm(MachineState& state) const;
-//        void execute_data_processing_imm_move_wide_imm(MachineState& state);
+        void execute_data_processing_imm_move_wide_imm(MachineState& state) const;
 
         void execute_data_processing_reg(MachineState& state) const;
     public:

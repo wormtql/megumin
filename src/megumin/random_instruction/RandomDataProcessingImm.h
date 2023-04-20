@@ -28,6 +28,16 @@ namespace megumin {
         arm::Instruction random_instruction() override;
     };
 
+    class RandomMoveWideImm: public RandomInstruction {
+    private:
+        std::mt19937& generator;
+        std::uniform_int_distribution<> uniform_int;
+    public:
+        explicit RandomMoveWideImm(std::mt19937& generator): generator(generator) {}
+
+        arm::Instruction random_instruction() override;
+    };
+
     class RandomDataProcessingImm: public RandomInstruction {
     public:
         struct Prob {
@@ -56,8 +66,9 @@ namespace megumin {
 
             dispatches.push_back(new RandomAddSubImm(generator));
             dispatches.push_back(new RandomAddSubImm(generator));
-            dispatches.push_back(new RandomAddSubImm(generator));
-            dispatches.push_back(new RandomAddSubImm(generator));
+            dispatches.push_back(new RandomDataProcessingImmLogical(generator));
+//            dispatches.push_back(new RandomAddSubImm(generator));
+            dispatches.push_back(new RandomMoveWideImm(generator));
             dispatches.push_back(new RandomAddSubImm(generator));
             dispatches.push_back(new RandomAddSubImm(generator));
             // todo

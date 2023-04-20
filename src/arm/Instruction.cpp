@@ -31,27 +31,6 @@ namespace arm {
         }
     }
 
-//    InstructionType2 Instruction::get_type2() {
-//        bits op0 = instruction.get_range(25, 29);
-//        if (op0 == 0) {
-//            return InstructionType::Reserved;
-//        } else if (op0 == 0b0001 || op0 == 0b0011) {
-//            return InstructionType::Reserved;
-//        } else if (op0 == 0b0010) {
-//            return InstructionType::SVE;
-//        } else if ((op0 >> 1) == 0b100) {
-//            return InstructionType::DataProcessingImm;
-//        } else if ((op0 >> 1) == 0b101) {
-//            return InstructionType::BranchExceptionSystem;
-//        } else if (op0.is_set(2) && !op0.is_set(0)) {
-//            return InstructionType::LoadAndStore;
-//        } else if ((op0 & 0b111) == 0b101) {
-//            return InstructionType::DataProcessingReg;
-//        } else if ((op0 & 0b111) == 0b111) {
-//            return InstructionType::DataProcessingSIMD;
-//        }
-//    }
-
     // https://developer.arm.com/documentation/ddi0596/2021-12/Index-by-Encoding/Data-Processing----Immediate?lang=en#addsub_imm
     void Instruction::execute_data_processing_imm_add_sub_imm(MachineState &state) const {
         bool sf = this->instruction.is_set(31);
@@ -131,7 +110,7 @@ namespace arm {
     }
 
     void Instruction::execute_data_processing_imm_add_sub_imm_with_tags(MachineState &state) const {
-
+        // todo
     }
 
     void Instruction::execute_data_processing_imm_logical_imm(MachineState &state) const {
@@ -173,6 +152,7 @@ namespace arm {
 
             if (!sf && N) {
                 // undefined
+                assert(false);
             }
 
             bits imm = ArmUtils::decode_bit_mask(datasize, N, imms, immr, true).first;
@@ -214,6 +194,7 @@ namespace arm {
             int datasize = sf == 1 ? 64 : 32;
 
             if (!sf && N) {
+                assert(false);
                 // undefined
             }
 
@@ -226,6 +207,42 @@ namespace arm {
 
             bits nzcv = bits::from_bools({result.is_set(datasize - 1), result == 0, 0, 0});
             state.p_state.set_nzcv(nzcv);
+        }
+    }
+
+    void Instruction::execute_data_processing_imm_move_wide_imm(MachineState &state) const {
+        bits opc = instruction.get_range(29, 31);
+        bool sf = instruction.is_set(31);
+        bits hw = instruction.get_range(21, 23);
+        bits imm16 = instruction.get_range(5, 21);
+        bits rd = instruction.get_range(0, 5);
+
+        int datasize = sf ? 64 : 32;
+        if (!sf && hw.is_set(1)) {
+            assert(false);
+        }
+
+        bits pos_bits = hw.concat(bits{4, 0});
+        int pos = pos_bits.as_u32();
+
+        if (opc == 0b00) {
+            // movn
+            bits result{datasize, 0};
+            result.set_range(pos, pos + 16, imm16.as_i64());
+            result = ~result;
+            state.gp.set(datasize, rd.as_i32(), result);
+        } else if (opc == 0b10) {
+            // movz
+            bits result{datasize, 0};
+            result.set_range(pos, pos + 16, imm16.as_i64());
+            state.gp.set(datasize, rd.as_i32(), result);
+        } else if (opc == 0b11) {
+            // mpvk
+            bits result = state.gp.get_ref(rd.as_i32());
+            result.set_range(pos, pos + 16, imm16.as_i64());
+            state.gp.set(datasize, rd.as_i32(), result);
+        } else {
+            assert(false);
         }
     }
 
@@ -243,7 +260,7 @@ namespace arm {
         } else if (op0 == 0b100) {
             execute_data_processing_imm_logical_imm(state);
         } else if (op0 == 0b101) {
-
+            execute_data_processing_imm_move_wide_imm(state);
         } else if (op0 == 0b110) {
 
         } else if (op0 == 0b111) {

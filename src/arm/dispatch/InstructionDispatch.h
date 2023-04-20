@@ -17,6 +17,9 @@ namespace arm {
 
         void dispatch(const Instruction& instruction);
 
+        virtual bool need_dispatch_nop() { return true; }
+        virtual void dispatch_nop(const Instruction& instruction) {}
+
         virtual bool need_dispatch_data_processing_imm() {
             return true;
         }
@@ -38,22 +41,22 @@ namespace arm {
         virtual bool need_dispatch_data_processing_imm_logical() {
             return true;
         }
-        virtual void dispatch_data_processing_imm_logical() {}
+        virtual void dispatch_data_processing_imm_logical(const Instruction& instruction) {}
 
         virtual bool need_dispatch_data_processing_move_wide() {
             return true;
         }
-        virtual void dispatch_data_processing_move_wide() {}
+        virtual void dispatch_data_processing_move_wide(const Instruction& instruction) {}
 
         virtual bool need_dispatch_data_processing_bitfield() {
             return true;
         }
-        virtual void dispatch_data_processing_bitfield() {}
+        virtual void dispatch_data_processing_bitfield(const Instruction& instruction) {}
 
         virtual bool need_dispatch_data_processing_extract() {
             return true;
         }
-        virtual void dispatch_data_processing_extract() {}
+        virtual void dispatch_data_processing_extract(const Instruction& instruction) {}
     };
 }
 

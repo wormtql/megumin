@@ -10,12 +10,13 @@
 using arm::bits;
 
 int count_set_bits(int64_t n) {
+    auto t = static_cast<uint64_t>(n);
     int result = 0;
-    while (n > 0) {
-        if (n & 1) {
+    while (t != 0) {
+        if (t & 1) {
             result++;
         }
-        n >>= 1;
+        t >>= 1;
     }
     return result;
 }

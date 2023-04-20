@@ -14,6 +14,69 @@ namespace megumin {
         return dispatch->random_instruction();
     }
 
+    arm::Instruction RandomDataProcessingImmLogical::random_instruction() {
+        bits result{32, 0};
+
+        result.set_range(23, 29, 0b100100);
+
+        // op
+        int opc = uniform_int_distribution(generator) % 4;
+        result.set_range(29, 31, opc);
+        // sf
+        int sf = uniform_int_distribution(generator) % 2;
+        result.set_bit(31, sf);
+        // N
+        int N = 0;
+        if (sf == 0) {
+            // then N must be 0
+            // this line can be ignored, because result is inited to be all 0
+            result.set_bit(22, N);
+        } else {
+            N = uniform_int_distribution(generator) % 2;
+            result.set_bit(22, N);
+        }
+
+        // immr
+        result.set_range(16, 22, uniform_int_distribution(generator) % (1 << 6));
+        // imms
+        int level = uniform_int_distribution(generator) % ((sf && N ? 6 : 5)) + 1;
+        result.set_range(10, 16, (0b11110ll << level) & (0b111111ll));
+        result.set_range(10, 10 + level, uniform_int_distribution(generator) % ((1 << level) - 1));
+        // rn
+        result.set_range(5, 10, uniform_int_distribution(generator) % (1 << 5));
+        // rd
+        result.set_range(0, 5, uniform_int_distribution(generator) % (1 << 5));
+
+        return arm::Instruction{result};
+    }
+
+    arm::Instruction RandomMoveWideImm::random_instruction() {
+        bits result{32, 0};
+        result.set_range(23, 29, 0b100101);
+        // sf
+        int sf = uniform_int(generator) % 2;
+        result.set_bit(31, sf);
+        // opc
+        int opc = uniform_int(generator) % 2;
+        if (opc == 0b01) {
+            opc = 0b11;
+        }
+        result.set_range(29, 31, opc);
+        // hw
+        int hw;
+        if (sf) {
+            hw = uniform_int(generator) % 4;
+        } else {
+            hw = uniform_int(generator) % 2;
+        }
+        result.set_range(21, 23, hw);
+        // imm16
+        result.set_range(5, 21, uniform_int(generator) % (1 << 16));
+        // rd
+        result.set_range(0, 5, uniform_int(generator) % (1 << 5));
+        return arm::Instruction{result};
+    }
+
     RandomAddSubImm::RandomAddSubImm(std::mt19937 &generator): generator(generator), uniform_int_dist() {}
 
     arm::Instruction RandomAddSubImm::random_instruction() {

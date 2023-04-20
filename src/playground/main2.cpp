@@ -14,6 +14,7 @@
 #include <cost/SimpleCost.h>
 #include <search/Search.h>
 #include <mutation/SimpleProgramMutation.h>
+#include <mutation/SimpleInClassMutation.h>
 #include <random_instruction/RandomDataProcessingImm.h>
 #include <mutation/MutateDataProcessingImm.h>
 
@@ -23,12 +24,14 @@ using std::endl;
 using std::vector;
 
 void f(const arm::Program& target, vector<MachineState> test_cases) {
-    std::mt19937 generator{100};
+    std::mt19937 generator{1000};
+    srand(1000);
 
     megumin::SimpleCost simple_cost{target, std::move(test_cases)};
 
     megumin::RandomDataProcessingImm random_data_processing_imm{generator};
-    megumin::MutateDataProcessingImmAddSub mutate_instruction{generator};
+//    megumin::MutateDataProcessingImmAddSub mutate_instruction{generator};
+    megumin::SimpleInClassMutation mutate_instruction{generator};
     megumin::SimpleProgramMutation simple_program_mutation{generator, &random_data_processing_imm, &mutate_instruction};
 
     megumin::Search search{&simple_program_mutation, &simple_cost, generator};
@@ -52,9 +55,11 @@ void f(const arm::Program& target, vector<MachineState> test_cases) {
 
 int main() {
     // add x1, x2, #10
-    const char* code = "\x41\x28\x00\x91";
+//    const char* code = "\x41\x28\x00\x91";
+    const char* code = "\x21\x28\x00\x91";
     // sub x2, x1, #5
-    const char* code2 = "\x22\x14\x00\xd1";
+//    const char* code2 = "\x22\x14\x00\xd1";
+    const char* code2 = "\x21\x14\x00\x91";
     // and x1, x2, #4
     const char* code3 = "\x41\x00\x7e\x92";
 
@@ -68,11 +73,11 @@ int main() {
 
     Program program;
     program.add_instruction(instruction);
-    program.add_instruction(instruction);
-//    program.add_instruction(instruction2);
+//    program.add_instruction(instruction);
+    program.add_instruction(instruction1);
 
     std::vector<MachineState> test_cases;
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < 20; i++) {
         test_cases.emplace_back(MachineState{});
         test_cases[i].fill_gp_random();
     }

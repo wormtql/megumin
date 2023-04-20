@@ -13,7 +13,9 @@ target_sources(megumin
         random_instruction/RandomInstruction.cpp
         random_instruction/RandomDataProcessingImm.cpp
         cost/SimpleCost.cpp
+        mutation/SimpleInClassMutation.cpp
         PUBLIC
+        mutation/SimpleInClassMutation.h
         cost/SimpleCost.h
         random_instruction/RandomDataProcessingImm.h
         random_instruction/RandomInstruction.h

@@ -29,8 +29,9 @@ namespace arm {
     }
 
     bits bits::concat(const bits& op) {
+//        assert(size + op.size <= 64);
         int64_t result = data0;
-        result = (result << size) | (op.data0 & ((1 << op.size) - 1));
+        result = (result << op.size) | (op.data0 & get_mask(op.size));
         return bits{size + op.size, result};
     }
 
@@ -67,7 +68,7 @@ namespace arm {
     }
 
     uint64_t bits::as_u64() const {
-        return data0;
+        return data0 & get_mask(size);
     }
 
     bool bits::operator==(const bits& other) const {
@@ -160,13 +161,17 @@ namespace arm {
 
     bits& bits::set_range(int low, int high, int64_t value) {
         assert(low < size && high < size);
-        int64_t mask = ~0ll;
-        mask <<= high;
-        mask |= get_mask(low);
-
-        data0 &= mask;
+//        int64_t mask = ~0ll;
+//        mask <<= high;
+//        mask |= get_mask(low);
+        int64_t mask = get_mask(high) - get_mask(low);
+        int64_t maskr = ~mask;
+        data0 &= maskr;
+//        value <<= low;
+//        value &= ~mask;
+//        value &= mask;
         value <<= low;
-        value &= ~mask;
+        value &= mask;
         data0 |= value;
         return *this;
     }

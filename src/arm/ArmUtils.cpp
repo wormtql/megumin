@@ -117,9 +117,7 @@ namespace arm {
                                                     bool immediate) {
 
         int len = ArmUtils::highest_set_bit(bits{1, immN}.concat(~imms));
-        if (len < 1) {
-            // undefined
-        }
+        assert(len >= 1);
         assert(m >= (1 << len));
 
         bits levels = bits{6, (1 << len) - 1};

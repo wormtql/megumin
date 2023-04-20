@@ -6,6 +6,13 @@
 
 namespace arm {
     void InstructionDispatch::dispatch(const Instruction& instruction) {
+        if (instruction.is_nop()) {
+            if (need_dispatch_nop()) {
+                dispatch_nop(instruction);
+            }
+            return;
+        }
+
         auto type = instruction.get_type();
         if (type == InstructionType::DataProcessingImm) {
             if (need_dispatch_data_processing_imm()) {
@@ -16,6 +23,7 @@ namespace arm {
                 dispatch_data_processing_reg(instruction);
             }
         }
+        // todo
     }
 
     void InstructionDispatch::dispatch_data_processing_imm(const Instruction &instruction) {
@@ -30,14 +38,20 @@ namespace arm {
             }
         } else if (op0 == 0b100) {
             if (need_dispatch_data_processing_imm_logical()) {
-                dispatch_data_processing_imm_logical();
+                dispatch_data_processing_imm_logical(instruction);
             }
         } else if (op0 == 0b101) {
-
+            if (need_dispatch_data_processing_move_wide()) {
+                dispatch_data_processing_move_wide(instruction);
+            }
         } else if (op0 == 0b110) {
-
+            if (need_dispatch_data_processing_bitfield()) {
+                dispatch_data_processing_bitfield(instruction);
+            }
         } else if (op0 == 0b111) {
-
+            if (need_dispatch_data_processing_extract()) {
+                dispatch_data_processing_extract(instruction);
+            }
         }
     }
 
