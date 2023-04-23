@@ -6,6 +6,7 @@
 #define MEGUMIN_RANDOMDATAPROCESSINGIMM_H
 
 #include <random>
+#include <memory>
 #include <vector>
 #include "random_instruction/RandomInstruction.h"
 
@@ -38,6 +39,26 @@ namespace megumin {
         arm::Instruction random_instruction() override;
     };
 
+    class RandomBitfield: public RandomInstruction {
+    private:
+        std::mt19937 &generator;
+        std::uniform_int_distribution<> uniform_int;
+    public:
+        explicit RandomBitfield(std::mt19937& generator): generator(generator) {}
+
+        arm::Instruction random_instruction() override;
+    };
+
+    class RandomExtract: public RandomInstruction {
+    private:
+        std::mt19937 &generator;
+        std::uniform_int_distribution<> uniform_int;
+    public:
+        explicit RandomExtract(std::mt19937& generator): generator(generator) {}
+
+        arm::Instruction random_instruction() override;
+    };
+
     class RandomDataProcessingImm: public RandomInstruction {
     public:
         struct Prob {
@@ -52,7 +73,8 @@ namespace megumin {
         std::mt19937& generator;
         std::discrete_distribution<> cat_prob;
 
-        std::vector<RandomInstruction*> dispatches;
+//        std::vector<RandomInstruction*> dispatches;
+        std::vector<std::unique_ptr<RandomInstruction>> dispatches;
     public:
         explicit RandomDataProcessingImm(std::mt19937& generator, Prob prob): generator(generator) {
             cat_prob = {{
@@ -64,21 +86,16 @@ namespace megumin {
                 prob.extract,
             }};
 
-            dispatches.push_back(new RandomAddSubImm(generator));
-            dispatches.push_back(new RandomAddSubImm(generator));
-            dispatches.push_back(new RandomDataProcessingImmLogical(generator));
-//            dispatches.push_back(new RandomAddSubImm(generator));
-            dispatches.push_back(new RandomMoveWideImm(generator));
-            dispatches.push_back(new RandomAddSubImm(generator));
-            dispatches.push_back(new RandomAddSubImm(generator));
+            dispatches.push_back(std::make_unique<RandomAddSubImm>(generator));
+            dispatches.push_back(std::make_unique<RandomAddSubImm>(generator));
+            dispatches.push_back(std::make_unique<RandomDataProcessingImmLogical>(generator));
+            dispatches.push_back(std::make_unique<RandomMoveWideImm>(generator));
+            dispatches.push_back(std::make_unique<RandomBitfield>(generator));
+            dispatches.push_back(std::make_unique<RandomExtract>(generator));
+//            dispatches.push_back(std::make_unique<RandomAddSubImm>(generator));
             // todo
         }
         explicit RandomDataProcessingImm(std::mt19937& generator): RandomDataProcessingImm(generator, {}) {}
-        ~RandomDataProcessingImm() override {
-            for (RandomInstruction* r : dispatches) {
-                delete r;
-            }
-        }
 
         arm::Instruction random_instruction() override;
     };

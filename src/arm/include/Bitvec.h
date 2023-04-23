@@ -31,8 +31,9 @@ namespace arm {
         [[nodiscard]] uint64_t as_u64() const;
 
         bits& append_bit(bool bit);
-        bits zero_extend(int size);
-        bits resize(int size);
+        bits zero_extend(int size) const;
+        bits resize(int size) const;
+        [[nodiscard]] bits sign_extend(int size) const;
 
         bool operator==(const bits& other) const;
         bool operator==(int64_t other) const;

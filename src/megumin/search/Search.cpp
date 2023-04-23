@@ -12,7 +12,7 @@ namespace megumin {
     {}
 
     void Search::do_search(SearchState &state) const {
-        for (int i = 0; i < max_iteration; i++) {
+        for (unsigned long long i = 0; i < max_iteration; i++) {
 //            if (i % 100000 == 0) {
 //                printf("%d\n", i);
 //                fflush(stdout);

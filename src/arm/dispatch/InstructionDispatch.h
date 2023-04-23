@@ -57,6 +57,9 @@ namespace arm {
             return true;
         }
         virtual void dispatch_data_processing_extract(const Instruction& instruction) {}
+
+        virtual bool need_dispatch_data_processing_2source() { return true; }
+        virtual void dispatch_data_processing_2source(const Instruction& instruction) {}
     };
 }
 

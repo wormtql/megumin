@@ -43,11 +43,11 @@ namespace arm {
 
     bool bits::is_set(int index) const {
         assert(index < size);
-        return (data0 >> index) & 1;
+        return (data0 >> index) & 1ll;
     }
 
     bits bits::get_range(int low, int high) const {
-        assert(low < size && high < size);
+        assert(low < size && high <= size);
         int64_t temp = (data0) & get_mask(high);
         temp = temp >> low;
         return bits{high - low, temp};
@@ -59,6 +59,7 @@ namespace arm {
     }
 
     int64_t bits::as_i64() const {
+//        return this->sign_extend(64).data0;
         return data0;
     }
 
@@ -130,12 +131,25 @@ namespace arm {
         return *this;
     }
 
-    bits bits::zero_extend(int size) {
+    bits bits::zero_extend(int size) const {
         assert(size >= this->size);
         return bits{size, data0};
     }
 
-    bits bits::resize(int size) {
+    bits bits::sign_extend(int size) const {
+        assert(size >= this->size);
+        bool sign = is_set(this->size - 1);
+
+        bits result;
+        if (sign)
+            result = ones(size);
+        else
+            result = bits{size, 0};
+        result.set_range(0, this->size, data0);
+        return result;
+    }
+
+    bits bits::resize(int size) const {
         int64_t result = data0 & get_mask(size);
         return bits{size, result};
     }
@@ -152,15 +166,15 @@ namespace arm {
     bits& bits::set_bit(int index, bool value) {
         assert(index < size);
         if (value) {
-            data0 |= (1 << index);
+            data0 |= 1ll << index;
         } else {
-            data0 &= ~(1 << index);
+            data0 &= ~(1ll << index);
         }
         return *this;
     }
 
     bits& bits::set_range(int low, int high, int64_t value) {
-        assert(low < size && high < size);
+        assert(low < size && high <= size);
 //        int64_t mask = ~0ll;
 //        mask <<= high;
 //        mask |= get_mask(low);

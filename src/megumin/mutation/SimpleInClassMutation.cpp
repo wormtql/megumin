@@ -5,6 +5,7 @@
 #include <Bitvec.h>
 #include "MutateDataProcessingImm.h"
 #include "SimpleInClassMutation.h"
+#include "MutateDataProcessingReg.h"
 
 using arm::bits;
 
@@ -18,9 +19,23 @@ namespace megumin {
         if (type == arm::InstructionType::DataProcessingImm) {
             return mutate_data_processing_imm(instruction);
         } else if (type == arm::InstructionType::DataProcessingReg) {
-            // todo
-//            execute_data_processing_reg(state);
+            return mutate_data_processing_reg(instruction);
         }
+        // todo
+        assert(false);
+    }
+
+    arm::Instruction SimpleInClassMutation::mutate_data_processing_reg(const arm::Instruction &instruction) {
+        bits op0 = instruction.get_range(29, 31);
+        bool op1 = instruction.get_bit(28);
+        bits op2 = instruction.get_range(21, 25);
+        bits op3 = instruction.get_range(10, 16);
+
+        if (op0 == 0 && op1 == 1 && op2 == 0b0110) {
+            return mutate_source2->mutate(instruction);
+//            return instruction;
+        }
+        // todo
         assert(false);
     }
 
@@ -35,22 +50,20 @@ namespace megumin {
         } else if (op0 == 0b101) {
             return mutate_move_wide_imm->mutate(instruction);
         } else if (op0 == 0b110) {
-            // todo
+            return mutate_bitfield->mutate(instruction);
         } else if (op0 == 0b111) {
-            // todo
+            return mutate_extract->mutate(instruction);
         }
         assert(false);
     }
 
     SimpleInClassMutation::SimpleInClassMutation(std::mt19937& generator) {
-        mutate_add_sub_imm = new MutateDataProcessingImmAddSub(generator);
-        mutate_logical_imm = new MutateDataProcessingImmLogical(generator);
-        mutate_move_wide_imm = new MutateDataProcessingImmMoveWide(generator);
-    }
+        mutate_add_sub_imm = std::make_unique<MutateDataProcessingImmAddSub>(generator);
+        mutate_logical_imm = std::make_unique<MutateDataProcessingImmLogical>(generator);
+        mutate_move_wide_imm = std::make_unique<MutateDataProcessingImmMoveWide>(generator);
+        mutate_bitfield = std::make_unique<MutateDataProcessingBitfield>(generator);
+        mutate_extract = std::make_unique<MutateDataProcessingExtract>(generator);
 
-    SimpleInClassMutation::~SimpleInClassMutation() {
-        delete mutate_logical_imm;
-        delete mutate_add_sub_imm;
-        delete mutate_move_wide_imm;
+        mutate_source2 = std::make_unique<MutateDataProcessingReg2Source>(generator);
     }
 }

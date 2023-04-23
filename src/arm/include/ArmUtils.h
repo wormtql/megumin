@@ -22,6 +22,8 @@ namespace arm {
         static bits zero_extend(bits x, int size);
 
         static bits replicate(bits x, int m);
+
+        static bits shift_reg(bits reg, int shift_type, int amount);
     };
 
     class ArmUtilsSharedFunctions {
@@ -37,6 +39,10 @@ namespace arm {
         static bits ror(bits x, int shift);
 
         static std::pair<bits, bits> ror_c(bits x, int shift);
+
+        static bits asr(bits x, int shift);
+
+        static std::pair<bits, bits> asr_c(bits x, int shift);
     };
 }
 

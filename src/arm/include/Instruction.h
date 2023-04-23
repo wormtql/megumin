@@ -33,19 +33,28 @@ namespace arm {
     class Instruction {
     private:
         arm::bits instruction;
+        uint64_t id;
+        static uint64_t ID;
 
         void execute_data_processing_imm(MachineState& state) const;
         void execute_data_processing_imm_add_sub_imm(MachineState& state) const;
         void execute_data_processing_imm_add_sub_imm_with_tags(MachineState& state) const;
         void execute_data_processing_imm_logical_imm(MachineState& state) const;
         void execute_data_processing_imm_move_wide_imm(MachineState& state) const;
+        void execute_data_processing_imm_bitfield(MachineState& state) const;
+        void execute_data_processing_imm_extract(MachineState& state) const;
 
         void execute_data_processing_reg(MachineState& state) const;
+        void execute_data_processing_reg_2_source(MachineState& state) const;
+
     public:
         explicit Instruction(bits instruction);
-        Instruction(): instruction{32, 0} {}
+        explicit Instruction(void* data): Instruction(bits{32, *reinterpret_cast<int64_t*>(data)}) {};
+        Instruction(const Instruction& other);
+        Instruction(): instruction{32, 0} { id = ID++; }
         static Instruction nop() { return Instruction{bits{32, 0}}; }
         [[nodiscard]] InstructionType get_type() const;
+        [[nodiscard]] const arm::bits& get_bits() const { return instruction; }
         InstructionType2 get_type2() const;
 
         void set_bit(int index, bool value);

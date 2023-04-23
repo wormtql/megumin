@@ -94,6 +94,7 @@ void arm::InstructionPrint::dispatch_data_processing_move_wide(const arm::Instru
     } else {
         assert(false);
     }
+    os << " ";
 
     auto reg = sf ? "x" : "w";
     os << reg << rd.as_u64() << ", ";
@@ -102,4 +103,75 @@ void arm::InstructionPrint::dispatch_data_processing_move_wide(const arm::Instru
         unsigned int shift = hw.as_u32() * 16;
         os << ", LSL #" << shift;
     }
+}
+
+void arm::InstructionPrint::dispatch_data_processing_bitfield(const arm::Instruction &instruction1) {
+    const bits& instruction = instruction1.get_bits();
+    bool sf = instruction.is_set(31);
+    bits opc = instruction.get_range(29, 31);
+    bool N = instruction.is_set(22);
+    bits immr = instruction.get_range(16, 22);
+    bits imms = instruction.get_range(10, 16);
+    bits rn = instruction.get_range(5, 10);
+    bits rd = instruction.get_range(0, 5);
+
+    if (opc == 00) {
+        os << "sbfm";
+    } else if (opc == 01) {
+        os << "bfm";
+    } else if (opc == 10) {
+        os << "ubfm";
+    } else {
+        assert(false);
+    }
+    os << " ";
+
+    auto reg = sf ? "x" : "w";
+    os << reg << rd.as_u64() << ", ";
+    os << reg << rn.as_u64() << ", ";
+    os << "#" << immr.as_u64() << ", ";
+    os << "#" << imms.as_u64();
+}
+
+void arm::InstructionPrint::dispatch_data_processing_extract(const arm::Instruction &instruction) {
+    const bool sf = instruction.get_bit(31);
+    const bits rm = instruction.get_range(16, 21);
+    const bits imms = instruction.get_range(10, 16);
+    const bits rn = instruction.get_range(5, 10);
+    const bits rd = instruction.get_range(0, 5);
+
+    const auto reg = sf ? "x" : "w";
+
+    os << "extr ";
+    os << reg << rd.as_u64() << ", ";
+    os << reg << rn.as_u64() << ", ";
+    os << reg << rm.as_u64() << ", ";
+    os << "#" << imms.as_u64();
+}
+
+void arm::InstructionPrint::dispatch_data_processing_2source(const arm::Instruction &instruction) {
+    bool sf = instruction.get_bit(31);
+    bits rm = instruction.get_range(16, 21);
+    bits opcode = instruction.get_range(10, 16);
+    bits rn = instruction.get_range(5, 10);
+    bits rd = instruction.get_range(0, 5);
+
+    if (opcode == 0b000010) {
+        os << "udiv";
+    } else if (opcode == 0b000011) {
+        os << "sdiv";
+    } else if (opcode == 0b001000) {
+        os << "lslv";
+    } else if (opcode == 0b001001) {
+        os << "lsrv";
+    } else if (opcode == 0b001010) {
+        os << "asrv";
+    } else if (opcode == 0b001011) {
+        os << "rorv";
+    }
+    os << " ";
+    auto reg = sf ? "x" : "w";
+    os << reg << rd.as_u64() << ", ";
+    os << reg << rn.as_u64() << ", ";
+    os << reg << rm.as_u64();
 }

@@ -56,6 +56,16 @@ namespace arm {
     }
 
     void InstructionDispatch::dispatch_data_processing_reg(const Instruction& instruction) {
+        bits op0 = instruction.get_range(29, 31);
+        bool op1 = instruction.get_bit(28);
+        bits op2 = instruction.get_range(21, 25);
+        bits op3 = instruction.get_range(10, 16);
+
+        if (op0 == 0 && op1 == 1 && op2 == 0b0110) {
+            if (need_dispatch_data_processing_2source()) {
+                dispatch_data_processing_2source(instruction);
+            }
+        }
         // todo
     }
 }

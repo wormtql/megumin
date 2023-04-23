@@ -1,4 +1,0 @@
-ToolSet: 17.0 (local)@D:\Microsoft Visual Studio\2022\Community
-Options: msvc.arch=x86_amd64
-
-Options:

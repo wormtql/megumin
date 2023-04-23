@@ -70,9 +70,41 @@ namespace arm {
             return result.first;
         }
     }
+
+    std::pair<bits, bits> ArmUtilsSharedFunctions::asr_c(bits x, int shift) {
+        assert(shift > 0);
+        assert(shift < x.size);
+        int64_t temp = x.sign_extend(64).data0;
+        temp >>= shift;
+        bool carry_out = x.is_set(shift - 1);
+        return {bits{x.size, temp}, bits{1, carry_out}};
+    }
+
+    bits ArmUtilsSharedFunctions::asr(bits x, int shift) {
+        assert(shift >= 0);
+        if (shift == 0) {
+            return x;
+        } else {
+            return asr_c(x, shift).first;
+        }
+    }
 }
 
+// instrs
 namespace arm {
+    bits ArmUtils::shift_reg(bits reg, int shift_type, int amount) {
+        switch (shift_type) {
+            case 0:
+                return ArmUtilsSharedFunctions::lsl(reg, amount);
+            case 1:
+                return ArmUtilsSharedFunctions::lsr(reg, amount);
+            case 2:
+                return ArmUtilsSharedFunctions::asr(reg, amount);
+            case 3:
+                return ArmUtilsSharedFunctions::ror(reg, amount);
+        }
+    }
+
     bits ArmUtils::replicate(bits x, int m) {
         assert(x.size * m <= 64);
         int64_t result = 0;
@@ -123,6 +155,7 @@ namespace arm {
         bits levels = bits{6, (1 << len) - 1};
         if (immediate && (imms & levels) == levels) {
             // undefined
+            assert(false);
         }
 
         unsigned int S = (imms & levels).as_u32();

@@ -17,42 +17,6 @@ using std::string;
 
 namespace megumin {
     // mutate add/sub imm
-    class MutateDataProcessingImmAddSubS: public Mutation {
-    public:
-        arm::Instruction mutate(const arm::Instruction &instruction) override;
-    };
-
-    class MutateDataProcessingImmAddSubWidth: public Mutation {
-    public:
-        arm::Instruction mutate(const arm::Instruction &instruction) override;
-    };
-
-    class MutateDataProcessingImmAddSubOperator: public Mutation {
-    public:
-        arm::Instruction mutate(const arm::Instruction &instruction) override;
-    };
-
-    class MutateDataProcessingImmAddSubRd: public Mutation {
-    public:
-        arm::Instruction mutate(const arm::Instruction &instruction) override;
-    };
-
-    class MutateDataProcessingImmAddSubRn: public Mutation {
-    public:
-        arm::Instruction mutate(const arm::Instruction &instruction) override;
-    };
-
-    class MutateDataProcessingImmAddSubImm12: public Mutation {
-    public:
-        arm::Instruction mutate(const arm::Instruction &instruction) override;
-    };
-
-    // mutate sh flag
-    class MutateDataProcessingImmAddSubSh: public Mutation {
-    public:
-        arm::Instruction mutate(const arm::Instruction &instruction) override;
-    };
-
     class MutateDataProcessingImmAddSub: public Mutation {
     public:
         struct Prob {
@@ -68,50 +32,23 @@ namespace megumin {
         std::mt19937& generator;
         std::discrete_distribution<> dist;
         std::vector<Mutation*> mutations;
+        std::uniform_int_distribution<> uniform_int;
+
+        arm::Instruction mutate_s(const arm::Instruction& instruction);
+        arm::Instruction mutate_width(const arm::Instruction& instruction);
+        arm::Instruction mutate_operator(const arm::Instruction& instruction);
+        arm::Instruction mutate_rd(const arm::Instruction& instruction);
+        arm::Instruction mutate_rn(const arm::Instruction& instruction);
+        arm::Instruction mutate_imm12(const arm::Instruction& instruction);
+        arm::Instruction mutate_sh(const arm::Instruction& instruction);
     public:
         MutateDataProcessingImmAddSub(std::mt19937& generator, Prob probs);
         explicit MutateDataProcessingImmAddSub(std::mt19937& generator): MutateDataProcessingImmAddSub(generator, {}) {}
-        ~MutateDataProcessingImmAddSub() override;
 
         arm::Instruction mutate(const arm::Instruction &instruction) override;
     };
 
     // mutate logical imm
-    class MutateDataProcessingImmLogicalOpc: public Mutation {
-    public:
-        arm::Instruction mutate(const arm::Instruction &instruction) override;
-    };
-
-    class MutateDataProcessingImmLogicalN: public Mutation {
-    public:
-        arm::Instruction mutate(const arm::Instruction &instruction) override;
-    };
-
-    class MutateDataProcessingImmLogicalSf: public Mutation {
-    public:
-        arm::Instruction mutate(const arm::Instruction &instruction) override;
-    };
-
-    class MutateDataProcessingImmLogicalImmr: public Mutation {
-    public:
-        arm::Instruction mutate(const arm::Instruction &instruction) override;
-    };
-
-    class MutateDataProcessingImmLogicalImms: public Mutation {
-    public:
-        arm::Instruction mutate(const arm::Instruction &instruction) override;
-    };
-
-    class MutateDataProcessingImmLogicalRn: public Mutation {
-    public:
-        arm::Instruction mutate(const arm::Instruction &instruction) override;
-    };
-
-    class MutateDataProcessingImmLogicalRd: public Mutation {
-    public:
-        arm::Instruction mutate(const arm::Instruction &instruction) override;
-    };
-
     class MutateDataProcessingImmLogical: public Mutation {
     public:
         struct Prob {
@@ -123,13 +60,20 @@ namespace megumin {
             double w_rn = 1.0;
             double w_rd = 1.0;
         };
+
+        arm::Instruction mutate_opc(const arm::Instruction& instruction);
+        arm::Instruction mutate_n(const arm::Instruction& instruction);
+        arm::Instruction mutate_sf(const arm::Instruction& instruction);
+        arm::Instruction mutate_immr(const arm::Instruction& instruction);
+        arm::Instruction mutate_imms(const arm::Instruction& instruction);
+        arm::Instruction mutate_rn(const arm::Instruction& instruction);
+        arm::Instruction mutate_rd(const arm::Instruction& instruction);
     private:
         std::mt19937& generator;
         std::discrete_distribution<> dist;
-        std::vector<Mutation*> mutations;
+        std::uniform_int_distribution<> uniform_int;
     public:
         MutateDataProcessingImmLogical(std::mt19937& generator, Prob prob);
-        ~MutateDataProcessingImmLogical() override;
         explicit MutateDataProcessingImmLogical(std::mt19937& generator): MutateDataProcessingImmLogical(generator, {}) {}
         arm::Instruction mutate(const arm::Instruction &instruction) override;
     };
@@ -157,6 +101,62 @@ namespace megumin {
     public:
         MutateDataProcessingImmMoveWide(std::mt19937& generator, Prob prob);
         explicit MutateDataProcessingImmMoveWide(std::mt19937& generator): MutateDataProcessingImmMoveWide(generator, {}) {}
+        arm::Instruction mutate(const arm::Instruction &instruction) override;
+    };
+
+    // mutate bitfield
+    class MutateDataProcessingBitfield: public Mutation {
+    public:
+        struct Prob {
+            double w_sf_and_n = 0.2;
+            double w_opc = 2.0;
+            double w_immr = 6.0;
+            double w_imms = 6.0;
+            double w_rn = 5.0;
+            double w_rd = 5.0;
+        };
+    private:
+        arm::Instruction mutate_sf_and_n(const arm::Instruction& instruction);
+        arm::Instruction mutate_opc(const arm::Instruction& instruction);
+        arm::Instruction mutate_immr(const arm::Instruction& instruction);
+        arm::Instruction mutate_imms(const arm::Instruction& instruction);
+        arm::Instruction mutate_rn(const arm::Instruction& instruction);
+        arm::Instruction mutate_rd(const arm::Instruction& instruction);
+
+        std::mt19937 &generator;
+        std::discrete_distribution<> discrete;
+        std::uniform_int_distribution<> uniform_int;
+    public:
+        MutateDataProcessingBitfield(std::mt19937& generator, Prob prob);
+        explicit MutateDataProcessingBitfield(std::mt19937& generator): MutateDataProcessingBitfield(generator, {}) {}
+
+        arm::Instruction mutate(const arm::Instruction &instruction) override;
+    };
+
+    // mutate extract
+    class MutateDataProcessingExtract: public Mutation {
+    public:
+        struct Prob {
+            double w_sf = 1.0;
+            double w_rm = 5.0;
+            double w_imms = 6.0;
+            double w_rn = 5.0;
+            double w_rd = 5.0;
+        };
+    private:
+        arm::Instruction mutate_sf(const arm::Instruction& instruction);
+        arm::Instruction mutate_rm(const arm::Instruction& instruction);
+        arm::Instruction mutate_imms(const arm::Instruction& instruction);
+        arm::Instruction mutate_rn(const arm::Instruction& instruction);
+        arm::Instruction mutate_rd(const arm::Instruction& instruction);
+
+        std::mt19937 &generator;
+        std::discrete_distribution<> discrete;
+        std::uniform_int_distribution<> uniform_int;
+    public:
+        MutateDataProcessingExtract(std::mt19937 &generator, Prob prob);
+        explicit MutateDataProcessingExtract(std::mt19937& generator): MutateDataProcessingExtract(generator, {}) {}
+
         arm::Instruction mutate(const arm::Instruction &instruction) override;
     };
 }

@@ -10,7 +10,7 @@
 #include "Instruction.h"
 #include "MachineState.h"
 
-const int MAX_INSTRUCTIONS = 10;
+const int MAX_INSTRUCTIONS = 20;
 
 namespace arm {
     class Program {

@@ -16,6 +16,7 @@
 #include <mutation/SimpleProgramMutation.h>
 #include <mutation/SimpleInClassMutation.h>
 #include <random_instruction/RandomDataProcessingImm.h>
+#include <random_instruction/RandomInstructionTop.h>
 #include <mutation/MutateDataProcessingImm.h>
 
 using namespace arm;
@@ -29,10 +30,11 @@ void f(const arm::Program& target, vector<MachineState> test_cases) {
 
     megumin::SimpleCost simple_cost{target, std::move(test_cases)};
 
-    megumin::RandomDataProcessingImm random_data_processing_imm{generator};
+//    megumin::RandomDataProcessingImm random_data_processing_imm{generator};
+    megumin::RandomInstructionTop random_instruction{generator};
 //    megumin::MutateDataProcessingImmAddSub mutate_instruction{generator};
     megumin::SimpleInClassMutation mutate_instruction{generator};
-    megumin::SimpleProgramMutation simple_program_mutation{generator, &random_data_processing_imm, &mutate_instruction};
+    megumin::SimpleProgramMutation simple_program_mutation{generator, &random_instruction, &mutate_instruction};
 
     megumin::Search search{&simple_program_mutation, &simple_cost, generator};
     megumin::SearchState state;
@@ -54,30 +56,34 @@ void f(const arm::Program& target, vector<MachineState> test_cases) {
 }
 
 int main() {
-    // add x1, x2, #10
-//    const char* code = "\x41\x28\x00\x91";
-    const char* code = "\x21\x28\x00\x91";
-    // sub x2, x1, #5
-//    const char* code2 = "\x22\x14\x00\xd1";
-    const char* code2 = "\x21\x14\x00\x91";
-    // and x1, x2, #4
-    const char* code3 = "\x41\x00\x7e\x92";
-
-    uint32_t instr = *reinterpret_cast<const uint32_t*>(code);
-    uint32_t i2 = *reinterpret_cast<const uint32_t*>(code2);
-    uint32_t i3 = *reinterpret_cast<const uint32_t*>(code3);
-
-    Instruction instruction{bits{32, instr}};
-    Instruction instruction1{bits{32, i2}};
-    Instruction instruction2{bits{32, i3}};
+    // add x1, x1, #10
+    Instruction instruction{(void*)"\x21\x28\x00\x91"};
+    // add x1, x1, #100
+    Instruction instruction1{(void*)"\x21\x90\x01\x91"};
+    Instruction instruction2{(void*)"\x21\x90\x01\x91"};
+    // movk x1, #100
+    Instruction instruction3{(void*)"\x81\x0c\x80\xf2"};
+    // sbfm x1, x2, #10, #20
+    Instruction instruction4{(void*)"\x41\x50\x0a\x13"};
+    // extr x0, x1, x2, #5
+    Instruction instruction5{(void*)"\x20\x14\xc2\x93"};
+    // udiv x1, x2, x3
+    Instruction instruction6{(void*)"\x41\x08\xc3\x9a"};
+    // asrv x2, x1, x4
+    Instruction instruction7{(void*)"\x22\x28\xc4\x9a"};
 
     Program program;
-    program.add_instruction(instruction);
 //    program.add_instruction(instruction);
-    program.add_instruction(instruction1);
+//    program.add_instruction(instruction1);
+//    program.add_instruction(instruction2);
+//    program.add_instruction(instruction3);
+//    program.add_instruction(instruction4);
+//    program.add_instruction(instruction5);
+    program.add_instruction(instruction6);
+    program.add_instruction(instruction7);
 
     std::vector<MachineState> test_cases;
-    for (int i = 0; i < 20; i++) {
+    for (int i = 0; i < 50; i++) {
         test_cases.emplace_back(MachineState{});
         test_cases[i].fill_gp_random();
     }

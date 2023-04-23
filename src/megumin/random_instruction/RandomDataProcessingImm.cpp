@@ -10,7 +10,7 @@ using arm::bits;
 namespace megumin {
     arm::Instruction RandomDataProcessingImm::random_instruction() {
         int cat = cat_prob(generator);
-        auto dispatch = dispatches[cat];
+        const auto& dispatch = dispatches[cat];
         return dispatch->random_instruction();
     }
 
@@ -46,6 +46,9 @@ namespace megumin {
         result.set_range(5, 10, uniform_int_distribution(generator) % (1 << 5));
         // rd
         result.set_range(0, 5, uniform_int_distribution(generator) % (1 << 5));
+        if (result.data0 < 0) {
+            printf("123");
+        }
 
         return arm::Instruction{result};
     }
@@ -101,6 +104,52 @@ namespace megumin {
         // rd
         instruction.set_range(0, 5, uniform_int_dist(generator) % (1 << 5));
 
+        return arm::Instruction{instruction};
+    }
+
+    arm::Instruction RandomBitfield::random_instruction() {
+        bits instruction{32, 0};
+        instruction.set_range(23, 29, 0b100110);
+
+        // opc
+        instruction.set_range(29, 31, uniform_int(generator) % 3);
+        // sf and N
+        int sf = uniform_int(generator) % 2;
+        instruction.set_bit(31, sf);
+        instruction.set_bit(22, sf);
+
+        int x = sf ? (1 << 6) : (1 << 5);
+
+        // immr
+        instruction.set_range(16, 22, uniform_int(generator) % x);
+        // imms
+        instruction.set_range(10, 16, uniform_int(generator) % x);
+        // rn
+        instruction.set_range(5, 10, uniform_int(generator) % (1 << 5));
+        // rd
+        instruction.set_range(0, 5, uniform_int(generator) % (1 << 5));
+
+        return arm::Instruction{instruction};
+    }
+
+    arm::Instruction RandomExtract::random_instruction() {
+        bits instruction{32, 0};
+        instruction.set_range(23, 31, 0b00100111);
+
+        // sf and N
+        int sf = uniform_int(generator) % 2;
+        instruction.set_bit(31, sf);
+        instruction.set_bit(22, sf);
+
+        // rm
+        instruction.set_range(16, 21, uniform_int(generator) % (1 << 5));
+        // rn
+        instruction.set_range(5, 10, uniform_int(generator) % (1 << 5));
+        // rd
+        instruction.set_range(0, 5, uniform_int(generator) % (1 << 5));
+        // imms
+        int x = sf ? (1 << 6) : (1 << 5);
+        instruction.set_range(10, 16, uniform_int(generator) % x);
         return arm::Instruction{instruction};
     }
 }

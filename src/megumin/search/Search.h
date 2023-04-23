@@ -29,7 +29,7 @@ namespace megumin {
         ProgramMutation* program_mutation;
         CostFunction* cost_function;
         double beta = 1.0;
-        int max_iteration = 100000000;
+        unsigned long long max_iteration = 10000000000;
 
         std::mt19937& generator;
         std::uniform_real_distribution<double> uniform_distribution;
