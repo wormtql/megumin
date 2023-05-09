@@ -58,8 +58,8 @@ namespace arm {
         return static_cast<int32_t>(mask & data0);
     }
 
+    // this will not sign extend to value
     int64_t bits::as_i64() const {
-//        return this->sign_extend(64).data0;
         return data0;
     }
 

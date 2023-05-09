@@ -23,20 +23,23 @@ namespace megumin {
         }
         // todo
         assert(false);
+        return instruction;
     }
 
     arm::Instruction SimpleInClassMutation::mutate_data_processing_reg(const arm::Instruction &instruction) {
-        bits op0 = instruction.get_range(29, 31);
+        bool op0 = instruction.get_bit(30);
         bool op1 = instruction.get_bit(28);
         bits op2 = instruction.get_range(21, 25);
         bits op3 = instruction.get_range(10, 16);
 
         if (op0 == 0 && op1 == 1 && op2 == 0b0110) {
             return mutate_source2->mutate(instruction);
-//            return instruction;
+        } else if (op0 == 1 && op1 == 1 && op2 == 0b0110) {
+            return mutate_source1->mutate(instruction);
         }
         // todo
         assert(false);
+        return instruction;
     }
 
     arm::Instruction SimpleInClassMutation::mutate_data_processing_imm(const arm::Instruction &instruction) {
@@ -65,5 +68,6 @@ namespace megumin {
         mutate_extract = std::make_unique<MutateDataProcessingExtract>(generator);
 
         mutate_source2 = std::make_unique<MutateDataProcessingReg2Source>(generator);
+        mutate_source1 = std::make_unique<MutateDataProcessingReg1Source>(generator);
     }
 }

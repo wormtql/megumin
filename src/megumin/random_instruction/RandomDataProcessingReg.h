@@ -21,10 +21,21 @@ namespace megumin {
         arm::Instruction random_instruction() override;
     };
 
+    class RandomDataProcessing1Source: public RandomInstruction {
+    private:
+        std::uniform_int_distribution<> uniform_int;
+        std::mt19937& generator;
+    public:
+        explicit RandomDataProcessing1Source(std::mt19937& generator): generator(generator) {}
+
+        arm::Instruction random_instruction() override;
+    };
+
     class RandomDataProcessingReg: public RandomInstruction {
     public:
         struct Prob {
             double w_2_source = 1.0;
+            double w_1_source = 1.0;
         };
     private:
         std::discrete_distribution<> discrete;

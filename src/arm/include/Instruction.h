@@ -46,6 +46,7 @@ namespace arm {
 
         void execute_data_processing_reg(MachineState& state) const;
         void execute_data_processing_reg_2_source(MachineState& state) const;
+        void execute_data_processing_reg_1_source(MachineState& state) const;
 
     public:
         explicit Instruction(bits instruction);

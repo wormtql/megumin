@@ -66,7 +66,8 @@ namespace megumin {
             double sub_add_imm_with_tags = 0.1;
             double logical = 1.0;
             double move_wide = 0.8;
-            double bitfield = 0.8;
+//            double bitfield = 0.8;
+            double bitfield = 0;
             double extract = 1.0;
         };
     private:

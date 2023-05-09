@@ -170,4 +170,15 @@ namespace arm {
         bits tmask = replicate(telem, 64 / esize);
         return {wmask.resize(m), tmask.resize(m)};
     }
+
+    int ArmUtilsSharedFunctions::count_leading_zero_bits(const bits &x) {
+        int N = x.size;
+        return N - ArmUtils::highest_set_bit(x) + 1;
+    }
+
+    int ArmUtilsSharedFunctions::count_leading_sign_bits(const bits &x) {
+        int N = x.size;
+        bits temp = x.get_range(1, N) ^ x.get_range(0, N - 1);
+        return count_leading_zero_bits(temp);
+    }
 }

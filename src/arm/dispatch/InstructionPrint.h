@@ -27,6 +27,8 @@ namespace arm {
 
         void dispatch_nop(const Instruction &instruction) override;
 
+        void dispatch_data_processing_1source(const Instruction &instruction) override;
+
         void dispatch_data_processing_2source(const Instruction &instruction) override;
     };
 }

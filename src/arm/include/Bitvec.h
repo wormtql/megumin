@@ -51,6 +51,11 @@ namespace arm {
         bits& set_range(int low, int high, int64_t value);
         static bits ones(int size);
         static bits from_bools(std::initializer_list<bool> args);
+
+        // helper functions for instructions
+        [[nodiscard]] bits get_rd() const { return get_range(0, 5); }
+        [[nodiscard]] bits get_rn() const { return get_range(5, 10); }
+        [[nodiscard]] bits get_imms() const { return get_range(10, 16); }
     };
 }
 

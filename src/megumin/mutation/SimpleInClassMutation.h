@@ -23,6 +23,7 @@ namespace megumin {
         std::unique_ptr<Mutation> mutate_extract;
 
         std::unique_ptr<Mutation> mutate_source2;
+        std::unique_ptr<Mutation> mutate_source1;
     public:
         explicit SimpleInClassMutation(std::mt19937& generator);
 

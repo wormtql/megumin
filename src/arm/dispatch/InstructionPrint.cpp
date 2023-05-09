@@ -175,3 +175,38 @@ void arm::InstructionPrint::dispatch_data_processing_2source(const arm::Instruct
     os << reg << rn.as_u64() << ", ";
     os << reg << rm.as_u64();
 }
+
+void arm::InstructionPrint::dispatch_data_processing_1source(const arm::Instruction &instruction) {
+    bool sf = instruction.get_bit(31);
+    bits opcode2 = instruction.get_range(16, 21);
+    bits opcode = instruction.get_range(10, 16);
+    bits rn = instruction.get_range(5, 10);
+    bits rd = instruction.get_range(0, 5);
+
+    if (opcode2 == 0 && opcode == 0) {
+        os << "rbit";
+    } else if (opcode2 == 0 && opcode == 0b000001) {
+        os << "rev16";
+    } else if (opcode2 == 0 && opcode == 0b000010) {
+        if (sf) {
+            os << "rev32";
+        } else {
+            os << "rev";
+        }
+    } else if (opcode2 == 0 && opcode == 0b000011) {
+        if (sf) {
+            os << "rev";
+        } else {
+            assert(false);
+        }
+    } else if (opcode2 == 0 && opcode == 0b000100) {
+        os << "clz";
+    } else if (opcode2 == 0 && opcode == 0b000101) {
+        os << "cls";
+    }
+    os << " ";
+
+    auto reg = sf ? "x" : "w";
+    os << reg << rd.as_u64() << ", ";
+    os << reg << rn.as_u64();
+}

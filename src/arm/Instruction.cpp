@@ -347,14 +347,17 @@ namespace arm {
 
     // https://developer.arm.com/documentation/ddi0596/2021-12/Index-by-Encoding/Data-Processing----Register?lang=en#dp_2src
     void Instruction::execute_data_processing_reg(MachineState &state) const {
-        bits op0 = instruction.get_range(29, 31);
+        bool op0 = instruction.is_set(30);
         bool op1 = instruction.is_set(28);
         bits op2 = instruction.get_range(21, 25);
         bits op3 = instruction.get_range(10, 16);
 
         if (op0 == 0 && op1 == 1 && op2 == 0b0110) {
             execute_data_processing_reg_2_source(state);
-        } else {
+        } else if (op0 == 1 && op1 == 1 && op2 == 0b0110) {
+            execute_data_processing_reg_1_source(state);
+        }
+        else {
             assert(false);
         }
     }
@@ -411,6 +414,84 @@ namespace arm {
             assert(false);
         }
 
+    }
+
+    void Instruction::execute_data_processing_reg_1_source(MachineState &state) const {
+        bool sf = instruction.is_set(31);
+        bool S = instruction.is_set(29);
+        bits opcode2 = instruction.get_range(16, 21);
+        bits opcode = instruction.get_range(10, 16);
+        bits rn = instruction.get_rn();
+        bits rd = instruction.get_rd();
+
+        int n = rn.as_u32();
+        int d = rd.as_u32();
+        int datasize = sf ? 64 : 32;
+
+        assert(S == 0);
+
+        if (opcode2 == 0 && opcode == 0) {
+            // rbit
+            bits operand = state.gp.get_ref(n).resize(datasize);
+            bits result {datasize, 0};
+            for (int i = 0; i < datasize; i++) {
+                bool b = operand.is_set(datasize - 1 - i);
+                result.set_bit(i, b);
+            }
+            state.gp.set(datasize, d, result);
+        } else if (opcode2 == 0 && (opcode >> 2) == 0) {
+            // rev
+            bits opc = instruction.get_range(10, 12);
+            int container_size = 0;
+            if (opc == 0b01) {
+                container_size = 16;
+            } else if (opc == 0b10) {
+                container_size = 32;
+            } else if (opc == 0b11) {
+                assert(sf == 1);
+                container_size = 64;
+            } else {
+                assert(false);
+            }
+
+            bits operand = state.gp.get(datasize, n);
+
+            int containers = datasize / container_size;
+            assert(containers >= 1);
+            int elements_per_container = container_size / 8;
+            int index = 0;
+            int rev_index;
+
+            bits result{datasize, 0};
+
+            for (int c = 0; c < containers; c++) {
+                rev_index = index + ((elements_per_container - 1) * 8);
+                for (int e = 0; e < elements_per_container; e++) {
+                    assert(rev_index <= datasize);
+                    assert(rev_index + 8 <= datasize);
+                    assert(index <= datasize);
+                    assert(index + 8 <= datasize);
+                    result.set_range(rev_index, rev_index + 8, operand.get_range(index, index + 8).as_i64());
+                    index += 8;
+                    rev_index -= 8;
+                }
+            }
+
+            state.gp.set(datasize, d, result);
+        } else if (opcode2 == 0 && opcode == 0b000100) {
+            // clz
+            bits operand1 = state.gp.get(datasize, n);
+            int result = ArmUtilsSharedFunctions::count_leading_zero_bits(operand1);
+            state.gp.set(datasize, d, bits{datasize, result});
+        } else if (opcode2 == 0 && opcode == 0b000101) {
+            // cls
+            bits operand1 = state.gp.get(datasize, n);
+            int result = ArmUtilsSharedFunctions::count_leading_sign_bits(operand1);
+            state.gp.set(datasize, d, bits{datasize, result});
+        }
+        else {
+            assert(false);
+        }
     }
 
     // https://developer.arm.com/documentation/ddi0596/2021-12/Index-by-Encoding/Data-Processing----Immediate

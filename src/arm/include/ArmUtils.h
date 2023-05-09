@@ -43,6 +43,10 @@ namespace arm {
         static bits asr(bits x, int shift);
 
         static std::pair<bits, bits> asr_c(bits x, int shift);
+
+        static int count_leading_zero_bits(const bits& x);
+
+        static int count_leading_sign_bits(const bits& x);
     };
 }
 

@@ -25,8 +25,7 @@ using std::endl;
 using std::vector;
 
 void f(const arm::Program& target, vector<MachineState> test_cases) {
-    std::mt19937 generator{1000};
-    srand(1000);
+    std::mt19937 generator{100};
 
     megumin::SimpleCost simple_cost{target, std::move(test_cases)};
 
@@ -71,6 +70,14 @@ int main() {
     Instruction instruction6{(void*)"\x41\x08\xc3\x9a"};
     // asrv x2, x1, x4
     Instruction instruction7{(void*)"\x22\x28\xc4\x9a"};
+    // rev16 w1, w2
+    Instruction instruction8{(void*)"\x41\x04\xc0\x5a"};
+    // rev32 x2, x1
+    Instruction instruction9{(void*)"\x22\x08\xc0\xda"};
+    // clz w1, w2
+    Instruction instruction10{(void*)"\x41\x10\xc0\x5a"};
+    // cls x3, x1
+    Instruction instruction11{(void*)"\x23\x14\xc0\xda"};
 
     Program program;
 //    program.add_instruction(instruction);
@@ -78,9 +85,13 @@ int main() {
 //    program.add_instruction(instruction2);
 //    program.add_instruction(instruction3);
 //    program.add_instruction(instruction4);
-//    program.add_instruction(instruction5);
+    program.add_instruction(instruction5);
     program.add_instruction(instruction6);
     program.add_instruction(instruction7);
+    program.add_instruction(instruction8);
+    program.add_instruction(instruction9);
+    program.add_instruction(instruction10);
+    program.add_instruction(instruction11);
 
     std::vector<MachineState> test_cases;
     for (int i = 0; i < 50; i++) {

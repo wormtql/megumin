@@ -35,6 +35,29 @@ namespace megumin {
 
     };
 
+    class MutateDataProcessingReg1Source: public Mutation {
+    public:
+        struct Prob {
+            double w_sf = 1;
+            double w_opcode = 2;
+            double w_rn = 5;
+            double w_rd = 5;
+        };
+    private:
+        arm::Instruction mutate_sf(const arm::Instruction& instruction);
+        arm::Instruction mutate_opcode(const arm::Instruction& instruction);
+        arm::Instruction mutate_rn(const arm::Instruction& instruction);
+        arm::Instruction mutate_rd(const arm::Instruction& instruction);
+
+        std::mt19937& generator;
+        std::uniform_int_distribution<> uniform_int;
+        std::discrete_distribution<> discrete;
+    public:
+        MutateDataProcessingReg1Source(std::mt19937& generator, Prob prob);
+        explicit MutateDataProcessingReg1Source(std::mt19937& generator): MutateDataProcessingReg1Source(generator, {}) {}
+
+        arm::Instruction mutate(const arm::Instruction &instruction) override;
+    };
 }
 
 

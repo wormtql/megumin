@@ -11,10 +11,12 @@ namespace megumin {
 megumin::RandomDataProcessingReg::RandomDataProcessingReg(std::mt19937 &generator, Prob prob)
     : generator(generator),
       discrete{{
-          prob.w_2_source
+          prob.w_2_source,
+          prob.w_1_source,
       }}
 {
     dispatches.push_back(std::make_unique<RandomDataProcessing2Source>(generator));
+    dispatches.push_back(std::make_unique<RandomDataProcessing1Source>(generator));
 }
 
 arm::Instruction megumin::RandomDataProcessingReg::random_instruction() {
@@ -38,6 +40,33 @@ arm::Instruction megumin::RandomDataProcessing2Source::random_instruction() {
     inst.set_bit(31, uniform_int(generator) % 2);
     // rm
     inst.set_range(16, 21, uniform_int(generator) % (1 << 5));
+    // rn
+    inst.set_range(5, 10, uniform_int(generator) % (1 << 5));
+    // rd
+    inst.set_range(0, 5, uniform_int(generator) % (1 << 5));
+
+    return arm::Instruction{inst};
+}
+
+arm::Instruction megumin::RandomDataProcessing1Source::random_instruction() {
+    arm::bits inst{32, 0};
+    inst.set_range(21, 31, 0b1011010110);
+    inst.set_range(16, 21, 0);
+
+    // sf
+    int sf = uniform_int(generator) % 2;
+    inst.set_bit(31, sf);
+    // opcode
+    int i = uniform_int(generator) % 6;
+    if (i < 4) {
+        if (sf == 0) {
+            inst.set_range(10, 16, uniform_int(generator) % 3);
+        } else {
+            inst.set_range(10, 16, i);
+        }
+    } else {
+        inst.set_range(10, 16, 0b100 + i - 4);
+    }
     // rn
     inst.set_range(5, 10, uniform_int(generator) % (1 << 5));
     // rd
