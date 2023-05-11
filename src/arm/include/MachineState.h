@@ -27,7 +27,9 @@ namespace arm {
 
     public:
         GPRegBank gp;
+        FPRegBank fp;
         PState p_state;
+        bits fpcr{64, 0};
 
         MachineState();
         MachineState(const MachineState& other);

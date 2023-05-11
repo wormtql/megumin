@@ -7,6 +7,7 @@
 
 #include <cstdint>
 #include <initializer_list>
+#include <utility>
 
 namespace arm {
     class bits {
@@ -34,6 +35,7 @@ namespace arm {
         bits zero_extend(int size) const;
         bits resize(int size) const;
         [[nodiscard]] bits sign_extend(int size) const;
+        void clear();
 
         bool operator==(const bits& other) const;
         bool operator==(int64_t other) const;
@@ -45,6 +47,8 @@ namespace arm {
         bits operator^(const bits& other) const;
         bits operator+(int64_t other) const;
         bits operator~() const;
+        int operator[](int index) const;
+        bits operator[](std::pair<int, int> range) const;
 
         bits concat(const bits& op);
         bits& set_bit(int index, bool value);

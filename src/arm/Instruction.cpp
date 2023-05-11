@@ -522,6 +522,8 @@ namespace arm {
             execute_data_processing_imm(state);
         } else if (type == InstructionType::DataProcessingReg) {
             execute_data_processing_reg(state);
+        } else if (type == InstructionType::DataProcessingSIMD) {
+            execute_floating_point_and_simd(state);
         }
     }
 
@@ -544,5 +546,56 @@ namespace arm {
 
     bool Instruction::is_nop() const {
         return instruction.data0 == 0;
+    }
+
+    void Instruction::execute_floating_point_and_simd(MachineState &state) const {
+        bits op0 = instruction.get_range(28, 32);
+        bits op1 = instruction.get_range(23, 25);
+        bits op2 = instruction.get_range(19, 23);
+        bits op3 = instruction.get_range(10, 19);
+
+        // there are many cryptographic instructions, we ignore these
+
+        bool floating_point_flag1 = op0[0] && !op0[2] && !op1[1] && op2[2];
+
+        if (floating_point_flag1 && op3[{0, 5}] == 0b10000) {
+            execute_floating_point_data_processing(state);
+        }
+    }
+
+    void Instruction::execute_floating_point_data_processing(MachineState &state) const {
+        bool M = instruction.is_set(31);
+        bool S = instruction.is_set(29);
+        bits ptype = instruction.get_range(22, 24);
+        bits opcode = instruction.get_range(15, 21);
+        bits rn = instruction.get_range(5, 10);
+        bits rd = instruction.get_range(0, 5);
+        int n = rn.as_i32();
+        int d = rd.as_i32();
+
+        int esize = 0;
+        if (ptype == 0b00) {
+            esize = 32;
+        } else if (ptype == 0b01) {
+            esize = 64;
+        } else if (ptype == 0b10) {
+            assert(false);
+            esize = 64;
+        } else if (ptype == 0b11) {
+            esize = 16;
+        }
+        assert(esize != 0);
+
+        if (M == 0 && S == 0 && ptype == 0b00 && opcode == 0b000000) {
+            // fmov
+            bits result = state.fp.get(esize, n);
+            state.fp.set(esize, d, result);
+        } else if (M == 0 && S == 0 && ptype == 0b00 && opcode == 0b000001) {
+            // fabs
+            bool merge = state.fpcr.is_set(2); // NEP
+            if (merge) {
+
+            }
+        }
     }
 }

@@ -4,6 +4,7 @@
 
 #include <cassert>
 #include <initializer_list>
+#include <utility>
 
 #include "Bitvec.h"
 
@@ -188,5 +189,17 @@ namespace arm {
         value &= mask;
         data0 |= value;
         return *this;
+    }
+
+    int bits::operator[](int index) const {
+        return is_set(index);
+    }
+
+    bits bits::operator[](std::pair<int, int> range) const {
+        return get_range(range.first, range.second);
+    }
+
+    void bits::clear() {
+        this->data0 = 0;
     }
 }

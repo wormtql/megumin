@@ -16,4 +16,14 @@ namespace arm {
     GPRegBank::GPRegBank(const GPRegBank &other) {
         memcpy(bank, other.bank, sizeof(bank));
     }
+
+    FPRegBank::FPRegBank() {
+        for (int i = 0; i < 64; i++) {
+            bank[i] = bits{64, 0};
+        }
+    }
+
+    FPRegBank::FPRegBank(const FPRegBank& other) {
+        memcpy(bank, other.bank, sizeof(bank));
+    }
 }

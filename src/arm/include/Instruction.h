@@ -48,6 +48,11 @@ namespace arm {
         void execute_data_processing_reg_2_source(MachineState& state) const;
         void execute_data_processing_reg_1_source(MachineState& state) const;
 
+        // floating point and SIMD
+        void execute_floating_point_and_simd(MachineState& state) const;
+
+        void execute_floating_point_data_processing(MachineState& state) const;
+
     public:
         explicit Instruction(bits instruction);
         explicit Instruction(void* data): Instruction(bits{32, *reinterpret_cast<int64_t*>(data)}) {};

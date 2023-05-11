@@ -22,6 +22,7 @@ namespace arm {
 
     MachineState::MachineState(const MachineState &other) {
         this->gp = other.gp;
+        this->fp = other.fp;
     }
 
     void MachineState::fill_gp_random() {
