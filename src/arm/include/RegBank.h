@@ -41,6 +41,18 @@ namespace arm {
             assert(false);
         }
 
+        void set16_merge(int index, bits data) {
+            bank[index * 2 + 1].set_range(0, 16, data.data0);
+        }
+
+        void set32_merge(int index, bits data) {
+            bank[index * 2 + 1].set_range(0, 32, data.data0);
+        }
+
+        void set64_merge(int index, bits data) {
+            bank[index * 2 + 1].set_value(data.resize(64));
+        }
+
         void set16(int index, bits data) {
             bank[index * 2 + 1].set_value(data.resize(16).zero_extend(64));
             bank[index * 2].clear();
@@ -56,16 +68,26 @@ namespace arm {
             bank[index * 2].clear();
         }
 
-        void set(int size, int index, bits data) {
+        void set(int size, int index, bits data, bool merge = false) {
             if (size == 16) {
-                set16(index, data);
+                merge ? set16_merge(index, data): set16(index, data);
             } else if (size == 32) {
-                set32(index, data);
+                merge ? set32_merge(index, data) : set32(index, data);
             } else if (size == 64) {
-                set64(index, data);
+                merge ? set64_merge(index, data) : set64(index, data);
             } else {
                 assert(false);
             }
+        }
+
+        [[nodiscard]] const bits& get_ref(int index, bool low) const {
+            int i = low ? index * 2 + 1 : index * 2;
+            return bank[i];
+        }
+
+        [[nodiscard]] bits& get_mut_ref(int index, bool low) {
+            int i = low ? index * 2 + 1 : index * 2;
+            return bank[i];
         }
     };
 

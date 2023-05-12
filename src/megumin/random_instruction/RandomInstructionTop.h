@@ -16,6 +16,7 @@ namespace megumin {
         struct Prob {
             double w_data_processing_imm = 1.0;
             double w_data_processing_reg = 1.0;
+            double w_fp_and_simd = 1.0;
         };
     private:
         std::mt19937& generator;

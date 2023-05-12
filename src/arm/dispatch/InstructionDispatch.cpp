@@ -22,8 +22,30 @@ namespace arm {
             if (need_dispatch_data_processing_reg()) {
                 dispatch_data_processing_reg(instruction);
             }
+        } else if (type == InstructionType::DataProcessingSIMD) {
+            if (need_dispatch_simd()) {
+                dispatch_simd(instruction);
+            }
         }
         // todo
+    }
+
+    void InstructionDispatch::dispatch_simd(const Instruction& instruction) {
+        bits op0 = instruction.get_range(28, 32);
+        bits op1 = instruction.get_range(23, 25);
+        bits op2 = instruction.get_range(19, 23);
+        bits op3 = instruction.get_range(10, 19);
+
+        bool floating_point_flag1 = op0[0] && !op0[2] && !op1[1] && op2[2];
+
+        if (floating_point_flag1 && op3[{0, 5}] == 0b10000) {
+            if (need_dispatch_fp_data_processing1()) {
+                dispatch_fp_data_processing1(instruction);
+            }
+        } else {
+            // todo
+            assert(false);
+        }
     }
 
     void InstructionDispatch::dispatch_data_processing_imm(const Instruction &instruction) {

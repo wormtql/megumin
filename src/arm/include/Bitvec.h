@@ -17,7 +17,9 @@ namespace arm {
         int64_t data0 = 0;
         int size = 0;
 
-        explicit bits(int size, int64_t init);
+        bits(int size, int64_t init);
+        explicit bits(double f);
+        explicit bits(float f);
         explicit bits(int size);
         bits() = default;
 
@@ -30,6 +32,8 @@ namespace arm {
         [[nodiscard]] int64_t as_i64() const;
         [[nodiscard]] uint32_t as_u32() const;
         [[nodiscard]] uint64_t as_u64() const;
+        [[nodiscard]] double as_f64() const;
+        [[nodiscard]] float as_f32() const;
 
         bits& append_bit(bool bit);
         bits zero_extend(int size) const;

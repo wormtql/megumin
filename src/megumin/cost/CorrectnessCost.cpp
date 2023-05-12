@@ -29,6 +29,20 @@ double eval_distance(const arm::bits &v1, const arm::bits &v2) {
     return count_set_bits(a ^ b);
 }
 
+uint64_t ulp_distance(const arm::bits& v1, const arm::bits& v2) {
+    int64_t a = v1.data0;
+    int64_t b = v2.data0;
+
+    a = a < 0 ? std::numeric_limits<int64_t>::min() - a : a;
+    b = b < 0 ? std::numeric_limits<int64_t>::min() - b : b;
+
+    uint64_t ulp = a > b ? a - b : b - a;
+//    if (ulp > 0) {
+//        assert(false);
+//    }
+    return ulp;
+}
+
 namespace megumin {
     CorrectnessCost::CorrectnessCost(const arm::Program &target, std::vector<arm::MachineState>&& test_cases)
         : target(target), test_cases(test_cases) {
@@ -49,6 +63,15 @@ namespace megumin {
             const bits& reg_rewrite = rewrite_state.gp.get_ref(i);
             result += eval_distance(reg_target, reg_rewrite);
         }
+
+        // calc floating point distance
+        // todo high 64 bits
+        for (int i = 0; i < 32; i++) {
+            const bits& reg_target = target_state.fp.get_ref(i, true);
+            const bits& reg_rewrite = rewrite_state.fp.get_ref(i, true);
+            result += (double) ulp_distance(reg_target, reg_rewrite);
+        }
+
         return result;
     }
 

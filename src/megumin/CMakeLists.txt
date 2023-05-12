@@ -17,7 +17,11 @@ target_sources(megumin
         mutation/SimpleInClassMutation.cpp
         random_instruction/RandomInstructionTop.cpp
         mutation/MutateDataProcessingReg.cpp
+        random_instruction/RandomFPAndSIMD.cpp
+        mutation/MutateFPDataProcessing.cpp
         PUBLIC
+        mutation/MutateFPDataProcessing.h
+        random_instruction/RandomFPAndSIMD.h
         mutation/MutateDataProcessingReg.h
         random_instruction/RandomInstructionTop.h
         random_instruction/RandomDataProcessingReg.h

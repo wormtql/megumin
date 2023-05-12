@@ -210,3 +210,45 @@ void arm::InstructionPrint::dispatch_data_processing_1source(const arm::Instruct
     os << reg << rd.as_u64() << ", ";
     os << reg << rn.as_u64();
 }
+
+void arm::InstructionPrint::dispatch_fp_data_processing1(const arm::Instruction &instruction) {
+    bool M = instruction.get_bit(31);
+    bool S = instruction.get_bit(29);
+    bits ptype = instruction.get_range(22, 24);
+    bits opcode = instruction.get_range(15, 21);
+    bits rn = instruction.get_range(5, 10);
+    bits rd = instruction.get_range(0, 5);
+
+    assert(!M);
+    assert(!S);
+
+    if (opcode == 0b000000) {
+        os << "fmov";
+    } else if (opcode == 0b000001) {
+        os << "fabs";
+    } else if (opcode == 0b000010) {
+        os << "fneg";
+    } else if (opcode == 0b000011) {
+        os << "fsqrt";
+    } else if (opcode == 0b000101) {
+        os << "fcvt";
+    } else if (opcode == 0b000111) {
+        os << "fcvt";
+    }
+    // todo
+
+    char reg = '0';
+    if (ptype == 0b00) {
+        reg = 'S';
+    } else if (ptype == 0b01) {
+        reg = 'D';
+    } else if (ptype == 0b11) {
+        reg = 'H';
+    } else {
+        assert(false);
+    }
+
+    os << " ";
+    os << reg << rd.as_u64() << ", ";
+    os << reg << rn.as_u64();
+}

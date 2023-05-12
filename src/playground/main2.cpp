@@ -78,6 +78,10 @@ int main() {
     Instruction instruction10{(void*)"\x41\x10\xc0\x5a"};
     // cls x3, x1
     Instruction instruction11{(void*)"\x23\x14\xc0\xda"};
+    // fmov d1, d2
+    Instruction instruction12{(void*)"\x41\x40\x60\x1e"};
+    // fabs d2, d3
+    Instruction instruction13{(void*)"\x62\xc0\x60\x1e"};
 
     Program program;
 //    program.add_instruction(instruction);
@@ -85,18 +89,21 @@ int main() {
 //    program.add_instruction(instruction2);
 //    program.add_instruction(instruction3);
 //    program.add_instruction(instruction4);
-    program.add_instruction(instruction5);
-    program.add_instruction(instruction6);
-    program.add_instruction(instruction7);
-    program.add_instruction(instruction8);
-    program.add_instruction(instruction9);
-    program.add_instruction(instruction10);
-    program.add_instruction(instruction11);
+//    program.add_instruction(instruction5);
+//    program.add_instruction(instruction6);
+//    program.add_instruction(instruction7);
+//    program.add_instruction(instruction8);
+//    program.add_instruction(instruction9);
+//    program.add_instruction(instruction10);
+//    program.add_instruction(instruction11);
+    program.add_instruction(instruction12);
+    program.add_instruction(instruction13);
 
     std::vector<MachineState> test_cases;
-    for (int i = 0; i < 50; i++) {
+    for (int i = 0; i < 20; i++) {
         test_cases.emplace_back(MachineState{});
         test_cases[i].fill_gp_random();
+        test_cases[i].fill_fp_random();
     }
 
 //    program.print();

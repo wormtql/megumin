@@ -15,6 +15,7 @@ namespace megumin {
     private:
         arm::Instruction mutate_data_processing_imm(const arm::Instruction& instruction);
         arm::Instruction mutate_data_processing_reg(const arm::Instruction& instruction);
+        arm::Instruction mutate_fp_and_simd(const arm::Instruction& instruction);
 
         std::unique_ptr<Mutation> mutate_add_sub_imm;
         std::unique_ptr<Mutation> mutate_logical_imm;
@@ -24,6 +25,8 @@ namespace megumin {
 
         std::unique_ptr<Mutation> mutate_source2;
         std::unique_ptr<Mutation> mutate_source1;
+
+        std::unique_ptr<Mutation> mutate_fp_data_processing_source1;
     public:
         explicit SimpleInClassMutation(std::mt19937& generator);
 

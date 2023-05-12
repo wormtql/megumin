@@ -2,6 +2,8 @@
 // Created by 58413 on 2023/4/14.
 //
 
+#include <cmath>
+
 #include "Instruction.h"
 #include "Bitvec.h"
 #include "ArmUtils.h"
@@ -585,16 +587,34 @@ namespace arm {
             esize = 16;
         }
         assert(esize != 0);
+        assert(M == 0 && S == 0);
 
-        if (M == 0 && S == 0 && ptype == 0b00 && opcode == 0b000000) {
+        if (opcode == 0b000000) {
             // fmov
             bits result = state.fp.get(esize, n);
             state.fp.set(esize, d, result);
-        } else if (M == 0 && S == 0 && ptype == 0b00 && opcode == 0b000001) {
+        } else if (opcode == 0b000001) {
             // fabs
-            bool merge = state.fpcr.is_set(2); // NEP
-            if (merge) {
 
+            bool merge = state.fpcr.is_set(2); // NEP
+//            bits result = bits{esize, 0};
+
+            bits operand = state.fp.get(esize, n);
+            if (esize == 64) {
+                double f = operand.as_f64();
+                f = abs(f);
+                bits result{f};
+                state.fp.set(esize, d, result, merge);
+            } else if (esize == 32) {
+                float f = operand.as_f32();
+                f = abs(f);
+                bits result{f};
+                state.fp.set(esize, d, result, merge);
+            } else if (esize == 16) {
+                // todo fp16
+                assert(false);
+            } else {
+                assert(false);
             }
         }
     }

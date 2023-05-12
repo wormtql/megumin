@@ -6,6 +6,7 @@
 #include "MutateDataProcessingImm.h"
 #include "SimpleInClassMutation.h"
 #include "MutateDataProcessingReg.h"
+#include "MutateFPDataProcessing.h"
 
 using arm::bits;
 
@@ -20,6 +21,8 @@ namespace megumin {
             return mutate_data_processing_imm(instruction);
         } else if (type == arm::InstructionType::DataProcessingReg) {
             return mutate_data_processing_reg(instruction);
+        } else if (type == arm::InstructionType::DataProcessingSIMD) {
+            return mutate_fp_and_simd(instruction);
         }
         // todo
         assert(false);
@@ -60,6 +63,20 @@ namespace megumin {
         assert(false);
     }
 
+    arm::Instruction SimpleInClassMutation::mutate_fp_and_simd(const arm::Instruction &instruction) {
+        bits op0 = instruction.get_range(28, 32);
+        bits op1 = instruction.get_range(23, 25);
+        bits op2 = instruction.get_range(19, 23);
+        bits op3 = instruction.get_range(10, 19);
+
+        bool floating_point_flag1 = op0[0] && !op0[2] && !op1[1] && op2[2];
+
+        if (floating_point_flag1 && op3[{0, 5}] == 0b10000) {
+            return mutate_fp_data_processing_source1->mutate(instruction);
+        }
+        assert(false);
+    }
+
     SimpleInClassMutation::SimpleInClassMutation(std::mt19937& generator) {
         mutate_add_sub_imm = std::make_unique<MutateDataProcessingImmAddSub>(generator);
         mutate_logical_imm = std::make_unique<MutateDataProcessingImmLogical>(generator);
@@ -69,5 +86,7 @@ namespace megumin {
 
         mutate_source2 = std::make_unique<MutateDataProcessingReg2Source>(generator);
         mutate_source1 = std::make_unique<MutateDataProcessingReg1Source>(generator);
+
+        mutate_fp_data_processing_source1 = std::make_unique<MutateFPDataProcessing1>(generator);
     }
 }

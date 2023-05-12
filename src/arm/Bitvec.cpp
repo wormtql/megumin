@@ -18,6 +18,7 @@ inline int64_t get_mask(int size) {
 
 namespace arm {
     bits bits::from_bools(std::initializer_list<bool> args) {
+        assert(args.size() <= 64);
         int64_t result = 0;
         for (bool i: args) {
             result = (result << 1) | (int)i;
@@ -41,6 +42,19 @@ namespace arm {
     }
 
     bits::bits(int size): size(size), data0(0) {}
+
+    bits::bits(double f) {
+        size = 64;
+        const auto* temp = reinterpret_cast<const int64_t*>(&f);
+        data0 = *temp;
+    }
+
+    bits::bits(float f) {
+        size = 32;
+        const auto* temp = reinterpret_cast<const int32_t*>(&f);
+        int32_t i32 = *temp;
+        data0 = i32;
+    }
 
     bool bits::is_set(int index) const {
         assert(index < size);
@@ -201,5 +215,16 @@ namespace arm {
 
     void bits::clear() {
         this->data0 = 0;
+    }
+
+    double bits::as_f64() const {
+        const double* temp = reinterpret_cast<const double*>(&data0);
+        return *temp;
+    }
+
+    float bits::as_f32() const {
+        int32_t i32 = static_cast<int32_t>(data0);
+        const float* temp = reinterpret_cast<const float*>(&i32);
+        return *temp;
     }
 }

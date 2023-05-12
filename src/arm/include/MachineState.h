@@ -35,6 +35,7 @@ namespace arm {
         MachineState(const MachineState& other);
 
         void fill_gp_random();
+        void fill_fp_random();
     };
 }
 
