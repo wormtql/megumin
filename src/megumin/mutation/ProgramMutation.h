@@ -12,7 +12,7 @@ namespace megumin {
     public:
         virtual ~ProgramMutation() = default;
 
-        [[nodiscard]] virtual arm::Program mutate(const arm::Program& program) const = 0;
+        [[nodiscard]] virtual arm::Program mutate(const arm::Program& program) = 0;
     };
 }
 

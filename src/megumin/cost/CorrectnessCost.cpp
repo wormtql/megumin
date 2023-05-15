@@ -3,13 +3,19 @@
 //
 
 #include <vector>
+#include <limits>
+#include <iostream>
+#include <bitset>
 
 #include <MachineState.h>
 #include "CorrectnessCost.h"
 
 using arm::bits;
+using namespace std;
 
 int count_set_bits(int64_t n) {
+    // printf("%llx\n", n);
+    // cout << bitset<64>(n) << endl;
     auto t = static_cast<uint64_t>(n);
     int result = 0;
     while (t != 0) {
@@ -21,11 +27,13 @@ int count_set_bits(int64_t n) {
     return result;
 }
 
-double eval_distance(const arm::bits &v1, const arm::bits &v2) {
+int eval_distance(const arm::bits &v1, const arm::bits &v2) {
     int64_t a = v1.data0;
     int64_t b = v2.data0;
 
     // hamming distance
+    // cout << a << ", " << b << endl;
+
     return count_set_bits(a ^ b);
 }
 
@@ -37,6 +45,7 @@ uint64_t ulp_distance(const arm::bits& v1, const arm::bits& v2) {
     b = b < 0 ? std::numeric_limits<int64_t>::min() - b : b;
 
     uint64_t ulp = a > b ? a - b : b - a;
+    // cout << "ulp: " << ulp << endl;
 //    if (ulp > 0) {
 //        assert(false);
 //    }

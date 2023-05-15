@@ -12,8 +12,8 @@ set(CMAKE_CXX_STANDARD 20)
 #include_directories(${LLVM_INCLUDE_DIRS})
 #separate_arguments(LLVM_DEFINITIONS_LIST NATIVE_COMMAND ${LLVM_DEFINITIONS})
 #add_definitions(${LLVM_DEFINITIONS_LIST})
-include_directories(keystone/include)
-link_directories(keystone)
+include_directories(keystone_install/include)
+link_directories(keystone_install/lib)
 
 add_subdirectory(src/arm)
 add_subdirectory(src/playground)
@@ -21,6 +21,6 @@ add_subdirectory(src/megumin)
 
 # keystone
 
-add_subdirectory(keystone)
+# add_subdirectory(keystone)
 
 

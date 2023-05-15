@@ -4,6 +4,7 @@
 
 #include <cstdlib>
 #include <iostream>
+#include <cstring>
 #include "RegBank.h"
 
 namespace arm {

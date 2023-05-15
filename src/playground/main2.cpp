@@ -46,7 +46,7 @@ void f(const arm::Program& target, vector<MachineState> test_cases) {
     }
 
     state.current = empty_program;
-    state.current_cost = simple_cost.cost(empty_program, 10000000).second;
+    state.current_cost = simple_cost.cost(empty_program, std::numeric_limits<double>::max()).second;
     state.current_correct_best = target;
     state.current_correct_best_cost = state.current_cost;
     state.current_best = empty_program;
@@ -84,7 +84,7 @@ int main() {
     // fabs d2, d3
     Instruction instruction13{(void*)"\x62\xc0\x60\x1e"};
 
-    Program program;
+    // Program program;
 //    program.add_instruction(instruction);
 //    program.add_instruction(instruction1);
 //    program.add_instruction(instruction2);
@@ -97,16 +97,19 @@ int main() {
 //    program.add_instruction(instruction9);
 //    program.add_instruction(instruction10);
 //    program.add_instruction(instruction11);
-    program.add_instruction(instruction12);
-    program.add_instruction(instruction13);
+    // program.add_instruction(instruction12);
+    // program.add_instruction(instruction13);
 
-    auto p = megumin::aarch64_asm("fmov d1, d2; fabs d2, d3");
-    if (p.has_value()) {
-        program = p.value();
-    }
+    auto program = megumin::aarch64_asm("fmov d1, d2; fabs d2, d3");
+    // auto program = megumin::aarch64_asm("add x1, x1, #10");
+    // auto program = megumin::aarch64_asm("clz w1, w2; cls x3, x1");
+    // auto program = megumin::aarch64_asm("fabs d1, d2");
+    cout << "size: " << program.get_size() << endl;
+    program.print();
+    cout << endl;
 
     std::vector<MachineState> test_cases;
-    for (int i = 0; i < 20; i++) {
+    for (int i = 0; i < 10; i++) {
         test_cases.emplace_back(MachineState{});
         test_cases[i].fill_gp_random();
         test_cases[i].fill_fp_random();

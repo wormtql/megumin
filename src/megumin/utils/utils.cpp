@@ -4,6 +4,7 @@
 
 #include <string>
 #include <optional>
+#include <iostream>
 
 #include "Instruction.h"
 #include "utils.h"
@@ -12,7 +13,7 @@
 using std::string;
 
 namespace megumin {
-    std::optional<arm::Program> aarch64_asm(const string& code) {
+    arm::Program aarch64_asm(const string& code) {
         ks_engine *ks;
         ks_err err;
         size_t count;
@@ -21,7 +22,7 @@ namespace megumin {
 
         err = ks_open(KS_ARCH_ARM64, KS_MODE_LITTLE_ENDIAN, &ks);
         if (err != KS_ERR_OK) {
-            return {};
+            assert(false);
         }
 
         if (ks_asm(ks, code.c_str(), 0, &encode, &size, &count) != KS_ERR_OK) {
@@ -29,7 +30,7 @@ namespace megumin {
                    count, ks_errno(ks));
             ks_free(encode);
             ks_close(ks);
-            return {};
+            assert(false);
         }
 
         arm::Program program;
@@ -37,6 +38,7 @@ namespace megumin {
         for (int i = 0; i < count; i++) {
             unsigned char* e = encode + 4 * i;
             arm::Instruction instr{(void*)e};
+            program.add_instruction(instr);
         }
         for (int i = 0; i < size; i++) {
             printf("%02x ", encode[i]);

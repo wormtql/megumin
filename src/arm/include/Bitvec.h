@@ -43,6 +43,8 @@ namespace arm {
 
         bool operator==(const bits& other) const;
         bool operator==(int64_t other) const;
+        bool operator!=(const bits& other) const;
+        bool operator!=(int64_t other) const;
         bits operator>>(int size) const;
         bits operator<<(int size) const;
         bits operator&(int64_t other) const;

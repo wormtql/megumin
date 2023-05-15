@@ -46,7 +46,7 @@ namespace megumin {
             this->instruction_mutation = mutation;
         }
 
-        [[nodiscard]] arm::Program mutate(const arm::Program &program) const override;
+        [[nodiscard]] arm::Program mutate(const arm::Program &program) override;
     };
 }
 

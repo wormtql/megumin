@@ -50,9 +50,4 @@ target_include_directories(megumin
         .
         )
 
-#target_include_directories(megumin PUBLIC ${PROJECT_SOURCE_DIR}/keystone/include)
-#target_link_libraries(megumin ${PROJECT_SOURCE_DIR}/keystone/keystone.lib)
-#target_include_directories(megumin PUBLIC E:\\codes\\keystone\\install\\include)
-#target_link_libraries(megumin E:\\codes\\keystone\\install\\lib\\keystone.lib)
-#target_link_libraries(megumin ${PROJECT_SOURCE_DIR}/keystone/keystone.dll)
 target_link_libraries(megumin keystone)

@@ -92,9 +92,19 @@ namespace arm {
         return data0 == other.data0;
     }
 
+    bool bits::operator!=(const bits& other) const {
+        assert(size == other.size);
+        return data0 != other.data0;
+    }
+
     bool bits::operator==(int64_t other) const {
         int64_t mask = get_mask(size);
         return data0 == (other & mask);
+    }
+
+    bool bits::operator!=(int64_t other) const {
+        int64_t mask = get_mask(size);
+        return data0 != (other & mask);
     }
 
     bits bits::operator>>(int size) const {

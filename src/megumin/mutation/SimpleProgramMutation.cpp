@@ -2,10 +2,14 @@
 // Created by 58413 on 2023/4/18.
 //
 
+#include <iostream>
+
 #include "SimpleProgramMutation.h"
 
+using namespace std;
+
 namespace megumin {
-    arm::Program SimpleProgramMutation::mutate(const arm::Program &program) const {
+    arm::Program SimpleProgramMutation::mutate(const arm::Program &program) {
         arm::Program result{program};
         int index = dist(generator);
         if (index == 0) {
@@ -18,6 +22,8 @@ namespace megumin {
             int change_index = uniform_int_dist(generator) % program.get_size();
             arm::Instruction new_inst = random_instruction_dispatch->random_instruction();
             result.set_instruction(change_index, new_inst);
+            // result.print();
+            // cout << endl;
         } else if (index == 2) {
             // swap
             int i1 = uniform_int_dist(generator) % program.get_size();

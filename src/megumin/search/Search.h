@@ -44,7 +44,7 @@ namespace megumin {
             this->max_iteration = it;
         }
 
-        void do_search(SearchState& state) const;
+        void do_search(SearchState& state);
     };
 }
 

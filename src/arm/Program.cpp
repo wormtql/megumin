@@ -3,6 +3,8 @@
 //
 
 #include <iostream>
+#include <cstdlib>
+#include <cstring>
 
 #include "Program.h"
 #include "InstructionPrint.h"

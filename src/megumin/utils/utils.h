@@ -12,7 +12,7 @@
 #include <keystone/keystone.h>
 
 namespace megumin {
-    std::optional<arm::Program> aarch64_asm(const std::string& code);
+    arm::Program aarch64_asm(const std::string& code);
 }
 
 #endif //MEGUMIN_UTILS_H

@@ -1,11 +1,13 @@
 //
 // Created by 58413 on 2023/4/18.
 //
+#include <iostream>
 
 #include "Bitvec.h"
 #include "RandomDataProcessingImm.h"
 
 using arm::bits;
+using namespace std;
 
 namespace megumin {
     arm::Instruction RandomDataProcessingImm::random_instruction() {
