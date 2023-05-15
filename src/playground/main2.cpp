@@ -18,6 +18,7 @@
 #include <random_instruction/RandomDataProcessingImm.h>
 #include <random_instruction/RandomInstructionTop.h>
 #include <mutation/MutateDataProcessingImm.h>
+#include <utils/utils.h>
 
 using namespace arm;
 using std::cout;
@@ -98,6 +99,11 @@ int main() {
 //    program.add_instruction(instruction11);
     program.add_instruction(instruction12);
     program.add_instruction(instruction13);
+
+    auto p = megumin::aarch64_asm("fmov d1, d2; fabs d2, d3");
+    if (p.has_value()) {
+        program = p.value();
+    }
 
     std::vector<MachineState> test_cases;
     for (int i = 0; i < 20; i++) {

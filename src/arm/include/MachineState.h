@@ -36,6 +36,10 @@ namespace arm {
 
         void fill_gp_random();
         void fill_fp_random();
+
+        [[nodiscard]] bool is_merging() const {
+            return fpcr.is_set(2);
+        }
     };
 }
 

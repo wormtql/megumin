@@ -1,6 +1,6 @@
-[submodule "3rd/keystone"]
-	path = 3rd/keystone
-	url = https://github.com/keystone-engine/keystone.git
 [submodule "3rd/llvm"]
 	path = 3rd/llvm
 	url = https://github.com/llvm/llvm-project.git
+[submodule "3rd/keystone"]
+	path = 3rd/keystone
+	url = https://github.com/wormtql/keystone.git

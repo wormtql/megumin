@@ -616,6 +616,20 @@ namespace arm {
             } else {
                 assert(false);
             }
+        } else if (opcode == 0b000010) {
+            // fneg
+            bool merge = state.is_merging();
+            bits operand = state.fp.get(esize, n);
+            // todo NaN
+            bool sign = operand.is_set(esize - 1);
+            operand.set_bit(esize - 1, !sign);
+            state.fp.set(esize, d, operand, merge);
+        } else if (opcode == 0b000011) {
+            // fsqrt
+            // todo, 有点复杂
+            bool merge = state.is_merging();
+            bits operand = state.fp.get(esize, n);
+
         }
     }
 }
