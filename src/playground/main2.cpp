@@ -100,10 +100,10 @@ int main() {
     // program.add_instruction(instruction12);
     // program.add_instruction(instruction13);
 
-    auto program = megumin::aarch64_asm("fmov d1, d2; fabs d2, d3");
+    // auto program = megumin::aarch64_asm("fmov d1, d2; fmov d3, d2");
     // auto program = megumin::aarch64_asm("add x1, x1, #10");
     // auto program = megumin::aarch64_asm("clz w1, w2; cls x3, x1");
-    // auto program = megumin::aarch64_asm("fabs d1, d2");
+    auto program = megumin::aarch64_asm("fabs d1, d2");
     cout << "size: " << program.get_size() << endl;
     program.print();
     cout << endl;

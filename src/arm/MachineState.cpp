@@ -42,7 +42,10 @@ namespace arm {
     void MachineState::fill_fp_random() {
         for (int i = 0; i < 32; i++) {
             for (int j = 0; j < 2; j++) {
-                auto r = (int64_t) rand();
+                int64_t temp = (int64_t) rand();
+                // int64_t temp = 0;
+                int64_t r = (temp << 32) | (int64_t) rand();
+                cout << r << endl;
 //                double d = *reinterpret_cast<double*>(&r);
                 fp.get_mut_ref(i, j).set_value(r);
             }
