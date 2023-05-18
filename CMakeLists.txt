@@ -1,10 +1,11 @@
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.16)
 project(megumin)
 
 set(CMAKE_CXX_STANDARD 20)
 #SET(CMAKE_BUILD_TYPE "Release")
 
-find_package(LLVM REQUIRED CONFIG PATHS /mnt/disk2/yaoxilai/llvm/16.0.4/llvm_install)
+# set(LLVM_DIR /mnt/disk2/yaoxilai/llvm/16.0.4/llvm_install)
+find_package(LLVM REQUIRED CONFIG PATHS /mnt/disk2/yaoxilai/llvm/16.0.4/llvm_install NO_DEFAULT_PATH)
 message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION}")
 message(STATUS "Using LLVMConfig.cmake in: ${LLVM_DIR}")
 message(STATUS "LLVM include dir: ${LLVM_INCLUDE_DIRS}")
