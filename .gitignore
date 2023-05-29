@@ -4,4 +4,5 @@ cmake-build-release/
 build/
 keystone_build/
 keystone_install/
+pocketfft_build/
 .vscode/
