@@ -48,10 +48,15 @@ namespace megumin {
     }
 
     arm::Instruction MutateDataProcessingImmAddSub::mutate_imm12(const arm::Instruction &instruction) {
-        int imm12 = uniform_int(generator) % (1 << 12);
+        int index = uniform_int(generator) % 12;
         auto result = instruction;
-        result.set_range(10, 22, imm12);
+        result.inverse_bit(10 + index);
         return result;
+
+        // int imm12 = uniform_int(generator) % (1 << 12);
+        // auto result = instruction;
+        // result.set_range(10, 22, imm12);
+        // return result;
     }
 
     arm::Instruction MutateDataProcessingImmAddSub::mutate_sh(const arm::Instruction &instruction) {

@@ -237,4 +237,10 @@ namespace arm {
         const float* temp = reinterpret_cast<const float*>(&i32);
         return *temp;
     }
+
+    void bits::inverse_bit(int index) {
+        assert(index < size);
+        bool bit = is_set(index);
+        set_bit(index, !bit);
+    }
 }

@@ -40,6 +40,7 @@ namespace arm {
         bits resize(int size) const;
         [[nodiscard]] bits sign_extend(int size) const;
         void clear();
+        void inverse_bit(int index);
 
         bool operator==(const bits& other) const;
         bool operator==(int64_t other) const;

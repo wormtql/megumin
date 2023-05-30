@@ -27,12 +27,12 @@ namespace megumin {
             const bool is_correct = new_cost_result.first == CostFunction::CorrectState::Correct;
             const double new_cost = new_cost_result.second;
 
-            if (i % 100000 == 0) {
-                printf("%d: new cost: %lf, current best: %lf\n", i, new_cost, state.current_best_cost);
-                new_program.print();
-                cout << endl;
-                fflush(stdout);
-            }
+            // if (i % 100000 == 0) {
+            //     printf("%d: new cost: %lf, current best: %lf\n", i, new_cost, state.current_best_cost);
+            //     new_program.print();
+            //     cout << endl;
+            //     fflush(stdout);
+            // }
 
             if (new_cost > max_cost) {
                 continue;

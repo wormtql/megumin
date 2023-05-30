@@ -103,7 +103,11 @@ int main() {
     // auto program = megumin::aarch64_asm("fmov d1, d2; fmov d3, d2");
     // auto program = megumin::aarch64_asm("add x1, x1, #10");
     // auto program = megumin::aarch64_asm("clz w1, w2; cls x3, x1");
-    auto program = megumin::aarch64_asm("fabs d1, d2");
+    // auto program = megumin::aarch64_asm("sub sp, sp, #1, lsl #12; sub sp, sp, #1744");
+    auto program = megumin::aarch64_asm("sub sp, sp, #1, lsl #12");
+    // auto program = megumin::aarch64_asm("sub sp, sp, #1");
+    // auto program = megumin::aarch64_asm("extr x0, x1, x2, #5");
+    // auto program = megumin::aarch64_asm("");
     cout << "size: " << program.get_size() << endl;
     program.print();
     cout << endl;
