@@ -67,7 +67,7 @@ namespace megumin {
             double logical = 1.0;
             double move_wide = 0.8;
 //            double bitfield = 0.8;
-            double bitfield = 1.0;
+            double bitfield = 0.0;
             double extract = 0.0;
         };
     private:

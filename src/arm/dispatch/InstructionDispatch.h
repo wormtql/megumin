@@ -69,6 +69,9 @@ namespace arm {
 
         virtual bool need_dispatch_fp_data_processing1() { return true; }
         virtual void dispatch_fp_data_processing1(const Instruction& instruction) {};
+
+        virtual bool need_dispatch_fp_data_processing2() { return true; }
+        virtual void dispatch_fp_data_processing2(const Instruction& instruction) {};
     };
 }
 

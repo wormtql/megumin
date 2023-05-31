@@ -8,8 +8,13 @@
 #include <cstdint>
 #include <initializer_list>
 #include <utility>
+#include <iostream>
+
+#include "MyFloat.h"
 
 namespace arm {
+    class Float;
+
     class bits {
     private:
 
@@ -34,6 +39,7 @@ namespace arm {
         [[nodiscard]] uint64_t as_u64() const;
         [[nodiscard]] double as_f64() const;
         [[nodiscard]] float as_f32() const;
+        [[nodiscard]] Float as_float() const;
 
         bits& append_bit(bool bit);
         bits zero_extend(int size) const;
@@ -67,6 +73,8 @@ namespace arm {
         [[nodiscard]] bits get_rd() const { return get_range(0, 5); }
         [[nodiscard]] bits get_rn() const { return get_range(5, 10); }
         [[nodiscard]] bits get_imms() const { return get_range(10, 16); }
+
+        void print_bin(std::ostream& os) const;
     };
 }
 

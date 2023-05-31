@@ -52,6 +52,7 @@ namespace arm {
         void execute_floating_point_and_simd(MachineState& state) const;
 
         void execute_floating_point_data_processing(MachineState& state) const;
+        void execute_floating_point_data_processing_2(MachineState& state) const;
 
     public:
         explicit Instruction(bits instruction);

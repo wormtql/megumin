@@ -27,6 +27,7 @@ namespace megumin {
         std::unique_ptr<Mutation> mutate_source1;
 
         std::unique_ptr<Mutation> mutate_fp_data_processing_source1;
+        std::unique_ptr<Mutation> mutate_fp_data_processing_source2;
     public:
         explicit SimpleInClassMutation(std::mt19937& generator);
 

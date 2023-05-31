@@ -10,7 +10,9 @@ target_sources(arm_asm
         dispatch/InstructionDispatch.h
         include/Program.h
         dispatch/InstructionPrint.h
+        include/MyFloat.h
         PRIVATE
+        MyFloat.cpp
         dispatch/InstructionPrint.cpp
         Program.cpp
         dispatch/InstructionDispatch.cpp

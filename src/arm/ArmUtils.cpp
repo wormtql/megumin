@@ -103,6 +103,7 @@ namespace arm {
             case 3:
                 return ArmUtilsSharedFunctions::ror(reg, amount);
         }
+        assert(false);
     }
 
     bits ArmUtils::replicate(bits x, int m) {

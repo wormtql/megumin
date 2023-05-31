@@ -26,7 +26,7 @@ using std::endl;
 using std::vector;
 
 void f(const arm::Program& target, vector<MachineState> test_cases) {
-    std::mt19937 generator{100};
+    std::mt19937 generator{1000};
 
     megumin::SimpleCost simple_cost{target, std::move(test_cases)};
 
@@ -83,6 +83,8 @@ int main() {
     Instruction instruction12{(void*)"\x41\x40\x60\x1e"};
     // fabs d2, d3
     Instruction instruction13{(void*)"\x62\xc0\x60\x1e"};
+    // fadd d1, d2, d3
+    Instruction instruction14{(void*)"\x41\x28\x63\x1e"};
 
     // Program program;
 //    program.add_instruction(instruction);
@@ -99,15 +101,18 @@ int main() {
 //    program.add_instruction(instruction11);
     // program.add_instruction(instruction12);
     // program.add_instruction(instruction13);
+    // program.add_instruction(instruction14);
 
     // auto program = megumin::aarch64_asm("fmov d1, d2; fmov d3, d2");
     // auto program = megumin::aarch64_asm("add x1, x1, #10");
     // auto program = megumin::aarch64_asm("clz w1, w2; cls x3, x1");
     // auto program = megumin::aarch64_asm("sub sp, sp, #1, lsl #12; sub sp, sp, #1744");
-    auto program = megumin::aarch64_asm("sub sp, sp, #1, lsl #12");
+    // auto program = megumin::aarch64_asm("sub sp, sp, #1, lsl #12");
     // auto program = megumin::aarch64_asm("sub sp, sp, #1");
     // auto program = megumin::aarch64_asm("extr x0, x1, x2, #5");
-    // auto program = megumin::aarch64_asm("");
+    // auto program = megumin::aarch64_asm("fadd d1, d2, d3");
+    auto program = megumin::aarch64_asm("fsub d1, d2, d3; fadd d4, d5, d2");
+    // auto program = megumin::aarch64_asm("fadd d4, d5, d1");
     cout << "size: " << program.get_size() << endl;
     program.print();
     cout << endl;

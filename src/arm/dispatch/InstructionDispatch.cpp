@@ -2,7 +2,11 @@
 // Created by 58413 on 2023/4/17.
 //
 
+#include <iostream>
+
 #include "InstructionDispatch.h"
+
+using namespace std;
 
 namespace arm {
     void InstructionDispatch::dispatch(const Instruction& instruction) {
@@ -42,8 +46,14 @@ namespace arm {
             if (need_dispatch_fp_data_processing1()) {
                 dispatch_fp_data_processing1(instruction);
             }
+        } else if (floating_point_flag1 && op3[{0, 2}] == 0b10) {
+            if (need_dispatch_fp_data_processing2()) {
+                dispatch_fp_data_processing2(instruction);
+            }
         } else {
             // todo
+            instruction.get_bits().print_bin(cout);
+            cout << endl;
             assert(false);
         }
     }

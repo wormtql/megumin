@@ -32,6 +32,8 @@ namespace arm {
         void dispatch_data_processing_2source(const Instruction &instruction) override;
 
         void dispatch_fp_data_processing1(const Instruction &instruction) override;
+
+        void dispatch_fp_data_processing2(const Instruction& instruction) override;
     };
 }
 

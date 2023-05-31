@@ -5,6 +5,7 @@
 #include <cassert>
 #include <initializer_list>
 #include <utility>
+#include <bitset>
 
 #include "Bitvec.h"
 
@@ -242,5 +243,19 @@ namespace arm {
         assert(index < size);
         bool bit = is_set(index);
         set_bit(index, !bit);
+    }
+
+    Float bits::as_float() const {
+        if (size == 32) {
+            return as_f32();
+        } else if (size == 64) {
+            return as_f64();
+        }
+        assert(false);
+    }
+
+    void bits::print_bin(std::ostream& os) const {
+        std::bitset<64> b(data0);
+        os << b;
     }
 }

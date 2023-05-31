@@ -2,11 +2,14 @@
 // Created by 58413 on 2023/4/19.
 //
 
+#include <iostream>
+
 #include "Bitvec.h"
 #include "InstructionPrint.h"
 #include "ArmUtils.h"
 
 using arm::bits;
+using namespace std;
 
 void arm::InstructionPrint::dispatch_data_processing_imm_add_sub(const arm::Instruction &instruction) {
     bool sf = instruction.get_bit(31);
@@ -251,4 +254,50 @@ void arm::InstructionPrint::dispatch_fp_data_processing1(const arm::Instruction 
     os << " ";
     os << reg << rd.as_u64() << ", ";
     os << reg << rn.as_u64();
+}
+
+void arm::InstructionPrint::dispatch_fp_data_processing2(const Instruction& instruction) {
+    bool M = instruction.get_bit(31);
+    bool S = instruction.get_bit(29);
+    bits ptype = instruction.get_range(22, 24);
+    bits rm = instruction.get_range(16, 21);
+    bits opcode = instruction.get_range(12, 16);
+    bits rn = instruction.get_range(5, 10);
+    bits rd = instruction.get_range(0, 5);
+
+    if (opcode == 0b0000) {
+        os << "fmul";
+    } else if (opcode == 0b0001) {
+        os << "fdiv";
+    } else if (opcode == 0b0010) {
+        os << "fadd";
+    } else if (opcode == 0b0011) {
+        os << "fsub";
+    } else if (opcode == 0b0100) {
+        os << "fmax";
+    } else if (opcode == 0b0101) {
+        os << "fmin";
+    } else if (opcode == 0b0110) {
+        os << "fmaxnm";
+    } else if (opcode == 0b0111) {
+        os << "fminnm";
+    } else if (opcode == 0b1000) {
+        os << "fnmul";
+    }
+
+    char reg = '0';
+    if (ptype == 0b00) {
+        reg = 'S';
+    } else if (ptype == 0b01) {
+        reg = 'D';
+    } else if (ptype == 0b11) {
+        reg = 'H';
+    } else {
+        assert(false);
+    }
+
+    os << " ";
+    os << reg << rd.as_u32() << ", ";
+    os << reg << rn.as_u32() << ", ";
+    os << reg << rm.as_u32();
 }

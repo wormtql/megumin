@@ -7,6 +7,7 @@
 #include "Instruction.h"
 #include "Bitvec.h"
 #include "ArmUtils.h"
+#include "MyFloat.h"
 
 namespace arm {
     uint64_t Instruction::ID = 0;
@@ -43,6 +44,7 @@ namespace arm {
         } else if ((op0 & 0b111) == 0b111) {
             return InstructionType::DataProcessingSIMD;
         }
+        assert(false);
     }
 
     // https://developer.arm.com/documentation/ddi0596/2021-12/Index-by-Encoding/Data-Processing----Immediate?lang=en#addsub_imm
@@ -560,8 +562,66 @@ namespace arm {
 
         bool floating_point_flag1 = op0[0] && !op0[2] && !op1[1] && op2[2];
 
-        if (floating_point_flag1 && op3[{0, 5}] == 0b10000) {
-            execute_floating_point_data_processing(state);
+        if (floating_point_flag1) {
+            if (op3[{0, 5}] == 0b10000) {
+                execute_floating_point_data_processing(state);
+            } else if (op3[{0, 2}] == 0b10) {
+                execute_floating_point_data_processing_2(state);
+            } else {
+                assert(false);
+            }
+        } else {
+            assert(false);
+        }
+    }
+
+    void Instruction::execute_floating_point_data_processing_2(MachineState& state) const {
+        bool M = instruction.is_set(31);
+        bool S = instruction.is_set(29);
+        bits ptype = instruction.get_range(22, 24);
+        bits rm = instruction.get_range(16, 21);
+        bits opcode = instruction.get_range(12, 16);
+        bits rn = instruction.get_range(5, 10);
+        bits rd = instruction.get_range(0, 5);
+
+        uint32_t n = rn.as_u32();
+        uint32_t d = rd.as_u32();
+        uint32_t m = rm.as_u32();
+
+        int esize = 0;
+        if (ptype == 0b00) {
+            esize = 32;
+        } else if (ptype == 0b01) {
+            esize = 64;
+        } else if (ptype == 0b10) {
+            assert(false);
+            esize = 64;
+        } else if (ptype == 0b11) {
+            esize = 16;
+        }
+        assert(esize != 0);
+        assert(M == 0 && S == 0);
+
+        if (opcode == 0b0010) {
+            // fadd
+            bits operand1 = state.fp.get(esize, n);
+            bits operand2 = state.fp.get(esize, m);
+            Float f1 = operand1.as_float();
+            Float f2 = operand2.as_float();
+            Float result = f1 + f2;
+            state.fp.set(esize, d, result.to_bits());
+        } else if (opcode == 0b0011) {
+            // fsub
+            bits operand1 = state.fp.get(esize, n);
+            bits operand2 = state.fp.get(esize, m);
+            Float f1 = operand1.as_float();
+            Float f2 = operand2.as_float();
+            Float result = f1 - f2;
+            state.fp.set(esize, d, result.to_bits());
+        } else if (opcode == 0b0100) {
+            // fmax
+        } else if (opcode == 0b0101) {
+            // fmin
         }
     }
 

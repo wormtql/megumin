@@ -73,6 +73,8 @@ namespace megumin {
 
         if (floating_point_flag1 && op3[{0, 5}] == 0b10000) {
             return mutate_fp_data_processing_source1->mutate(instruction);
+        } else if (floating_point_flag1 && op3[{0, 2}] == 0b10) {
+            return mutate_fp_data_processing_source2->mutate(instruction);
         }
         assert(false);
     }
@@ -88,5 +90,6 @@ namespace megumin {
         mutate_source1 = std::make_unique<MutateDataProcessingReg1Source>(generator);
 
         mutate_fp_data_processing_source1 = std::make_unique<MutateFPDataProcessing1>(generator);
+        mutate_fp_data_processing_source2 = std::make_unique<MutateFPDataProcessing2>(generator);
     }
 }
