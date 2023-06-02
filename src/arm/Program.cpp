@@ -7,7 +7,7 @@
 #include <cstring>
 
 #include "Program.h"
-#include "InstructionPrint.h"
+#include "visitor/InstructionPrinter.h"
 
 namespace arm {
     void Program::execute(MachineState &state) const {
@@ -53,10 +53,10 @@ namespace arm {
     }
 
     void Program::print() const {
-        InstructionPrint printer{std::cout};
+        InstructionPrinter printer{std::cout};
 
         for (int i = 0; i < size; i++) {
-            printer.dispatch(instructions[i]);
+            printer.visit_instruction(instructions[i]);
             if (i != size - 1)
                 std::cout << "\n";
         }

@@ -31,7 +31,7 @@ namespace arm {
         void set_instruction_nop(int index);
         void swap_instructions(int i1, int i2);
 
-        const Instruction& get_instruction_const(int index) const;
+        [[nodiscard]] const Instruction& get_instruction_const(int index) const;
         void print() const;
     };
 }
