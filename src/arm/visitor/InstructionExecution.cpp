@@ -5,6 +5,7 @@
 #include "InstructionExecution.h"
 #include "ArmUtils.h"
 #include "megumin_utils.h"
+#include "MyFloat.h"
 
 using megumin::megumin_assert;
 using megumin::megumin_todo;
@@ -510,7 +511,7 @@ namespace arm {
             // todo, 有点复杂
             bool merge = state.is_merging();
             bits operand = state.fp.get(esize, n);
-            megumin_todo();
+//            megumin_todo();
         }
     }
 
