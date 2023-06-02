@@ -13,9 +13,11 @@ include_directories(${LLVM_INCLUDE_DIRS})
 separate_arguments(LLVM_DEFINITIONS_LIST NATIVE_COMMAND ${LLVM_DEFINITIONS})
 add_definitions(${LLVM_DEFINITIONS_LIST})
 
-# keystone
-include_directories(keystone_install/include)
-link_directories(keystone_install/lib)
+if(NOT WIN32)
+    # keystone
+    include_directories(keystone_install/include)
+    link_directories(keystone_install/lib)
+endif()
 
 add_subdirectory(src/arm)
 add_subdirectory(src/playground)
