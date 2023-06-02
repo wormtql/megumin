@@ -22,7 +22,7 @@ namespace megumin {
     }
 
     arm::Instruction MutateDataProcessingReg2Source::mutate_sf(const arm::Instruction& instruction) {
-        bool sf = instruction.get_bit(31);
+        bool sf = instruction.is_set(31);
         auto result = instruction;
         result.set_bit(31, !sf);
         return result;
@@ -79,7 +79,7 @@ namespace megumin {
 // mutate 1-source
 namespace megumin {
     arm::Instruction MutateDataProcessingReg1Source::mutate_sf(const arm::Instruction &instruction) {
-        int sf = instruction.get_bit(31);
+        int sf = instruction.is_set(31);
         int sf2 = !sf;
         bits opcode = instruction.get_range(10, 16);
         if (opcode == 0b000011 && sf2 == 0) {
@@ -95,7 +95,7 @@ namespace megumin {
     }
 
     arm::Instruction MutateDataProcessingReg1Source::mutate_opcode(const arm::Instruction &instruction) {
-        int sf = instruction.get_bit(31);
+        int sf = instruction.is_set(31);
 
         int opcode;
         int temp = uniform_int(generator) % 6;

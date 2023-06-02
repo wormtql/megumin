@@ -14,21 +14,21 @@ using arm::bits;
 namespace megumin {
     arm::Instruction MutateDataProcessingImmAddSub::mutate_s(const arm::Instruction &instruction) {
         auto result = instruction;
-        bool S = instruction.get_bit(29);
+        bool S = instruction.is_set(29);
         result.set_bit(29, !S);
         return result;
     }
 
     arm::Instruction MutateDataProcessingImmAddSub::mutate_width(const arm::Instruction &instruction) {
         auto result = instruction;
-        bool sf = instruction.get_bit(31);
+        bool sf = instruction.is_set(31);
         result.set_bit(31, !sf);
         return result;
     }
 
     arm::Instruction MutateDataProcessingImmAddSub::mutate_operator(const arm::Instruction &instruction) {
         auto result = instruction;
-        bool op = instruction.get_bit(30);
+        bool op = instruction.is_set(30);
         result.set_bit(30, !op);
         return result;
     }
@@ -60,7 +60,7 @@ namespace megumin {
     }
 
     arm::Instruction MutateDataProcessingImmAddSub::mutate_sh(const arm::Instruction &instruction) {
-        int sh = instruction.get_bit(22);
+        int sh = instruction.is_set(22);
         auto result = instruction;
         result.set_bit(22, !sh);
         return result;
@@ -105,7 +105,7 @@ namespace megumin {
     arm::Instruction MutateDataProcessingImmLogical::mutate_n(const arm::Instruction &instruction) {
         auto result = instruction;
         int N = uniform_int(generator) % 2;
-        int sf = result.get_bit(31);
+        int sf = result.is_set(31);
         if (sf == 0 && N == 1) {
             // this is undefined, return original instruction
             return result;
@@ -124,7 +124,7 @@ namespace megumin {
     arm::Instruction MutateDataProcessingImmLogical::mutate_sf(const arm::Instruction &instruction) {
         auto result = instruction;
         int sf = uniform_int(generator) % 2;
-        int N = instruction.get_bit(22);
+        int N = instruction.is_set(22);
         if (sf == 0 && N == 1) {
             return result;
         }
@@ -146,8 +146,8 @@ namespace megumin {
 
         // assume N and sf are valid
 
-        bool sf = instruction.get_bit(31);
-        bool N = instruction.get_bit(22);
+        bool sf = instruction.is_set(31);
+        bool N = instruction.is_set(22);
 
         int level = uniform_int(generator) % (sf && N ? 6 : 5) + 1;
         result.set_range(10, 16, (0b11110ll << level) & (0b111111ll));
@@ -218,7 +218,7 @@ namespace megumin {
 
     arm::Instruction MutateDataProcessingImmMoveWide::mutate_sf(const arm::Instruction &instruction) {
         int sf = uniform_int(generator) % 2;
-        if (sf == 0 && instruction.get_bit(22)) {
+        if (sf == 0 && instruction.is_set(22)) {
             return instruction;
         }
         auto result = instruction;
@@ -237,7 +237,7 @@ namespace megumin {
     }
 
     arm::Instruction MutateDataProcessingImmMoveWide::mutate_hw(const arm::Instruction &instruction) {
-        bool sf = instruction.get_bit(31);
+        bool sf = instruction.is_set(31);
         int hw;
         if (sf) {
             hw = uniform_int(generator) % 4;
@@ -296,11 +296,11 @@ namespace megumin {
     {}
 
     arm::Instruction MutateDataProcessingBitfield::mutate_sf_and_n(const arm::Instruction &instruction) {
-        int sf = instruction.get_bit(31);
+        int sf = instruction.is_set(31);
         int sf2 = !sf;
 
-        bool imms5 = instruction.get_bit(15);
-        bool immr5 = instruction.get_bit(21);
+        bool imms5 = instruction.is_set(15);
+        bool immr5 = instruction.is_set(21);
         if (sf2 == 0 && (imms5 || immr5)) {
             return instruction;
         }
@@ -319,7 +319,7 @@ namespace megumin {
     }
 
     arm::Instruction MutateDataProcessingBitfield::mutate_immr(const arm::Instruction &instruction) {
-        int sf = instruction.get_bit(31);
+        int sf = instruction.is_set(31);
         int x;
         if (sf) {
             x = 1 << 6;
@@ -334,7 +334,7 @@ namespace megumin {
 
     arm::Instruction MutateDataProcessingBitfield::mutate_imms(const arm::Instruction &instruction) {
         auto result = instruction;
-        bool sf = instruction.get_bit(31);
+        bool sf = instruction.is_set(31);
 
         int x = sf ? (1 << 6) : (1 << 5);
         result.set_range(10, 16, uniform_int(generator) % x);
@@ -387,8 +387,8 @@ namespace megumin {
     {}
 
     arm::Instruction MutateDataProcessingExtract::mutate_sf(const arm::Instruction &instruction) {
-        bool sf = instruction.get_bit(31);
-        bool imms5 = instruction.get_bit(15);
+        bool sf = instruction.is_set(31);
+        bool imms5 = instruction.is_set(15);
         bool sf2 = !sf;
 
         if (!sf2 && imms5) {
@@ -408,7 +408,7 @@ namespace megumin {
     }
 
     arm::Instruction MutateDataProcessingExtract::mutate_imms(const arm::Instruction &instruction) {
-        bool sf = instruction.get_bit(31);
+        bool sf = instruction.is_set(31);
         int x = sf ? (1 << 6) : (1 << 5);
         auto result = instruction;
         result.set_range(10, 16, uniform_int(generator) % x);

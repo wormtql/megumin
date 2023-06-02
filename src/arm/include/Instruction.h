@@ -66,12 +66,14 @@ namespace arm {
 
         void set_bit(int index, bool value);
         void set_range(int low, int high, int64_t value);
-        [[nodiscard]] bool get_bit(int index) const;
+        [[nodiscard]] bool is_set(int index) const;
         void execute(MachineState& state) const;
         void set_as_nop();
         void inverse_bit(int index) { instruction.inverse_bit(index); }
         [[nodiscard]] bool is_nop() const;
         [[nodiscard]] bits get_range(int low, int high) const { return instruction.get_range(low, high); }
+        [[nodiscard]] bits get_rn() const { return instruction.get_rn(); }
+        [[nodiscard]] bits get_rd() const { return instruction.get_rd(); }
     };
 }
 

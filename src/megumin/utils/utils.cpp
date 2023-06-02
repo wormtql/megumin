@@ -13,6 +13,7 @@
 using std::string;
 
 namespace megumin {
+#ifdef USE_KEYSTONE
     arm::Program aarch64_asm(const string& code) {
         ks_engine *ks;
         ks_err err;
@@ -51,4 +52,5 @@ namespace megumin {
 
         return program;
     }
+#endif
 }

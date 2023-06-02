@@ -86,7 +86,7 @@ int main() {
     // fadd d1, d2, d3
     Instruction instruction14{(void*)"\x41\x28\x63\x1e"};
 
-    // Program program;
+     Program program;
 //    program.add_instruction(instruction);
 //    program.add_instruction(instruction1);
 //    program.add_instruction(instruction2);
@@ -95,7 +95,7 @@ int main() {
 //    program.add_instruction(instruction5);
 //    program.add_instruction(instruction6);
 //    program.add_instruction(instruction7);
-//    program.add_instruction(instruction8);
+    program.add_instruction(instruction8);
 //    program.add_instruction(instruction9);
 //    program.add_instruction(instruction10);
 //    program.add_instruction(instruction11);
@@ -103,6 +103,7 @@ int main() {
     // program.add_instruction(instruction13);
     // program.add_instruction(instruction14);
 
+#ifdef USE_KEYSTONE
     // auto program = megumin::aarch64_asm("fmov d1, d2; fmov d3, d2");
     // auto program = megumin::aarch64_asm("add x1, x1, #10");
     // auto program = megumin::aarch64_asm("clz w1, w2; cls x3, x1");
@@ -114,6 +115,8 @@ int main() {
     // auto program = megumin::aarch64_asm("fsub d1, d2, d3; fadd d4, d5, d2");
     auto program = megumin::aarch64_asm("sub x10, x8, #1; lsl x11, x10, #4");
     // auto program = megumin::aarch64_asm("fadd d4, d5, d1");
+#endif
+
     cout << "size: " << program.get_size() << endl;
     program.print();
     cout << endl;

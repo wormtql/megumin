@@ -30,8 +30,8 @@ namespace megumin {
     }
 
     arm::Instruction SimpleInClassMutation::mutate_data_processing_reg(const arm::Instruction &instruction) {
-        bool op0 = instruction.get_bit(30);
-        bool op1 = instruction.get_bit(28);
+        bool op0 = instruction.is_set(30);
+        bool op1 = instruction.is_set(28);
         bits op2 = instruction.get_range(21, 25);
         bits op3 = instruction.get_range(10, 16);
 

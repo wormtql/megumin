@@ -1,61 +1,27 @@
 //
-// Created by 58413 on 2023/4/14.
+// Created by 58413 on 2023/6/2.
 //
 
-#include <cmath>
-
-#include "Instruction.h"
-#include "Bitvec.h"
+#include "InstructionExecution.h"
 #include "ArmUtils.h"
-#include "MyFloat.h"
+#include "megumin_utils.h"
+
+using megumin::megumin_assert;
+using megumin::megumin_todo;
 
 namespace arm {
-    uint64_t Instruction::ID = 0;
+    InstructionExecution::InstructionExecution(MachineState &state)
+        :state(state)
+    {}
 
-    Instruction::Instruction(bits instruction): instruction(instruction) {
-        id = ID++;
-//        if (id == 8263965) {
-//            printf("123");
-//        }
-    }
-
-    Instruction::Instruction(const Instruction &other) {
-        id = ID++;
-        instruction = other.instruction;
-    }
-
-    InstructionType Instruction::get_type() const {
-//        Bitvec op0 = get_range(instruction, 25, 29);
-        bits op0 = instruction.get_range(25, 29);
-        if (op0 == 0) {
-            return InstructionType::Reserved;
-        } else if (op0 == 0b0001 || op0 == 0b0011) {
-            return InstructionType::Reserved;
-        } else if (op0 == 0b0010) {
-            return InstructionType::SVE;
-        } else if ((op0 >> 1) == 0b100) {
-            return InstructionType::DataProcessingImm;
-        } else if ((op0 >> 1) == 0b101) {
-            return InstructionType::BranchExceptionSystem;
-        } else if (op0.is_set(2) && !op0.is_set(0)) {
-            return InstructionType::LoadAndStore;
-        } else if ((op0 & 0b111) == 0b101) {
-            return InstructionType::DataProcessingReg;
-        } else if ((op0 & 0b111) == 0b111) {
-            return InstructionType::DataProcessingSIMD;
-        }
-        assert(false);
-    }
-
-    // https://developer.arm.com/documentation/ddi0596/2021-12/Index-by-Encoding/Data-Processing----Immediate?lang=en#addsub_imm
-    void Instruction::execute_data_processing_imm_add_sub_imm(MachineState &state) const {
-        bool sf = this->instruction.is_set(31);
-        bool op = this->instruction.is_set(30);
-        bool sh = this->instruction.is_set(22);
-        bool S = this->instruction.is_set(29);
-        bits imm12 = this->instruction.get_range(10, 22);
-        bits rn = this->instruction.get_range(5, 10);
-        bits rd = this->instruction.get_range(0, 5);
+    void InstructionExecution::visit_dp_imm_add_sub(const Instruction &instruction) {
+        bool sf = instruction.is_set(31);
+        bool op = instruction.is_set(30);
+        bool sh = instruction.is_set(22);
+        bool S = instruction.is_set(29);
+        bits imm12 = instruction.get_range(10, 22);
+        bits rn = instruction.get_range(5, 10);
+        bits rd = instruction.get_range(0, 5);
 
         if (!op && !S) {
             // add
@@ -125,11 +91,11 @@ namespace arm {
         }
     }
 
-    void Instruction::execute_data_processing_imm_add_sub_imm_with_tags(MachineState &state) const {
-        // todo
+    void InstructionExecution::visit_dp_imm_add_sub_with_tags(const Instruction &instruction) {
+        // todo execute add sub with tag
     }
 
-    void Instruction::execute_data_processing_imm_logical_imm(MachineState &state) const {
+    void InstructionExecution::visit_dp_imm_logical(const Instruction &instruction) {
         bits opc = instruction.get_range(29, 31);
         bool sf = instruction.is_set(31);
         bool N = instruction.is_set(22);
@@ -152,7 +118,7 @@ namespace arm {
             bits imm = ArmUtils::decode_bit_mask(datasize, N, imms, immr, true).first;
 
             bits operand1 = state.gp.get(datasize, n);
-            assert(operand1.size == datasize);
+            megumin_assert(operand1.size == datasize);
             bits result = operand1 & imm;
             state.gp.set(datasize, d, result);
         } else if (opc == 0b01) {
@@ -168,13 +134,13 @@ namespace arm {
 
             if (!sf && N) {
                 // undefined
-                assert(false);
+                megumin_assert(false);
             }
 
             bits imm = ArmUtils::decode_bit_mask(datasize, N, imms, immr, true).first;
 
             bits operand1 = state.gp.get(datasize, n);
-            assert(operand1.size == datasize);
+            megumin_assert(operand1.size == datasize);
             bits result = operand1 | imm;
             state.gp.set(datasize, d, result);
         } else if (opc == 0b10) {
@@ -195,7 +161,7 @@ namespace arm {
             bits imm = ArmUtils::decode_bit_mask(datasize, N, imms, immr, true).first;
 
             bits operand1 = state.gp.get(datasize, n);
-            assert(operand1.size == datasize);
+            megumin_assert(operand1.size == datasize);
             bits result = operand1 ^ imm;
             state.gp.set(datasize, d, result);
         } else if (opc == 0b11) {
@@ -210,14 +176,14 @@ namespace arm {
             int datasize = sf == 1 ? 64 : 32;
 
             if (!sf && N) {
-                assert(false);
+                megumin_assert(false);
                 // undefined
             }
 
             bits imm = ArmUtils::decode_bit_mask(datasize, N, imms, immr, true).first;
 
             bits operand1 = state.gp.get(datasize, n);
-            assert(operand1.size == datasize);
+            megumin_assert(operand1.size == datasize);
             bits result = operand1 & imm;
             state.gp.set(datasize, d, result);
 
@@ -226,7 +192,7 @@ namespace arm {
         }
     }
 
-    void Instruction::execute_data_processing_imm_move_wide_imm(MachineState &state) const {
+    void InstructionExecution::visit_dp_imm_move_wide(const Instruction &instruction) {
         bits opc = instruction.get_range(29, 31);
         bool sf = instruction.is_set(31);
         bits hw = instruction.get_range(21, 23);
@@ -235,7 +201,7 @@ namespace arm {
 
         int datasize = sf ? 64 : 32;
         if (!sf && hw.is_set(1)) {
-            assert(false);
+            megumin_assert(false);
         }
 
         bits pos_bits = hw.concat(bits{4, 0});
@@ -258,11 +224,11 @@ namespace arm {
             result.set_range(pos, pos + 16, imm16.as_i64());
             state.gp.set(datasize, rd.as_i32(), result);
         } else {
-            assert(false);
+            megumin_assert(false);
         }
     }
 
-    void Instruction::execute_data_processing_imm_bitfield(MachineState &state) const {
+    void InstructionExecution::visit_dp_imm_bitfield(const Instruction &instruction) {
         bool sf = instruction.is_set(31);
         bits opc = instruction.get_range(29, 31);
         bool N = instruction.is_set(22);
@@ -279,8 +245,8 @@ namespace arm {
         bits wmask{datasize, 0};
         bits tmask{datasize, 0};
 
-        assert(!(sf && !N));
-        assert(!(!sf && (N || immr.is_set(5) || imms.is_set(5))));
+        megumin_assert(!(sf && !N));
+        megumin_assert(!(!sf && (N || immr.is_set(5) || imms.is_set(5))));
 
         auto R = immr.as_u32();
         auto S = imms.as_u32();
@@ -310,7 +276,7 @@ namespace arm {
         }
     }
 
-    void Instruction::execute_data_processing_imm_extract(MachineState &state) const {
+    void InstructionExecution::visit_dp_imm_extract(const Instruction &instruction) {
         bool sf = instruction.is_set(31);
         bits op21 = instruction.get_range(29, 31);
         bool N = instruction.is_set(22);
@@ -327,9 +293,9 @@ namespace arm {
 
         if (op21 == 0b00 && !o0) {
             // extr
-            assert(N == sf);
+            megumin_assert(N == sf);
             if (sf == 0 && imms.is_set(5)) {
-                assert(false);
+                megumin_assert(false);
             }
 
             int lsb = imms.as_u32();
@@ -345,28 +311,89 @@ namespace arm {
                 state.gp.set(datasize, d, result);
             }
         } else {
-            assert(false);
+            megumin_todo();
         }
     }
 
-    // https://developer.arm.com/documentation/ddi0596/2021-12/Index-by-Encoding/Data-Processing----Register?lang=en#dp_2src
-    void Instruction::execute_data_processing_reg(MachineState &state) const {
-        bool op0 = instruction.is_set(30);
-        bool op1 = instruction.is_set(28);
-        bits op2 = instruction.get_range(21, 25);
-        bits op3 = instruction.get_range(10, 16);
+    void InstructionExecution::visit_dp_reg_1source(const Instruction &instruction) {
+        bool sf = instruction.is_set(31);
+        bool S = instruction.is_set(29);
+        bits opcode2 = instruction.get_range(16, 21);
+        bits opcode = instruction.get_range(10, 16);
+        bits rn = instruction.get_rn();
+        bits rd = instruction.get_rd();
 
-        if (op0 == 0 && op1 == 1 && op2 == 0b0110) {
-            execute_data_processing_reg_2_source(state);
-        } else if (op0 == 1 && op1 == 1 && op2 == 0b0110) {
-            execute_data_processing_reg_1_source(state);
+        int n = rn.as_u32();
+        int d = rd.as_u32();
+        int datasize = sf ? 64 : 32;
+
+        megumin_assert(S == 0);
+
+        if (opcode2 == 0 && opcode == 0) {
+            // rbit
+            bits operand = state.gp.get_ref(n).resize(datasize);
+            bits result {datasize, 0};
+            for (int i = 0; i < datasize; i++) {
+                bool b = operand.is_set(datasize - 1 - i);
+                result.set_bit(i, b);
+            }
+            state.gp.set(datasize, d, result);
+        } else if (opcode2 == 0 && (opcode >> 2) == 0) {
+            // rev
+            bits opc = instruction.get_range(10, 12);
+            int container_size = 0;
+            if (opc == 0b01) {
+                container_size = 16;
+            } else if (opc == 0b10) {
+                container_size = 32;
+            } else if (opc == 0b11) {
+                megumin_assert(sf == 1);
+                container_size = 64;
+            } else {
+                megumin_assert(false);
+            }
+
+            bits operand = state.gp.get(datasize, n);
+
+            int containers = datasize / container_size;
+            megumin_assert(containers >= 1);
+            int elements_per_container = container_size / 8;
+            int index = 0;
+            int rev_index;
+
+            bits result{datasize, 0};
+
+            for (int c = 0; c < containers; c++) {
+                rev_index = index + ((elements_per_container - 1) * 8);
+                for (int e = 0; e < elements_per_container; e++) {
+                    megumin_assert(rev_index <= datasize);
+                    megumin_assert(rev_index + 8 <= datasize);
+                    megumin_assert(index <= datasize);
+                    megumin_assert(index + 8 <= datasize);
+                    result.set_range(rev_index, rev_index + 8, operand.get_range(index, index + 8).as_i64());
+                    index += 8;
+                    rev_index -= 8;
+                }
+            }
+
+            state.gp.set(datasize, d, result);
+        } else if (opcode2 == 0 && opcode == 0b000100) {
+            // clz
+            bits operand1 = state.gp.get(datasize, n);
+            int result = ArmUtilsSharedFunctions::count_leading_zero_bits(operand1);
+            state.gp.set(datasize, d, bits{datasize, result});
+        } else if (opcode2 == 0 && opcode == 0b000101) {
+            // cls
+            bits operand1 = state.gp.get(datasize, n);
+            int result = ArmUtilsSharedFunctions::count_leading_sign_bits(operand1);
+            state.gp.set(datasize, d, bits{datasize, result});
         }
         else {
-            assert(false);
+            megumin_assert(false);
         }
     }
 
-    void Instruction::execute_data_processing_reg_2_source(MachineState &state) const {
+    void InstructionExecution::visit_dp_reg_2source(const Instruction &instruction) {
         bool sf = instruction.is_set(31);
         bool S = instruction.is_set(29);
         bits rm = instruction.get_range(16, 21);
@@ -412,220 +439,14 @@ namespace arm {
                 bits result = ArmUtils::shift_reg(operand1, shift_type, operand2.as_u32() % datasize);
                 state.gp.set(datasize, d, result);
             } else {
-                assert(false);
+                megumin_assert(false);
             }
         } else {
-            assert(false);
-        }
-
-    }
-
-    void Instruction::execute_data_processing_reg_1_source(MachineState &state) const {
-        bool sf = instruction.is_set(31);
-        bool S = instruction.is_set(29);
-        bits opcode2 = instruction.get_range(16, 21);
-        bits opcode = instruction.get_range(10, 16);
-        bits rn = instruction.get_rn();
-        bits rd = instruction.get_rd();
-
-        int n = rn.as_u32();
-        int d = rd.as_u32();
-        int datasize = sf ? 64 : 32;
-
-        assert(S == 0);
-
-        if (opcode2 == 0 && opcode == 0) {
-            // rbit
-            bits operand = state.gp.get_ref(n).resize(datasize);
-            bits result {datasize, 0};
-            for (int i = 0; i < datasize; i++) {
-                bool b = operand.is_set(datasize - 1 - i);
-                result.set_bit(i, b);
-            }
-            state.gp.set(datasize, d, result);
-        } else if (opcode2 == 0 && (opcode >> 2) == 0) {
-            // rev
-            bits opc = instruction.get_range(10, 12);
-            int container_size = 0;
-            if (opc == 0b01) {
-                container_size = 16;
-            } else if (opc == 0b10) {
-                container_size = 32;
-            } else if (opc == 0b11) {
-                assert(sf == 1);
-                container_size = 64;
-            } else {
-                assert(false);
-            }
-
-            bits operand = state.gp.get(datasize, n);
-
-            int containers = datasize / container_size;
-            assert(containers >= 1);
-            int elements_per_container = container_size / 8;
-            int index = 0;
-            int rev_index;
-
-            bits result{datasize, 0};
-
-            for (int c = 0; c < containers; c++) {
-                rev_index = index + ((elements_per_container - 1) * 8);
-                for (int e = 0; e < elements_per_container; e++) {
-                    assert(rev_index <= datasize);
-                    assert(rev_index + 8 <= datasize);
-                    assert(index <= datasize);
-                    assert(index + 8 <= datasize);
-                    result.set_range(rev_index, rev_index + 8, operand.get_range(index, index + 8).as_i64());
-                    index += 8;
-                    rev_index -= 8;
-                }
-            }
-
-            state.gp.set(datasize, d, result);
-        } else if (opcode2 == 0 && opcode == 0b000100) {
-            // clz
-            bits operand1 = state.gp.get(datasize, n);
-            int result = ArmUtilsSharedFunctions::count_leading_zero_bits(operand1);
-            state.gp.set(datasize, d, bits{datasize, result});
-        } else if (opcode2 == 0 && opcode == 0b000101) {
-            // cls
-            bits operand1 = state.gp.get(datasize, n);
-            int result = ArmUtilsSharedFunctions::count_leading_sign_bits(operand1);
-            state.gp.set(datasize, d, bits{datasize, result});
-        }
-        else {
-            assert(false);
+            megumin_assert(false);
         }
     }
 
-    // https://developer.arm.com/documentation/ddi0596/2021-12/Index-by-Encoding/Data-Processing----Immediate
-    void Instruction::execute_data_processing_imm(MachineState &state) const {
-        bits op0 = this->instruction.get_range(23, 26);
-        if (op0 == 0b010) {
-            execute_data_processing_imm_add_sub_imm(state);
-        } else if (op0 == 0b011) {
-            execute_data_processing_imm_add_sub_imm_with_tags(state);
-        } else if (op0 == 0b100) {
-            execute_data_processing_imm_logical_imm(state);
-        } else if (op0 == 0b101) {
-            execute_data_processing_imm_move_wide_imm(state);
-        } else if (op0 == 0b110) {
-            execute_data_processing_imm_bitfield(state);
-        } else if (op0 == 0b111) {
-            execute_data_processing_imm_extract(state);
-        }
-    }
-
-    void Instruction::execute(MachineState &state) const {
-        if (instruction.data0 == 0) {
-            // nop
-            return;
-        }
-        auto type = get_type();
-        if (type == InstructionType::DataProcessingImm) {
-            execute_data_processing_imm(state);
-        } else if (type == InstructionType::DataProcessingReg) {
-            execute_data_processing_reg(state);
-        } else if (type == InstructionType::DataProcessingSIMD) {
-            execute_floating_point_and_simd(state);
-        }
-    }
-
-    void Instruction::set_bit(int index, bool value) {
-        instruction.set_bit(index, value);
-    }
-
-    bool Instruction::is_set(int index) const {
-        assert(index < 32);
-        return instruction.is_set(index);
-    }
-
-    void Instruction::set_range(int low, int high, int64_t value) {
-        instruction.set_range(low, high, value);
-    }
-
-    void Instruction::set_as_nop() {
-        instruction.data0 = 0;
-    }
-
-    bool Instruction::is_nop() const {
-        return instruction.data0 == 0;
-    }
-
-    void Instruction::execute_floating_point_and_simd(MachineState &state) const {
-        bits op0 = instruction.get_range(28, 32);
-        bits op1 = instruction.get_range(23, 25);
-        bits op2 = instruction.get_range(19, 23);
-        bits op3 = instruction.get_range(10, 19);
-
-        // there are many cryptographic instructions, we ignore these
-
-        bool floating_point_flag1 = op0[0] && !op0[2] && !op1[1] && op2[2];
-
-        if (floating_point_flag1) {
-            if (op3[{0, 5}] == 0b10000) {
-                execute_floating_point_data_processing(state);
-            } else if (op3[{0, 2}] == 0b10) {
-                execute_floating_point_data_processing_2(state);
-            } else {
-                assert(false);
-            }
-        } else {
-            assert(false);
-        }
-    }
-
-    void Instruction::execute_floating_point_data_processing_2(MachineState& state) const {
-        bool M = instruction.is_set(31);
-        bool S = instruction.is_set(29);
-        bits ptype = instruction.get_range(22, 24);
-        bits rm = instruction.get_range(16, 21);
-        bits opcode = instruction.get_range(12, 16);
-        bits rn = instruction.get_range(5, 10);
-        bits rd = instruction.get_range(0, 5);
-
-        uint32_t n = rn.as_u32();
-        uint32_t d = rd.as_u32();
-        uint32_t m = rm.as_u32();
-
-        int esize = 0;
-        if (ptype == 0b00) {
-            esize = 32;
-        } else if (ptype == 0b01) {
-            esize = 64;
-        } else if (ptype == 0b10) {
-            assert(false);
-            esize = 64;
-        } else if (ptype == 0b11) {
-            esize = 16;
-        }
-        assert(esize != 0);
-        assert(M == 0 && S == 0);
-
-        if (opcode == 0b0010) {
-            // fadd
-            bits operand1 = state.fp.get(esize, n);
-            bits operand2 = state.fp.get(esize, m);
-            Float f1 = operand1.as_float();
-            Float f2 = operand2.as_float();
-            Float result = f1 + f2;
-            state.fp.set(esize, d, result.to_bits());
-        } else if (opcode == 0b0011) {
-            // fsub
-            bits operand1 = state.fp.get(esize, n);
-            bits operand2 = state.fp.get(esize, m);
-            Float f1 = operand1.as_float();
-            Float f2 = operand2.as_float();
-            Float result = f1 - f2;
-            state.fp.set(esize, d, result.to_bits());
-        } else if (opcode == 0b0100) {
-            // fmax
-        } else if (opcode == 0b0101) {
-            // fmin
-        }
-    }
-
-    void Instruction::execute_floating_point_data_processing(MachineState &state) const {
+    void InstructionExecution::visit_fp_simd_dp_1source(const Instruction &instruction) {
         bool M = instruction.is_set(31);
         bool S = instruction.is_set(29);
         bits ptype = instruction.get_range(22, 24);
@@ -641,13 +462,13 @@ namespace arm {
         } else if (ptype == 0b01) {
             esize = 64;
         } else if (ptype == 0b10) {
-            assert(false);
+            megumin_assert(false);
             esize = 64;
         } else if (ptype == 0b11) {
             esize = 16;
         }
-        assert(esize != 0);
-        assert(M == 0 && S == 0);
+        megumin_assert(esize != 0);
+        megumin_assert(M == 0 && S == 0);
 
         if (opcode == 0b000000) {
             // fmov
@@ -672,9 +493,9 @@ namespace arm {
                 state.fp.set(esize, d, result, merge);
             } else if (esize == 16) {
                 // todo fp16
-                assert(false);
+                megumin_assert(false);
             } else {
-                assert(false);
+                megumin_assert(false);
             }
         } else if (opcode == 0b000010) {
             // fneg
@@ -689,7 +510,57 @@ namespace arm {
             // todo, 有点复杂
             bool merge = state.is_merging();
             bits operand = state.fp.get(esize, n);
+            megumin_todo();
+        }
+    }
 
+    void InstructionExecution::visit_fp_simd_dp_2source(const Instruction &instruction) {
+        bool M = instruction.is_set(31);
+        bool S = instruction.is_set(29);
+        bits ptype = instruction.get_range(22, 24);
+        bits rm = instruction.get_range(16, 21);
+        bits opcode = instruction.get_range(12, 16);
+        bits rn = instruction.get_range(5, 10);
+        bits rd = instruction.get_range(0, 5);
+
+        uint32_t n = rn.as_u32();
+        uint32_t d = rd.as_u32();
+        uint32_t m = rm.as_u32();
+
+        int esize = 0;
+        if (ptype == 0b00) {
+            esize = 32;
+        } else if (ptype == 0b01) {
+            esize = 64;
+        } else if (ptype == 0b10) {
+            megumin_assert(false);
+            esize = 64;
+        } else if (ptype == 0b11) {
+            esize = 16;
+        }
+        megumin_assert(esize != 0);
+        megumin_assert(M == 0 && S == 0);
+
+        if (opcode == 0b0010) {
+            // fadd
+            bits operand1 = state.fp.get(esize, n);
+            bits operand2 = state.fp.get(esize, m);
+            Float f1 = operand1.as_float();
+            Float f2 = operand2.as_float();
+            Float result = f1 + f2;
+            state.fp.set(esize, d, result.to_bits());
+        } else if (opcode == 0b0011) {
+            // fsub
+            bits operand1 = state.fp.get(esize, n);
+            bits operand2 = state.fp.get(esize, m);
+            Float f1 = operand1.as_float();
+            Float f2 = operand2.as_float();
+            Float result = f1 - f2;
+            state.fp.set(esize, d, result.to_bits());
+        } else if (opcode == 0b0100) {
+            // fmax
+        } else if (opcode == 0b0101) {
+            // fmin
         }
     }
 }

@@ -12,10 +12,10 @@ using arm::bits;
 using namespace std;
 
 void arm::InstructionPrint::dispatch_data_processing_imm_add_sub(const arm::Instruction &instruction) {
-    bool sf = instruction.get_bit(31);
-    bool op = instruction.get_bit(30);
-    bool S = instruction.get_bit(29);
-    bool sh = instruction.get_bit(22);
+    bool sf = instruction.is_set(31);
+    bool op = instruction.is_set(30);
+    bool S = instruction.is_set(29);
+    bool sh = instruction.is_set(22);
     bits imm12 = instruction.get_range(10, 22);
     bits rn = instruction.get_range(5, 10);
     bits rd = instruction.get_range(0, 5);
@@ -50,9 +50,9 @@ void arm::InstructionPrint::dispatch_nop(const arm::Instruction &instruction) {
 }
 
 void arm::InstructionPrint::dispatch_data_processing_imm_logical(const arm::Instruction& instruction) {
-    bool sf = instruction.get_bit(31);
+    bool sf = instruction.is_set(31);
     bits opc = instruction.get_range(29, 31);
-    bool N = instruction.get_bit(22);
+    bool N = instruction.is_set(22);
     bits immr = instruction.get_range(16, 22);
     bits imms = instruction.get_range(10, 16);
     bits rn = instruction.get_range(5, 10);
@@ -83,7 +83,7 @@ void arm::InstructionPrint::dispatch_data_processing_imm_logical(const arm::Inst
 
 void arm::InstructionPrint::dispatch_data_processing_move_wide(const arm::Instruction &instruction) {
     bits opc = instruction.get_range(29, 31);
-    bool sf = instruction.get_bit(31);
+    bool sf = instruction.is_set(31);
     bits hw = instruction.get_range(21, 23);
     bits imm16 = instruction.get_range(5, 21);
     bits rd = instruction.get_range(0, 5);
@@ -137,7 +137,7 @@ void arm::InstructionPrint::dispatch_data_processing_bitfield(const arm::Instruc
 }
 
 void arm::InstructionPrint::dispatch_data_processing_extract(const arm::Instruction &instruction) {
-    const bool sf = instruction.get_bit(31);
+    const bool sf = instruction.is_set(31);
     const bits rm = instruction.get_range(16, 21);
     const bits imms = instruction.get_range(10, 16);
     const bits rn = instruction.get_range(5, 10);
@@ -153,7 +153,7 @@ void arm::InstructionPrint::dispatch_data_processing_extract(const arm::Instruct
 }
 
 void arm::InstructionPrint::dispatch_data_processing_2source(const arm::Instruction &instruction) {
-    bool sf = instruction.get_bit(31);
+    bool sf = instruction.is_set(31);
     bits rm = instruction.get_range(16, 21);
     bits opcode = instruction.get_range(10, 16);
     bits rn = instruction.get_range(5, 10);
@@ -180,7 +180,7 @@ void arm::InstructionPrint::dispatch_data_processing_2source(const arm::Instruct
 }
 
 void arm::InstructionPrint::dispatch_data_processing_1source(const arm::Instruction &instruction) {
-    bool sf = instruction.get_bit(31);
+    bool sf = instruction.is_set(31);
     bits opcode2 = instruction.get_range(16, 21);
     bits opcode = instruction.get_range(10, 16);
     bits rn = instruction.get_range(5, 10);
@@ -215,8 +215,8 @@ void arm::InstructionPrint::dispatch_data_processing_1source(const arm::Instruct
 }
 
 void arm::InstructionPrint::dispatch_fp_data_processing1(const arm::Instruction &instruction) {
-    bool M = instruction.get_bit(31);
-    bool S = instruction.get_bit(29);
+    bool M = instruction.is_set(31);
+    bool S = instruction.is_set(29);
     bits ptype = instruction.get_range(22, 24);
     bits opcode = instruction.get_range(15, 21);
     bits rn = instruction.get_range(5, 10);
@@ -257,8 +257,8 @@ void arm::InstructionPrint::dispatch_fp_data_processing1(const arm::Instruction 
 }
 
 void arm::InstructionPrint::dispatch_fp_data_processing2(const Instruction& instruction) {
-    bool M = instruction.get_bit(31);
-    bool S = instruction.get_bit(29);
+    bool M = instruction.is_set(31);
+    bool S = instruction.is_set(29);
     bits ptype = instruction.get_range(22, 24);
     bits rm = instruction.get_range(16, 21);
     bits opcode = instruction.get_range(12, 16);
