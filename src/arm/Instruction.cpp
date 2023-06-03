@@ -8,6 +8,7 @@
 #include "Bitvec.h"
 #include "ArmUtils.h"
 #include "MyFloat.h"
+#include "visitor/GetDefRegister.h"
 #include "visitor/InstructionExecution.h"
 
 namespace arm {
@@ -74,5 +75,15 @@ namespace arm {
 
     bool Instruction::is_nop() const {
         return instruction.data0 == 0;
+    }
+
+    std::optional<Reg> Instruction::get_def_register() const {
+        GetDefRegister get_def_register;
+        get_def_register.visit_instruction(*this);
+        if (get_def_register.result.reg_type == RegType::None) {
+            return {};
+        } else {
+            return get_def_register.result;
+        }
     }
 }

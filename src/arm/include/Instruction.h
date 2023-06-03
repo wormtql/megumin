@@ -6,8 +6,10 @@
 #define MEGUMIN_INSTRUCTION_H
 
 #include <cstdint>
+#include <optional>
 #include "MachineState.h"
 #include "Bitvec.h"
+#include "RegSet.h"
 
 namespace arm {
     enum class InstructionType {
@@ -54,6 +56,8 @@ namespace arm {
         [[nodiscard]] bits get_range(int low, int high) const { return instruction.get_range(low, high); }
         [[nodiscard]] bits get_rn() const { return instruction.get_rn(); }
         [[nodiscard]] bits get_rd() const { return instruction.get_rd(); }
+
+        [[nodiscard]] std::optional<Reg> get_def_register() const;
     };
 }
 

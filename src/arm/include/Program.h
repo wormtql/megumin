@@ -9,22 +9,23 @@
 
 #include "Instruction.h"
 #include "MachineState.h"
-
-const int MAX_INSTRUCTIONS = 20;
+#include "RegSet.h"
 
 namespace arm {
     class Program {
     private:
-        Instruction instructions[MAX_INSTRUCTIONS];
-        int size = 0;
+        std::vector<Instruction> instructions;
+
+        std::vector<RegSet> def_ins;
+        RegSet entry_def_ins;
     public:
         Program() = default;
         explicit Program(int size);
-        Program(const Program& other);
+        Program(int size, const RegSet& def_ins0);
 
         void execute(MachineState& state) const;
         [[nodiscard]] int get_size() const {
-            return size;
+            return instructions.size();
         }
         void add_instruction(const Instruction& instruction);
         void set_instruction(int index, const Instruction& instruction);
@@ -33,6 +34,9 @@ namespace arm {
 
         [[nodiscard]] const Instruction& get_instruction_const(int index) const;
         void print() const;
+
+        void calculate_def_ins();
+        const RegSet& get_def_in(int index);
     };
 }
 
