@@ -4,6 +4,7 @@
 
 #include <array>
 #include "MutateFPDataProcessing.h"
+#include "megumin_utils.h"
 
 namespace megumin {
     MutateFPDataProcessing1::MutateFPDataProcessing1(std::mt19937 &generator, Prob prob)
@@ -16,14 +17,16 @@ namespace megumin {
           }}
     {}
 
-    arm::Instruction MutateFPDataProcessing1::mutate_ptype(const arm::Instruction &instruction) {
+    arm::Instruction MutateFPDataProcessing1::mutate_ptype(const arm::Program& program, int index) {
+        const arm::Instruction& instruction = program.get_instruction_const(index);
         auto result = instruction;
         // todo half precision
         result.set_range(22, 24, uniform_int(generator) % 2);
         return result;
     }
 
-    arm::Instruction MutateFPDataProcessing1::mutate_opcode(const arm::Instruction &instruction) {
+    arm::Instruction MutateFPDataProcessing1::mutate_opcode(const arm::Program& program, int index) {
+        const arm::Instruction& instruction = program.get_instruction_const(index);
         static int opcodes[] = {
                 0b000000,
                 0b000001,
@@ -40,36 +43,34 @@ namespace megumin {
         return result;
     }
 
-    arm::Instruction MutateFPDataProcessing1::mutate_rn(const arm::Instruction &instruction) {
+    arm::Instruction MutateFPDataProcessing1::mutate_rn(const arm::Program& program, int index) {
+        const arm::Instruction& instruction = program.get_instruction_const(index);
         auto result = instruction;
         result.set_range(5, 10, uniform_int(generator) % (1 << 5));
         return result;
     }
 
-    arm::Instruction MutateFPDataProcessing1::mutate_rd(const arm::Instruction &instruction) {
+    arm::Instruction MutateFPDataProcessing1::mutate_rd(const arm::Program& program, int index) {
+        const arm::Instruction& instruction = program.get_instruction_const(index);
         auto result = instruction;
         result.set_range(0, 5, uniform_int(generator) % (1 << 5));
         return result;
     }
 
-    arm::Instruction MutateFPDataProcessing1::mutate(const arm::Instruction &instruction) {
-        int index = discrete(generator);
-        switch (index) {
+    arm::Instruction MutateFPDataProcessing1::mutate(const arm::Program& program, int index) {
+        int index2 = discrete(generator);
+        switch (index2) {
             case 0:
-                return mutate_ptype(instruction);
+                return mutate_ptype(program, index);
             case 1:
-                return mutate_opcode(instruction);
+                return mutate_opcode(program, index);
             case 2:
-                return mutate_rn(instruction);
+                return mutate_rn(program, index);
             case 3:
-                return mutate_rd(instruction);
-            default:
-                assert(false);
+                return mutate_rd(program, index);
         }
-        assert(false);
-        return instruction;
+        megumin_assert(false);
     }
-
 }
 
 // fp dp 2-source
@@ -85,20 +86,23 @@ namespace megumin {
           }}
     {}
 
-    arm::Instruction MutateFPDataProcessing2::mutate_ptype(const arm::Instruction &instruction) {
+    arm::Instruction MutateFPDataProcessing2::mutate_ptype(const arm::Program& program, int index) {
+        const arm::Instruction& instruction = program.get_instruction_const(index);
         auto result = instruction;
         // todo half precision
         result.set_range(22, 24, uniform_int(generator) % 2);
         return result;
     }
 
-    arm::Instruction MutateFPDataProcessing2::mutate_rm(const arm::Instruction& instruction) {
+    arm::Instruction MutateFPDataProcessing2::mutate_rm(const arm::Program& program, int index) {
+        const arm::Instruction& instruction = program.get_instruction_const(index);
         auto result = instruction;
         result.set_range(16, 21, uniform_int(generator) % 2);
         return result;
     }
 
-    arm::Instruction MutateFPDataProcessing2::mutate_opcode(const arm::Instruction &instruction) {
+    arm::Instruction MutateFPDataProcessing2::mutate_opcode(const arm::Program& program, int index) {
+        const arm::Instruction& instruction = program.get_instruction_const(index);
         // todo
         static int opcodes[] = {
                 0b0010,
@@ -112,35 +116,34 @@ namespace megumin {
         return result;
     }
 
-    arm::Instruction MutateFPDataProcessing2::mutate_rn(const arm::Instruction &instruction) {
+    arm::Instruction MutateFPDataProcessing2::mutate_rn(const arm::Program& program, int index) {
+        const arm::Instruction& instruction = program.get_instruction_const(index);
         auto result = instruction;
         result.set_range(5, 10, uniform_int(generator) % (1 << 5));
         return result;
     }
 
-    arm::Instruction MutateFPDataProcessing2::mutate_rd(const arm::Instruction &instruction) {
+    arm::Instruction MutateFPDataProcessing2::mutate_rd(const arm::Program& program, int index) {
+        const arm::Instruction& instruction = program.get_instruction_const(index);
         auto result = instruction;
         result.set_range(0, 5, uniform_int(generator) % (1 << 5));
         return result;
     }
 
-    arm::Instruction MutateFPDataProcessing2::mutate(const arm::Instruction &instruction) {
-        int index = discrete(generator);
-        switch (index) {
+    arm::Instruction MutateFPDataProcessing2::mutate(const arm::Program& program, int index) {
+        int index2 = discrete(generator);
+        switch (index2) {
             case 0:
-                return mutate_ptype(instruction);
+                return mutate_ptype(program, index);
             case 1:
-                return mutate_rm(instruction);
+                return mutate_rm(program, index);
             case 2:
-                return mutate_opcode(instruction);
+                return mutate_opcode(program, index);
             case 3:
-                return mutate_rn(instruction);
+                return mutate_rn(program, index);
             case 4:
-                return mutate_rd(instruction);
-            default:
-                assert(false);
+                return mutate_rd(program, index);
         }
-        assert(false);
-        return instruction;
+        megumin_assert(false);
     }
 }

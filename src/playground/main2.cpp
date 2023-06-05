@@ -13,11 +13,9 @@
 #include <cost/CorrectnessCost.h>
 #include <cost/SimpleCost.h>
 #include <search/Search.h>
-#include <mutation/SimpleProgramMutation.h>
-#include <mutation/SimpleInClassMutation.h>
+#include <program_mutation/WeightedProgramMutation.h>
 #include <random_instruction/RandomDataProcessingImm.h>
 #include <random_instruction/RandomInstructionTop.h>
-#include <mutation/MutateDataProcessingImm.h>
 #include <utils/utils.h>
 
 using namespace arm;
@@ -33,10 +31,11 @@ void f(const arm::Program& target, vector<MachineState> test_cases) {
 //    megumin::RandomDataProcessingImm random_data_processing_imm{generator};
     megumin::RandomInstructionTop random_instruction{generator};
 //    megumin::MutateDataProcessingImmAddSub mutate_instruction{generator};
-    megumin::SimpleInClassMutation mutate_instruction{generator};
-    megumin::SimpleProgramMutation simple_program_mutation{generator, &random_instruction, &mutate_instruction};
+//    megumin::SimpleInClassMutation mutate_instruction{generator};
+//    megumin::SimpleProgramMutation simple_program_mutation{generator, &random_instruction, &mutate_instruction};
+    megumin::WeightedProgramMutation weighted_program_mutation{generator};
 
-    megumin::Search search{&simple_program_mutation, &simple_cost, generator};
+    megumin::Search search{&weighted_program_mutation, &simple_cost, generator};
     megumin::SearchState state;
 
 

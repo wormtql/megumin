@@ -4,10 +4,12 @@
 
 #include "InClassInstructionMutation.h"
 #include "instruction_mutation/SimpleInstructionMutation.h"
+#include "megumin_utils.h"
 
 namespace megumin {
     InClassInstructionMutation::InClassInstructionMutation(std::mt19937 &generator)
-        :generator(generator)
+        : generator(generator),
+          simple_instruction_mutation(generator)
     {}
 
     MutationResult InClassInstructionMutation::mutate(arm::Program &program) {
@@ -19,9 +21,11 @@ namespace megumin {
         result.mutation_index[0] = index;
         result.mutation_instructions[0] = program.get_instruction_const(index);
 
-        SimpleInstructionMutation simple_instruction_mutation{generator};
+        simple_instruction_mutation.result = arm::Instruction::nop();
+        simple_instruction_mutation.program = &program;
+        simple_instruction_mutation.index = index;
         simple_instruction_mutation.visit_instruction(result.mutation_instructions[0]);
-        program.set_instruction(index, result.mutation_instructions[0]);
+        program.set_instruction(index, simple_instruction_mutation.result);
 
         program.calculate_def_ins();
 
@@ -29,8 +33,10 @@ namespace megumin {
     }
 
     void InClassInstructionMutation::undo(arm::Program &program, const MutationResult &result) {
+        megumin_assert(result.mutation_index[0] < program.get_size());
 
+        program.set_instruction(result.mutation_index[0], result.mutation_instructions[0]);
+
+        program.calculate_def_ins();
     }
 }
-
-

@@ -13,6 +13,7 @@ namespace megumin {
 
         int mutation_index[2];
         arm::Instruction mutation_instructions[2];
+        int tag = 0;
     };
 }
 

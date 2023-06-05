@@ -25,6 +25,8 @@ namespace megumin {
         }
 
         program.swap_instructions(index1, index2);
+        program.calculate_def_ins();
+
         return result;
     }
 
@@ -32,5 +34,6 @@ namespace megumin {
         megumin_assert(result.mutation_index[0] < program.get_size());
         megumin_assert(result.mutation_index[1] < program.get_size());
         program.swap_instructions(result.mutation_index[0], result.mutation_index[1]);
+        program.calculate_def_ins();
     }
 }

@@ -12,8 +12,8 @@ namespace arm {
 
     class RegSet {
     private:
-        bits gp;
-        bits fp;
+        bits gp{32, 0};
+        bits fp{32, 0};
     public:
         RegSet() = default;
 

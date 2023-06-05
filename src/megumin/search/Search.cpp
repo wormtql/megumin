@@ -5,6 +5,7 @@
 #include <iostream>
 #include <cmath>
 #include "Search.h"
+#include "Program.h"
 
 using namespace std;
 
@@ -15,14 +16,13 @@ namespace megumin {
 
     void Search::do_search(SearchState &state) {
         for (unsigned long long i = 0; i < max_iteration; i++) {
-            arm::Program new_program = program_mutation->mutate(state.current);
+//            arm::Program new_program = program_mutation->mutate(state.current);
+            arm::Program& program = state.current;
+            auto mutation_result = program_mutation->mutate(program);
 
             const double p = uniform_distribution(generator);
-            // cout << "current cost: " << state.current_best_cost << endl;
             const double max_cost = state.current_cost - (std::log(p) / beta);
-            // cout << "max_cost: " << max_cost << endl;
-            // break;
-            const auto new_cost_result = cost_function->cost(new_program, max_cost + 1);
+            const auto new_cost_result = cost_function->cost(program, max_cost + 1);
 
             const bool is_correct = new_cost_result.first == CostFunction::CorrectState::Correct;
             const double new_cost = new_cost_result.second;
@@ -35,22 +35,23 @@ namespace megumin {
             // }
 
             if (new_cost > max_cost) {
+                program_mutation->undo(program, mutation_result);
                 continue;
             }
             state.current_cost = new_cost;
-            state.current = new_program;
+//            state.current = new_program;
 
             if (state.current_best_cost > new_cost) {
                 state.current_best_cost = new_cost;
-                state.current_best = new_program;
+                state.current_best = state.current;
                 std::cout << "iteration: " << i << "\n";
-                new_program.print();
+                state.current.print();
                 std::cout << "\n";
                 std::cout << new_cost << "\n\n";
             }
 
             if (new_cost < state.current_correct_best_cost && is_correct) {
-                state.current_correct_best = new_program;
+                state.current_correct_best = state.current;
                 state.current_correct_best_cost = new_cost;
             }
         }

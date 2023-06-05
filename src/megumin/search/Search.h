@@ -7,8 +7,7 @@
 
 #include <random>
 
-#include "mutation/Mutation.h"
-#include "mutation/ProgramMutation.h"
+#include "program_mutation/ProgramMutation.h"
 #include "cost/CostFunction.h"
 
 namespace megumin {

@@ -30,6 +30,8 @@ namespace megumin {
         MutateFPDataProcessing2 mutate_fp_simd_dp_2source;
     public:
         arm::Instruction result;
+        const arm::Program* program = nullptr;
+        int index = 0;
 
         explicit SimpleInstructionMutation(std::mt19937& generator);
 

@@ -20,6 +20,8 @@ namespace megumin {
         result.mutation_instructions[0] = program.get_instruction_const(index);
 
         program.set_instruction_nop(index);
+        program.calculate_def_ins();
+
         return result;
     }
 
@@ -27,6 +29,7 @@ namespace megumin {
         megumin_assert(result.mutation_index[0] < program.get_size());
 
         program.set_instruction(result.mutation_index[0], result.mutation_instructions[0]);
+        program.calculate_def_ins();
     }
 }
 

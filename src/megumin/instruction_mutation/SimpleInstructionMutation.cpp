@@ -23,7 +23,7 @@ namespace megumin {
     }
 
     void SimpleInstructionMutation::visit_dp_imm_add_sub(const arm::Instruction &instruction) {
-        result = mutate_dp_imm_add_sub.mutate(instruction);
+        result = mutate_dp_imm_add_sub.mutate(*program, index);
     }
 
     void SimpleInstructionMutation::visit_dp_imm_add_sub_with_tags(const arm::Instruction &instruction) {
@@ -31,34 +31,34 @@ namespace megumin {
     }
 
     void SimpleInstructionMutation::visit_dp_imm_logical(const arm::Instruction &instruction) {
-        result = mutate_dp_imm_logical.mutate(instruction);
+        result = mutate_dp_imm_logical.mutate(*program, index);
     }
 
     void SimpleInstructionMutation::visit_dp_imm_move_wide(const arm::Instruction &instruction) {
-        result = mutate_dp_imm_move_wide.mutate(instruction);
+        result = mutate_dp_imm_move_wide.mutate(*program, index);
     }
 
     void SimpleInstructionMutation::visit_dp_imm_bitfield(const arm::Instruction &instruction) {
-        result = mutate_dp_imm_bitfield.mutate(instruction);
+        result = mutate_dp_imm_bitfield.mutate(*program, index);
     }
 
     void SimpleInstructionMutation::visit_dp_imm_extract(const arm::Instruction &instruction) {
-        result = mutate_dp_imm_extract.mutate(instruction);
+        result = mutate_dp_imm_extract.mutate(*program, index);
     }
 
     void SimpleInstructionMutation::visit_dp_reg_2source(const arm::Instruction &instruction) {
-        result = mutate_dp_reg_2source.mutate(instruction);
+        result = mutate_dp_reg_2source.mutate(*program, index);
     }
 
     void SimpleInstructionMutation::visit_dp_reg_1source(const arm::Instruction &instruction) {
-        result = mutate_dp_reg_1source.mutate(instruction);
+        result = mutate_dp_reg_1source.mutate(*program, index);
     }
 
     void SimpleInstructionMutation::visit_fp_simd_dp_1source(const arm::Instruction &instruction) {
-        result = mutate_fp_simd_dp_1source.mutate(instruction);
+        result = mutate_fp_simd_dp_1source.mutate(*program, index);
     }
 
     void SimpleInstructionMutation::visit_fp_simd_dp_2source(const arm::Instruction &instruction) {
-        result = mutate_fp_simd_dp_2source.mutate(instruction);
+        result = mutate_fp_simd_dp_2source.mutate(*program, index);
     }
 }

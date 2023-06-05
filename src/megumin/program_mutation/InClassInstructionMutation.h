@@ -7,12 +7,14 @@
 
 #include <random>
 #include "ProgramMutation.h"
+#include "instruction_mutation/SimpleInstructionMutation.h"
 
 namespace megumin {
     class InClassInstructionMutation: public ProgramMutation {
     private:
         std::mt19937& generator;
         std::uniform_int_distribution<> uniform_int;
+        SimpleInstructionMutation simple_instruction_mutation;
     public:
         explicit InClassInstructionMutation(std::mt19937& generator);
 

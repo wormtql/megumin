@@ -15,7 +15,7 @@ namespace megumin {
         for (int i = 0; i < weight.dp_imm_add_sub; i++) {
             random_functions.push_back(std::make_unique<RandomAddSubImm>(generator));
         }
-        for (int i = 0; i < weight.dp_imm_add_sub_with_tags) {
+        for (int i = 0; i < weight.dp_imm_add_sub_with_tags; i++) {
             // todo
         }
         for (int i = 0; i < weight.dp_imm_logical; i++) {
@@ -55,6 +55,8 @@ megumin::MutationResult megumin::RandomInstructionMutation::mutate(arm::Program 
     result.mutation_instructions[0] = program.get_instruction_const(index);
 
     program.set_instruction(index, instruction);
+    program.calculate_def_ins();
+
     return result;
 }
 
@@ -62,4 +64,5 @@ void megumin::RandomInstructionMutation::undo(arm::Program &program, const megum
     megumin_assert(result.mutation_index[0] < program.get_size());
 
     program.set_instruction(result.mutation_index[0], result.mutation_instructions[0]);
+    program.calculate_def_ins();
 }

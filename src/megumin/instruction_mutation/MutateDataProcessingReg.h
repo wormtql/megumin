@@ -7,6 +7,7 @@
 
 #include <random>
 #include "instruction_mutation/InstructionMutation.h"
+#include "Program.h"
 
 namespace megumin {
     class MutateDataProcessingReg2Source: public InstructionMutation {
@@ -19,11 +20,11 @@ namespace megumin {
             double w_rd = 5;
         };
     private:
-        arm::Instruction mutate_opcode(const arm::Instruction& instruction);
-        arm::Instruction mutate_sf(const arm::Instruction& instruction);
-        arm::Instruction mutate_rm(const arm::Instruction& instruction);
-        arm::Instruction mutate_rn(const arm::Instruction& instruction);
-        arm::Instruction mutate_rd(const arm::Instruction& instruction);
+        arm::Instruction mutate_opcode(const arm::Program& program, int index);
+        arm::Instruction mutate_sf(const arm::Program& program, int index);
+        arm::Instruction mutate_rm(const arm::Program& program, int index);
+        arm::Instruction mutate_rn(const arm::Program& program, int index);
+        arm::Instruction mutate_rd(const arm::Program& program, int index);
 
         std::mt19937& generator;
         std::uniform_int_distribution<> uniform_int;
@@ -31,7 +32,7 @@ namespace megumin {
     public:
         MutateDataProcessingReg2Source(std::mt19937& generator, Prob prob);
         explicit MutateDataProcessingReg2Source(std::mt19937& generator): MutateDataProcessingReg2Source(generator, {}) {}
-        arm::Instruction mutate(const arm::Instruction &instruction) override;
+        arm::Instruction mutate(const arm::Program& program, int index) override;
 
     };
 
@@ -44,10 +45,10 @@ namespace megumin {
             double w_rd = 5;
         };
     private:
-        arm::Instruction mutate_sf(const arm::Instruction& instruction);
-        arm::Instruction mutate_opcode(const arm::Instruction& instruction);
-        arm::Instruction mutate_rn(const arm::Instruction& instruction);
-        arm::Instruction mutate_rd(const arm::Instruction& instruction);
+        arm::Instruction mutate_sf(const arm::Program& program, int index);
+        arm::Instruction mutate_opcode(const arm::Program& program, int index);
+        arm::Instruction mutate_rn(const arm::Program& program, int index);
+        arm::Instruction mutate_rd(const arm::Program& program, int index);
 
         std::mt19937& generator;
         std::uniform_int_distribution<> uniform_int;
@@ -56,7 +57,7 @@ namespace megumin {
         MutateDataProcessingReg1Source(std::mt19937& generator, Prob prob);
         explicit MutateDataProcessingReg1Source(std::mt19937& generator): MutateDataProcessingReg1Source(generator, {}) {}
 
-        arm::Instruction mutate(const arm::Instruction &instruction) override;
+        arm::Instruction mutate(const arm::Program& program, int index) override;
     };
 }
 
