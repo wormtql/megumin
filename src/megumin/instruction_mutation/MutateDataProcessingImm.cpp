@@ -176,7 +176,9 @@ namespace megumin {
     arm::Instruction MutateDataProcessingImmLogical::mutate_rn(const arm::Program& program, int index) {
         const arm::Instruction& instruction = program.get_instruction_const(index);
         auto result = instruction;
-        result.set_range(5, 10, uniform_int(generator) % (1 << 5));
+
+        const auto& def_ins = program.get_def_in(index);
+        result.set_range(5, 10, def_ins.random_gp(generator));
         return result;
     }
 
@@ -374,10 +376,9 @@ namespace megumin {
         const arm::Instruction& instruction = program.get_instruction_const(index);
         auto result = instruction;
 
-        auto def_ins = program.get_def_in(index);
+        const auto& def_ins = program.get_def_in(index);
         int reg = def_ins.random_gp(generator);
 
-//        result.set_range(5, 10, uniform_int(generator) % (1 << 5));
         result.set_range(5, 10, reg);
         return result;
     }
@@ -457,7 +458,9 @@ namespace megumin {
     arm::Instruction MutateDataProcessingExtract::mutate_rn(const arm::Program& program, int index) {
         const arm::Instruction& instruction = program.get_instruction_const(index);
         auto result = instruction;
-        result.set_range(5, 10, uniform_int(generator) % (1 << 5));
+
+        const auto& def_ins = program.get_def_in(index);
+        result.set_range(5, 10, def_ins.random_gp(generator));
         return result;
     }
 

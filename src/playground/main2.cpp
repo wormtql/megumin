@@ -44,7 +44,10 @@ void f(const arm::Program& target, vector<MachineState> test_cases) {
     }
     RegSet entry_def_ins;
     entry_def_ins.set_gp(1, true);
+    entry_def_ins.set_fp(2, true);
+    entry_def_ins.set_fp(3, true);
     empty_program.set_entry_def_ins(entry_def_ins);
+    empty_program.calculate_def_ins();
 
     state.current = empty_program;
     state.current_cost = simple_cost.cost(empty_program, std::numeric_limits<double>::max()).second;
@@ -101,8 +104,8 @@ int main() {
 //    program.add_instruction(instruction10);
 //    program.add_instruction(instruction11);
     // program.add_instruction(instruction12);
-    // program.add_instruction(instruction13);
-    // program.add_instruction(instruction14);
+     program.add_instruction(instruction13);
+     program.add_instruction(instruction14);
 
 #ifdef USE_KEYSTONE
     // auto program = megumin::aarch64_asm("fmov d1, d2; fmov d3, d2");

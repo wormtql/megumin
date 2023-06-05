@@ -44,7 +44,7 @@ namespace arm {
     int RegSet::random_gp(std::mt19937& generator) const {
         int arr[32];
         int size = 0;
-        int temp = (int) gp.data0;
+        uint64_t temp = (uint64_t) gp.data0;
 
         int it = 0;
         while (temp > 0) {
@@ -55,6 +55,26 @@ namespace arm {
             temp >>= 1;
         }
         megumin::megumin_assert(size > 0, "gp reg set size is 0");
+
+        std::uniform_int_distribution<> uniform_int;
+        int index = uniform_int(generator) % size;
+        return arr[index];
+    }
+
+    int RegSet::random_fp(std::mt19937 &generator) const {
+        int arr[32];
+        int size = 0;
+        uint64_t temp = (uint64_t) fp.data0;
+
+        int it = 0;
+        while (temp > 0) {
+            if (temp % 2 == 1) {
+                arr[size++] = it;
+            }
+            it++;
+            temp >>= 1;
+        }
+        megumin::megumin_assert(size > 0, "fp reg set size is 0");
 
         std::uniform_int_distribution<> uniform_int;
         int index = uniform_int(generator) % size;

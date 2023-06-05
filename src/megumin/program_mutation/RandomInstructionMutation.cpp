@@ -38,6 +38,14 @@ namespace megumin {
         for (int i = 0; i < weight.dp_reg_2source; i++) {
             random_functions.push_back(std::make_unique<RandomDataProcessing2Source>(generator));
         }
+
+        // fp and simd
+        for (int i = 0; i < weight.fp_and_simd_dp_1source; i++) {
+            random_functions.push_back(std::make_unique<RandomFPDataProcessing1>(generator));
+        }
+        for (int i = 0; i < weight.fp_and_simd_dp_2source; i++) {
+            random_functions.push_back(std::make_unique<RandomFPDataProcessing2>(generator));
+        }
     }
 }
 

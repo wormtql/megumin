@@ -46,7 +46,9 @@ namespace megumin {
     arm::Instruction MutateFPDataProcessing1::mutate_rn(const arm::Program& program, int index) {
         const arm::Instruction& instruction = program.get_instruction_const(index);
         auto result = instruction;
-        result.set_range(5, 10, uniform_int(generator) % (1 << 5));
+
+        const auto& def_ins = program.get_def_in(index);
+        result.set_range(5, 10, def_ins.random_fp(generator));
         return result;
     }
 
@@ -97,7 +99,9 @@ namespace megumin {
     arm::Instruction MutateFPDataProcessing2::mutate_rm(const arm::Program& program, int index) {
         const arm::Instruction& instruction = program.get_instruction_const(index);
         auto result = instruction;
-        result.set_range(16, 21, uniform_int(generator) % 2);
+
+        const auto& def_ins = program.get_def_in(index);
+        result.set_range(16, 21, def_ins.random_fp(generator));
         return result;
     }
 
@@ -119,7 +123,9 @@ namespace megumin {
     arm::Instruction MutateFPDataProcessing2::mutate_rn(const arm::Program& program, int index) {
         const arm::Instruction& instruction = program.get_instruction_const(index);
         auto result = instruction;
-        result.set_range(5, 10, uniform_int(generator) % (1 << 5));
+
+        const auto& def_ins = program.get_def_in(index);
+        result.set_range(5, 10, def_ins.random_fp(generator));
         return result;
     }
 

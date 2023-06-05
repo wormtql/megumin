@@ -39,9 +39,10 @@ arm::Instruction megumin::RandomDataProcessing2Source::random_instruction(const 
     // sf
     inst.set_bit(31, uniform_int(generator) % 2);
     // rm
-    inst.set_range(16, 21, uniform_int(generator) % (1 << 5));
+    const auto& def_ins = program.get_def_in(index);
+    inst.set_range(16, 21, def_ins.random_gp(generator));
     // rn
-    inst.set_range(5, 10, uniform_int(generator) % (1 << 5));
+    inst.set_range(5, 10, def_ins.random_gp(generator));
     // rd
     inst.set_range(0, 5, uniform_int(generator) % (1 << 5));
 
@@ -68,7 +69,8 @@ arm::Instruction megumin::RandomDataProcessing1Source::random_instruction(const 
         inst.set_range(10, 16, 0b100 + i - 4);
     }
     // rn
-    inst.set_range(5, 10, uniform_int(generator) % (1 << 5));
+    const auto& def_ins = program.get_def_in(index);
+    inst.set_range(5, 10, def_ins.random_gp(generator));
     // rd
     inst.set_range(0, 5, uniform_int(generator) % (1 << 5));
 

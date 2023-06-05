@@ -19,7 +19,7 @@ namespace arm {
     public:
         RegSet() = default;
 
-        bool have_gp(int index) const;
+        [[nodiscard]] bool have_gp(int index) const;
         bool have_fp(int index) const;
         void set_fp(int index, bool value);
         void set_gp(int index, bool value);
@@ -28,6 +28,7 @@ namespace arm {
         RegSet operator|(const Reg& other);
 
         int random_gp(std::mt19937& generator) const;
+        int random_fp(std::mt19937& generator) const;
     };
 
     enum class RegType {

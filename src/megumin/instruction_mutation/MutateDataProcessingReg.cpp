@@ -34,14 +34,18 @@ namespace megumin {
     arm::Instruction MutateDataProcessingReg2Source::mutate_rm(const arm::Program& program, int index) {
         const arm::Instruction& instruction = program.get_instruction_const(index);
         auto result = instruction;
-        result.set_range(16, 21, uniform_int(generator) % (1 << 5));
+
+        const auto& def_ins = program.get_def_in(index);
+        result.set_range(16, 21, def_ins.random_gp(generator));
         return result;
     }
 
     arm::Instruction MutateDataProcessingReg2Source::mutate_rn(const arm::Program& program, int index) {
         const arm::Instruction& instruction = program.get_instruction_const(index);
         auto result = instruction;
-        result.set_range(5, 10, uniform_int(generator) % (1 << 5));
+
+        const auto& def_ins = program.get_def_in(index);
+        result.set_range(5, 10, def_ins.random_gp(generator));
         return result;
     }
 
@@ -126,7 +130,9 @@ namespace megumin {
 
     arm::Instruction MutateDataProcessingReg1Source::mutate_rn(const arm::Program& program, int index) {
         const arm::Instruction& instruction = program.get_instruction_const(index);
-        return InstructionMutation::mutate_rn(uniform_int(generator), instruction);
+
+        const auto& def_ins = program.get_def_in(index);
+        return InstructionMutation::mutate_rn(def_ins.random_gp(generator), instruction);
     }
 
     arm::Instruction MutateDataProcessingReg1Source::mutate_rd(const arm::Program& program, int index) {

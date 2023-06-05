@@ -45,7 +45,8 @@ namespace megumin {
         result.set_range(10, 16, (0b11110ll << level) & (0b111111ll));
         result.set_range(10, 10 + level, uniform_int_distribution(generator) % ((1 << level) - 1));
         // rn
-        result.set_range(5, 10, uniform_int_distribution(generator) % (1 << 5));
+        const auto& def_ins = program.get_def_in(index);
+        result.set_range(5, 10, def_ins.random_gp(generator));
         // rd
         result.set_range(0, 5, uniform_int_distribution(generator) % (1 << 5));
         if (result.data0 < 0) {
@@ -102,7 +103,8 @@ namespace megumin {
         // imm12
         instruction.set_range(10, 22, uniform_int_dist(generator) % (1 << 12));
         // rn
-        instruction.set_range(5, 10, uniform_int_dist(generator) % (1 << 5));
+        const auto& def_ins = program.get_def_in(index);
+        instruction.set_range(5, 10, def_ins.random_gp(generator));
         // rd
         instruction.set_range(0, 5, uniform_int_dist(generator) % (1 << 5));
 
@@ -127,8 +129,7 @@ namespace megumin {
         // imms
         instruction.set_range(10, 16, uniform_int(generator) % x);
         // rn
-        auto def_ins = program.get_def_in(index);
-//        instruction.set_range(5, 10, uniform_int(generator) % (1 << 5));
+        const auto& def_ins = program.get_def_in(index);
         instruction.set_range(5, 10, def_ins.random_gp(generator));
         // rd
         instruction.set_range(0, 5, uniform_int(generator) % (1 << 5));
@@ -148,7 +149,8 @@ namespace megumin {
         // rm
         instruction.set_range(16, 21, uniform_int(generator) % (1 << 5));
         // rn
-        instruction.set_range(5, 10, uniform_int(generator) % (1 << 5));
+        const auto& def_ins = program.get_def_in(index);
+        instruction.set_range(5, 10, def_ins.random_gp(generator));
         // rd
         instruction.set_range(0, 5, uniform_int(generator) % (1 << 5));
         // imms
