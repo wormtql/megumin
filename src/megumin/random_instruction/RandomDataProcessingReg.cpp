@@ -19,13 +19,13 @@ megumin::RandomDataProcessingReg::RandomDataProcessingReg(std::mt19937 &generato
     dispatches.push_back(std::make_unique<RandomDataProcessing1Source>(generator));
 }
 
-arm::Instruction megumin::RandomDataProcessingReg::random_instruction() {
-    int index = discrete(generator);
-    auto& dispatch = dispatches[index];
-    return dispatch->random_instruction();
+arm::Instruction megumin::RandomDataProcessingReg::random_instruction(const arm::Program& program, int index) {
+    int index2 = discrete(generator);
+    auto& dispatch = dispatches[index2];
+    return dispatch->random_instruction(program, index);
 }
 
-arm::Instruction megumin::RandomDataProcessing2Source::random_instruction() {
+arm::Instruction megumin::RandomDataProcessing2Source::random_instruction(const arm::Program& program, int index) {
     arm::bits inst{32, 0};
     inst.set_range(21, 29, 0b11010110);
 
@@ -48,7 +48,7 @@ arm::Instruction megumin::RandomDataProcessing2Source::random_instruction() {
     return arm::Instruction{inst};
 }
 
-arm::Instruction megumin::RandomDataProcessing1Source::random_instruction() {
+arm::Instruction megumin::RandomDataProcessing1Source::random_instruction(const arm::Program& program, int index) {
     arm::bits inst{32, 0};
     inst.set_range(21, 31, 0b1011010110);
     inst.set_range(16, 21, 0);

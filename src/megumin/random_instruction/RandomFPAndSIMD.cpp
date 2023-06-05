@@ -10,7 +10,7 @@
 using arm::bits;
 
 namespace megumin {
-    arm::Instruction RandomFPDataProcessing1::random_instruction() {
+    arm::Instruction RandomFPDataProcessing1::random_instruction(const arm::Program& program, int index) {
         bits instruction{32, 0};
 
         instruction.set_range(24, 32, 0b00011110);
@@ -33,7 +33,7 @@ namespace megumin {
 
 // fp 2-source
 namespace megumin {
-    arm::Instruction RandomFPDataProcessing2::random_instruction() {
+    arm::Instruction RandomFPDataProcessing2::random_instruction(const arm::Program& program, int index) {
         bits instruction{32, 0};
         
         instruction.set_range(24, 32, 0b00011110);
@@ -68,8 +68,8 @@ namespace megumin {
         dispatches.push_back(std::make_unique<RandomFPDataProcessing2>(generator));
     }
 
-    arm::Instruction RandomFPAndSIMD::random_instruction() {
-        int index = discrete(generator);
-        return dispatches[index]->random_instruction();
+    arm::Instruction RandomFPAndSIMD::random_instruction(const arm::Program& program, int index) {
+        int index2 = discrete(generator);
+        return dispatches[index2]->random_instruction(program, index);
     }
 }

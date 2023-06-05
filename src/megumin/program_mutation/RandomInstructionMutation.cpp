@@ -47,7 +47,7 @@ megumin::MutationResult megumin::RandomInstructionMutation::mutate(arm::Program 
 
     int random_index = uniform_int(generator) % (random_functions.size());
 
-    arm::Instruction instruction = random_functions[random_index]->random_instruction();
+    arm::Instruction instruction = random_functions[random_index]->random_instruction(program, index);
 
     MutationResult result;
     result.success = true;

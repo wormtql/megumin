@@ -6,13 +6,14 @@
 #define MEGUMIN_RANDOMINSTRUCTION_H
 
 #include <Instruction.h>
+#include "Program.h"
 
 namespace megumin {
     class RandomInstruction {
     public:
         virtual ~RandomInstruction() = default;
 
-        virtual arm::Instruction random_instruction() = 0;
+        virtual arm::Instruction random_instruction(const arm::Program& program, int index) = 0;
     };
 }
 

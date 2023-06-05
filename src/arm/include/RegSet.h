@@ -5,6 +5,8 @@
 #ifndef MEGUMIN_REGSET_H
 #define MEGUMIN_REGSET_H
 
+#include <random>
+#include <iostream>
 #include "RegBank.h"
 
 namespace arm {
@@ -17,17 +19,15 @@ namespace arm {
     public:
         RegSet() = default;
 
-        bool have_gp(int index);
-
-        bool have_fp(int index);
-
+        bool have_gp(int index) const;
+        bool have_fp(int index) const;
         void set_fp(int index, bool value);
-
         void set_gp(int index, bool value);
-
         void add_reg(const Reg& other);
 
         RegSet operator|(const Reg& other);
+
+        int random_gp(std::mt19937& generator) const;
     };
 
     enum class RegType {
@@ -48,5 +48,7 @@ namespace arm {
         static Reg gp(int index);
     };
 }
+
+std::ostream& operator<<(std::ostream& os, const arm::RegSet& reg_set);
 
 #endif //MEGUMIN_REGSET_H

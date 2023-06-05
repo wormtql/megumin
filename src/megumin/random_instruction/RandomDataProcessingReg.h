@@ -9,6 +9,7 @@
 #include <memory>
 #include <vector>
 #include "random_instruction/RandomInstruction.h"
+#include "Program.h"
 
 namespace megumin {
     class RandomDataProcessing2Source: public RandomInstruction {
@@ -18,7 +19,7 @@ namespace megumin {
     public:
         explicit RandomDataProcessing2Source(std::mt19937& generator): generator(generator) {}
 
-        arm::Instruction random_instruction() override;
+        arm::Instruction random_instruction(const arm::Program& program, int index) override;
     };
 
     class RandomDataProcessing1Source: public RandomInstruction {
@@ -28,7 +29,7 @@ namespace megumin {
     public:
         explicit RandomDataProcessing1Source(std::mt19937& generator): generator(generator) {}
 
-        arm::Instruction random_instruction() override;
+        arm::Instruction random_instruction(const arm::Program& program, int index) override;
     };
 
     class RandomDataProcessingReg: public RandomInstruction {
@@ -44,7 +45,7 @@ namespace megumin {
     public:
         RandomDataProcessingReg(std::mt19937& generator, Prob prob);
         explicit RandomDataProcessingReg(std::mt19937& generator): RandomDataProcessingReg(generator, {}) {}
-        arm::Instruction random_instruction() override;
+        arm::Instruction random_instruction(const arm::Program& program, int index) override;
     };
 }
 

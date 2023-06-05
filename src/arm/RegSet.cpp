@@ -3,13 +3,15 @@
 //
 
 #include "RegSet.h"
+#include "megumin_utils.h"
 
+// RegSet
 namespace arm {
-    bool RegSet::have_gp(int index) {
+    bool RegSet::have_gp(int index) const {
         return gp.is_set(index);
     }
 
-    bool RegSet::have_fp(int index) {
+    bool RegSet::have_fp(int index) const {
         return fp.is_set(index);
     }
 
@@ -38,6 +40,26 @@ namespace arm {
             fp.set_bit(other.index, true);
         }
     }
+
+    int RegSet::random_gp(std::mt19937& generator) const {
+        int arr[32];
+        int size = 0;
+        int temp = (int) gp.data0;
+
+        int it = 0;
+        while (temp > 0) {
+            if (temp % 2 == 1) {
+                arr[size++] = it;
+            }
+            it++;
+            temp >>= 1;
+        }
+        megumin::megumin_assert(size > 0, "gp reg set size is 0");
+
+        std::uniform_int_distribution<> uniform_int;
+        int index = uniform_int(generator) % size;
+        return arr[index];
+    }
 }
 
 namespace arm {
@@ -57,4 +79,21 @@ namespace arm {
     Reg Reg::fp(int index) {
         return Reg{RegType::FP, index};
     }
+}
+
+std::ostream& operator<<(std::ostream& os, const arm::RegSet& reg_set) {
+    os << "gp: ";
+    for (int i = 0; i < 32; i++) {
+        if (reg_set.have_gp(i)) {
+            os << i << ", ";
+        }
+    }
+    os << std::endl;
+    os << "fp: ";
+    for (int i = 0; i < 32; i++) {
+        if (reg_set.have_fp(i)) {
+            os << i << ", ";
+        }
+    }
+    return os;
 }

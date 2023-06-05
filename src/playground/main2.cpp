@@ -15,7 +15,6 @@
 #include <search/Search.h>
 #include <program_mutation/WeightedProgramMutation.h>
 #include <random_instruction/RandomDataProcessingImm.h>
-#include <random_instruction/RandomInstructionTop.h>
 #include <utils/utils.h>
 
 using namespace arm;
@@ -29,7 +28,7 @@ void f(const arm::Program& target, vector<MachineState> test_cases) {
     megumin::SimpleCost simple_cost{target, std::move(test_cases)};
 
 //    megumin::RandomDataProcessingImm random_data_processing_imm{generator};
-    megumin::RandomInstructionTop random_instruction{generator};
+//    megumin::RandomInstructionTop random_instruction{generator};
 //    megumin::MutateDataProcessingImmAddSub mutate_instruction{generator};
 //    megumin::SimpleInClassMutation mutate_instruction{generator};
 //    megumin::SimpleProgramMutation simple_program_mutation{generator, &random_instruction, &mutate_instruction};
@@ -43,6 +42,9 @@ void f(const arm::Program& target, vector<MachineState> test_cases) {
     for (int i = 0; i < target.get_size(); i++) {
         empty_program.add_instruction(Instruction::nop());
     }
+    RegSet entry_def_ins;
+    entry_def_ins.set_gp(1, true);
+    empty_program.set_entry_def_ins(entry_def_ins);
 
     state.current = empty_program;
     state.current_cost = simple_cost.cost(empty_program, std::numeric_limits<double>::max()).second;
@@ -86,7 +88,7 @@ int main() {
     Instruction instruction14{(void*)"\x41\x28\x63\x1e"};
 
      Program program;
-//    program.add_instruction(instruction);
+    program.add_instruction(instruction);
 //    program.add_instruction(instruction1);
 //    program.add_instruction(instruction2);
 //    program.add_instruction(instruction3);
@@ -95,7 +97,7 @@ int main() {
 //    program.add_instruction(instruction6);
 //    program.add_instruction(instruction7);
 //    program.add_instruction(instruction8);
-    program.add_instruction(instruction9);
+//    program.add_instruction(instruction9);
 //    program.add_instruction(instruction10);
 //    program.add_instruction(instruction11);
     // program.add_instruction(instruction12);

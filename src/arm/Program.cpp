@@ -32,7 +32,7 @@ namespace arm {
             instructions.push_back(Instruction::nop());
         }
         entry_def_ins = def_ins0;
-        calculate_def_ins();
+//        calculate_def_ins();
     }
 
     void Program::add_instruction(const Instruction &instruction) {
@@ -83,7 +83,11 @@ namespace arm {
         }
     }
 
-    const RegSet& Program::get_def_in(int index) {
+    const RegSet& Program::get_def_in(int index) const {
         return def_ins[index];
+    }
+
+    void Program::set_entry_def_ins(const RegSet& def_ins0) {
+        entry_def_ins = def_ins0;
     }
 }

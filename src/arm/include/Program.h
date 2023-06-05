@@ -31,12 +31,13 @@ namespace arm {
         void set_instruction(int index, const Instruction& instruction);
         void set_instruction_nop(int index);
         void swap_instructions(int i1, int i2);
+        void set_entry_def_ins(const RegSet& def_ins);
 
         [[nodiscard]] const Instruction& get_instruction_const(int index) const;
         void print() const;
 
         void calculate_def_ins();
-        const RegSet& get_def_in(int index);
+        [[nodiscard]] const RegSet& get_def_in(int index) const;
     };
 }
 

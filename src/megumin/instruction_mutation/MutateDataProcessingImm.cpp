@@ -3,12 +3,14 @@
 //
 
 #include <cstdlib>
+#include <iostream>
 
 #include <ArmUtils.h>
 #include <Bitvec.h>
 #include "MutateDataProcessingImm.h"
 
 using arm::bits;
+using namespace std;
 
 // mutate add/sub imm
 namespace megumin {
@@ -46,7 +48,11 @@ namespace megumin {
 
     arm::Instruction MutateDataProcessingImmAddSub::mutate_rn(const arm::Program& program, int index) {
         const arm::Instruction& instruction = program.get_instruction_const(index);
-        int reg = uniform_int(generator) % 32;
+
+        auto def_ins = program.get_def_in(index);
+        int reg = def_ins.random_gp(generator);
+
+//        int reg = uniform_int(generator) % 32;
         auto result = instruction;
         result.set_range(5, 10, reg);
         return result;
@@ -367,7 +373,12 @@ namespace megumin {
     arm::Instruction MutateDataProcessingBitfield::mutate_rn(const arm::Program& program, int index) {
         const arm::Instruction& instruction = program.get_instruction_const(index);
         auto result = instruction;
-        result.set_range(5, 10, uniform_int(generator) % (1 << 5));
+
+        auto def_ins = program.get_def_in(index);
+        int reg = def_ins.random_gp(generator);
+
+//        result.set_range(5, 10, uniform_int(generator) % (1 << 5));
+        result.set_range(5, 10, reg);
         return result;
     }
 

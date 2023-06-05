@@ -19,7 +19,7 @@ namespace megumin {
     public:
         explicit RandomFPDataProcessing1(std::mt19937& generator): generator(generator) {}
 
-        arm::Instruction random_instruction() override;
+        arm::Instruction random_instruction(const arm::Program& program, int index) override;
     };
 
     // random fp 2-source
@@ -31,7 +31,7 @@ namespace megumin {
     public:
         explicit RandomFPDataProcessing2(std::mt19937& generator): generator(generator) {}
 
-        arm::Instruction random_instruction() override;
+        arm::Instruction random_instruction(const arm::Program& program, int index) override;
     };
 
     // top
@@ -50,7 +50,7 @@ namespace megumin {
         RandomFPAndSIMD(std::mt19937& generator, Prob prob);
         explicit RandomFPAndSIMD(std::mt19937& generator): RandomFPAndSIMD(generator, {}) {}
 
-        arm::Instruction random_instruction() override;
+        arm::Instruction random_instruction(const arm::Program& program, int index) override;
     };
 }
 

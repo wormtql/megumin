@@ -10,13 +10,13 @@ using arm::bits;
 using namespace std;
 
 namespace megumin {
-    arm::Instruction RandomDataProcessingImm::random_instruction() {
+    arm::Instruction RandomDataProcessingImm::random_instruction(const arm::Program& program, int index) {
         int cat = cat_prob(generator);
         const auto& dispatch = dispatches[cat];
-        return dispatch->random_instruction();
+        return dispatch->random_instruction(program, index);
     }
 
-    arm::Instruction RandomDataProcessingImmLogical::random_instruction() {
+    arm::Instruction RandomDataProcessingImmLogical::random_instruction(const arm::Program& program, int index) {
         bits result{32, 0};
 
         result.set_range(23, 29, 0b100100);
@@ -55,7 +55,7 @@ namespace megumin {
         return arm::Instruction{result};
     }
 
-    arm::Instruction RandomMoveWideImm::random_instruction() {
+    arm::Instruction RandomMoveWideImm::random_instruction(const arm::Program& program, int index) {
         bits result{32, 0};
         result.set_range(23, 29, 0b100101);
         // sf
@@ -84,7 +84,7 @@ namespace megumin {
 
     RandomAddSubImm::RandomAddSubImm(std::mt19937 &generator): generator(generator), uniform_int_dist() {}
 
-    arm::Instruction RandomAddSubImm::random_instruction() {
+    arm::Instruction RandomAddSubImm::random_instruction(const arm::Program& program, int index) {
         int add_or_sub = uniform_int_dist(generator) % 2;
         bits instruction{32, 0};
 
@@ -109,7 +109,7 @@ namespace megumin {
         return arm::Instruction{instruction};
     }
 
-    arm::Instruction RandomBitfield::random_instruction() {
+    arm::Instruction RandomBitfield::random_instruction(const arm::Program& program, int index) {
         bits instruction{32, 0};
         instruction.set_range(23, 29, 0b100110);
 
@@ -127,14 +127,16 @@ namespace megumin {
         // imms
         instruction.set_range(10, 16, uniform_int(generator) % x);
         // rn
-        instruction.set_range(5, 10, uniform_int(generator) % (1 << 5));
+        auto def_ins = program.get_def_in(index);
+//        instruction.set_range(5, 10, uniform_int(generator) % (1 << 5));
+        instruction.set_range(5, 10, def_ins.random_gp(generator));
         // rd
         instruction.set_range(0, 5, uniform_int(generator) % (1 << 5));
 
         return arm::Instruction{instruction};
     }
 
-    arm::Instruction RandomExtract::random_instruction() {
+    arm::Instruction RandomExtract::random_instruction(const arm::Program& program, int index) {
         bits instruction{32, 0};
         instruction.set_range(23, 31, 0b00100111);
 
