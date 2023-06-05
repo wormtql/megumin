@@ -9,7 +9,7 @@
 
 namespace megumin {
     struct MutationResult {
-        bool success;
+        bool success = false;
 
         int mutation_index[2];
         arm::Instruction mutation_instructions[2];

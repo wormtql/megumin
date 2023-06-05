@@ -6,10 +6,10 @@
 #define MEGUMIN_MUTATEDATAPROCESSINGREG_H
 
 #include <random>
-#include "mutation/Mutation.h"
+#include "instruction_mutation/InstructionMutation.h"
 
 namespace megumin {
-    class MutateDataProcessingReg2Source: public Mutation {
+    class MutateDataProcessingReg2Source: public InstructionMutation {
     public:
         struct Prob {
             double w_opcode = 2.5;
@@ -35,7 +35,7 @@ namespace megumin {
 
     };
 
-    class MutateDataProcessingReg1Source: public Mutation {
+    class MutateDataProcessingReg1Source: public InstructionMutation {
     public:
         struct Prob {
             double w_sf = 1;

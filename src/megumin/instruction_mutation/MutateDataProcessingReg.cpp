@@ -118,11 +118,11 @@ namespace megumin {
     }
 
     arm::Instruction MutateDataProcessingReg1Source::mutate_rn(const arm::Instruction &instruction) {
-        return Mutation::mutate_rn(uniform_int(generator), instruction);
+        return InstructionMutation::mutate_rn(uniform_int(generator), instruction);
     }
 
     arm::Instruction MutateDataProcessingReg1Source::mutate_rd(const arm::Instruction &instruction) {
-        return Mutation::mutate_rd(uniform_int(generator), instruction);
+        return InstructionMutation::mutate_rd(uniform_int(generator), instruction);
     }
 
     arm::Instruction MutateDataProcessingReg1Source::mutate(const arm::Instruction &instruction) {

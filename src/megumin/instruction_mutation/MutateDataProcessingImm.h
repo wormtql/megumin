@@ -10,14 +10,14 @@
 #include <string>
 #include <vector>
 
-#include "Mutation.h"
+#include "InstructionMutation.h"
 #include <Instruction.h>
 
 using std::string;
 
 namespace megumin {
     // mutate add/sub imm
-    class MutateDataProcessingImmAddSub: public Mutation {
+    class MutateDataProcessingImmAddSub: public InstructionMutation {
     public:
         struct Prob {
             double w_s = 1.0;
@@ -31,7 +31,7 @@ namespace megumin {
     private:
         std::mt19937& generator;
         std::discrete_distribution<> dist;
-        std::vector<Mutation*> mutations;
+        std::vector<InstructionMutation*> mutations;
         std::uniform_int_distribution<> uniform_int;
 
         arm::Instruction mutate_s(const arm::Instruction& instruction);
@@ -49,7 +49,7 @@ namespace megumin {
     };
 
     // mutate logical imm
-    class MutateDataProcessingImmLogical: public Mutation {
+    class MutateDataProcessingImmLogical: public InstructionMutation {
     public:
         struct Prob {
             double w_opc = 1.0;
@@ -79,7 +79,7 @@ namespace megumin {
     };
 
     // mutate move wide imm
-    class MutateDataProcessingImmMoveWide: public Mutation {
+    class MutateDataProcessingImmMoveWide: public InstructionMutation {
     public:
         struct Prob {
             double w_sf = 1.0;
@@ -105,7 +105,7 @@ namespace megumin {
     };
 
     // mutate bitfield
-    class MutateDataProcessingBitfield: public Mutation {
+    class MutateDataProcessingBitfield: public InstructionMutation {
     public:
         struct Prob {
             double w_sf_and_n = 0.2;
@@ -134,7 +134,7 @@ namespace megumin {
     };
 
     // mutate extract
-    class MutateDataProcessingExtract: public Mutation {
+    class MutateDataProcessingExtract: public InstructionMutation {
     public:
         struct Prob {
             double w_sf = 1.0;

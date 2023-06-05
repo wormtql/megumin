@@ -13,6 +13,6 @@ target_sources(arm_asm
 target_include_directories(arm_asm
         PUBLIC
         include
-        dispatch)
+        visitor)
 target_link_libraries(arm_asm
         megumin_utils)
