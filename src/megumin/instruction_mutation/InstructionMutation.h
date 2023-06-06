@@ -27,46 +27,15 @@ namespace megumin {
             arm::Instruction operator()(const arm::Program& program, int index) const;
         };
 
-//        struct Dispatch {
-//            using Pointer = arm::Instruction(*)(const arm::Program&, int);
-//            union {
-//                LambdaMutateBit mutate_bit;
-//                LambdaMutateRange mutate_range;
-//                Pointer pointer;
-//            } items;
-//            int type;
-//            arm::Instruction operator()(const arm::Program& program, int index) const {
-//                if (type == 0) {
-//                    return items.mutate_bit(program, index);
-//                } else if (type == 1) {
-//                    return items.mutate_range(program, index);
-//                } else if (type == 2) {
-//                    return items.pointer(program, index);
-//                }
-//            }
-//
-//            Dispatch(const LambdaMutateBit& b) {
-//                items.mutate_bit = b;
-//                type = 0;
-//            }
-//
-//            Dispatch(const LambdaMutateRange& r) {
-//                items.mutate_range = r;
-//                type = 1;
-//            }
-//
-//            Dispatch(Pointer p) {
-//                items.pointer = p;
-//                type = 2;
-//            }
-//        };
-
         static std::uniform_int_distribution<> uniform_int;
         static std::mt19937 generator;
 
         static arm::Instruction mutate_rn(const arm::Program& program, int index);
         static arm::Instruction mutate_rd(const arm::Program& program, int index);
         static arm::Instruction mutate_rm(const arm::Program& program, int index);
+        static arm::Instruction mutate_rn_fp(const arm::Program& program, int index);
+        static arm::Instruction mutate_rm_fp(const arm::Program& program, int index);
+        static arm::Instruction mutate_rd_fp(const arm::Program& program, int index);
 
         static LambdaMutateBit make_mutate_bit(int mutate_index) {
             return LambdaMutateBit {
@@ -91,11 +60,9 @@ namespace megumin {
         }
     private:
         std::vector<std::function<arm::Instruction(const arm::Program&, int)>> mutation_functions;
-//        std::vector<Dispatch> mutation_functions;
     public:
         // func, weight
         using MutationFuncPair = std::pair<std::function<arm::Instruction(const arm::Program&, int)>, int>;
-//        using MutationFuncPair = std::pair<Dispatch, int>;
 
         InstructionMutation() = default;
         InstructionMutation(std::initializer_list<MutationFuncPair> func_pairs);

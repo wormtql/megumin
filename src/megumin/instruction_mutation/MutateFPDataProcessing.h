@@ -12,50 +12,35 @@ namespace megumin {
     class MutateFPDataProcessing1: public InstructionMutation {
     public:
         struct Prob {
-            double w_ptype = 1.0;
-            double w_opcode = 5.0;
-            double w_rn = 5.0;
-            double w_rd = 5.0;
+            int w_ptype = 1;
+            int w_opcode = 5;
+            int w_rn = 5;
+            int w_rd = 5;
         };
     private:
-        arm::Instruction mutate_ptype(const arm::Program& program, int index);
-        arm::Instruction mutate_opcode(const arm::Program& program, int index);
-        arm::Instruction mutate_rn(const arm::Program& program, int index);
-        arm::Instruction mutate_rd(const arm::Program& program, int index);
-
-        std::mt19937& generator;
-        std::uniform_int_distribution<> uniform_int;
-        std::discrete_distribution<> discrete;
+        static arm::Instruction mutate_ptype(const arm::Program& program, int index);
+        static arm::Instruction mutate_opcode(const arm::Program& program, int index);
     public:
-        MutateFPDataProcessing1(std::mt19937& generator, Prob prob);
-        explicit MutateFPDataProcessing1(std::mt19937& generator): MutateFPDataProcessing1(generator, {}) {}
-        arm::Instruction mutate(const arm::Program& program, int index) override;
+        explicit MutateFPDataProcessing1(Prob prob);
+        MutateFPDataProcessing1(): MutateFPDataProcessing1(Prob{}) {}
     };
 
 
     class MutateFPDataProcessing2: public InstructionMutation {
     public:
         struct Prob {
-            double w_ptype = 1.0;
-            double w_rm = 5.0;
-            double w_opcode = 4.0;
-            double w_rn = 5.0;
-            double w_rd = 5.0;
+            int w_ptype = 1;
+            int w_rm = 5;
+            int w_opcode = 4;
+            int w_rn = 5;
+            int w_rd = 5;
         };
     private:
-        arm::Instruction mutate_ptype(const arm::Program& program, int index);
-        arm::Instruction mutate_rm(const arm::Program& program, int index);
-        arm::Instruction mutate_opcode(const arm::Program& program, int index);
-        arm::Instruction mutate_rn(const arm::Program& program, int index);
-        arm::Instruction mutate_rd(const arm::Program& program, int index);
-
-        std::mt19937& generator;
-        std::uniform_int_distribution<> uniform_int;
-        std::discrete_distribution<> discrete;
+        static arm::Instruction mutate_ptype(const arm::Program& program, int index);
+        static arm::Instruction mutate_opcode(const arm::Program& program, int index);
     public:
-        MutateFPDataProcessing2(std::mt19937& generator, Prob prob);
-        explicit MutateFPDataProcessing2(std::mt19937& generator): MutateFPDataProcessing2(generator, {}) {}
-        arm::Instruction mutate(const arm::Program& program, int index) override;
+        explicit MutateFPDataProcessing2(Prob prob);
+        MutateFPDataProcessing2(): MutateFPDataProcessing2(Prob{}) {}
     };
 }
 

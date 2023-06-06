@@ -6,17 +6,7 @@
 #include "megumin_utils.h"
 
 namespace megumin {
-    SimpleInstructionMutation::SimpleInstructionMutation(std::mt19937& generator)
-        : mutate_dp_imm_add_sub(),
-          mutate_dp_imm_logical(),
-          mutate_dp_imm_move_wide(),
-          mutate_dp_imm_bitfield(),
-          mutate_dp_imm_extract(),
-          mutate_dp_reg_1source(),
-          mutate_dp_reg_2source(),
-          mutate_fp_simd_dp_2source(generator),
-          mutate_fp_simd_dp_1source(generator)
-    {}
+    SimpleInstructionMutation::SimpleInstructionMutation(std::mt19937& generator) {}
 
     void SimpleInstructionMutation::visit_nop(const arm::Instruction &instruction) {
         result = arm::Instruction::nop();
