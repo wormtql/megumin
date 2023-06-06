@@ -142,16 +142,15 @@ namespace megumin {
 
 // mutate bitfield
 namespace megumin {
-    MutateDataProcessingBitfield::MutateDataProcessingBitfield(std::mt19937 &generator, Prob prob)
-        : generator(generator),
-          discrete{{
-              prob.w_sf_and_n,
-              prob.w_opc,
-              prob.w_immr,
-              prob.w_imms,
-              prob.w_rn,
-              prob.w_rd,
-          }}
+    MutateDataProcessingBitfield::MutateDataProcessingBitfield(Prob prob)
+        : InstructionMutation({
+            {mutate_sf_and_n, prob.w_sf_and_n},
+            {mutate_opc, prob.w_opc},
+            {mutate_immr, prob.w_immr},
+            {mutate_imms, prob.w_imms},
+            {mutate_rn, prob.w_rn},
+            {mutate_rd, prob.w_rd},
+        })
     {}
 
     arm::Instruction MutateDataProcessingBitfield::mutate_sf_and_n(const arm::Program& program, int index) {
@@ -203,56 +202,18 @@ namespace megumin {
         result.set_range(10, 16, uniform_int(generator) % x);
         return result;
     }
-
-    arm::Instruction MutateDataProcessingBitfield::mutate_rn(const arm::Program& program, int index) {
-        const arm::Instruction& instruction = program.get_instruction_const(index);
-        auto result = instruction;
-
-        const auto& def_ins = program.get_def_in(index);
-        int reg = def_ins.random_gp(generator);
-
-        result.set_range(5, 10, reg);
-        return result;
-    }
-
-    arm::Instruction MutateDataProcessingBitfield::mutate_rd(const arm::Program& program, int index) {
-        const arm::Instruction& instruction = program.get_instruction_const(index);
-        auto result = instruction;
-        result.set_range(0, 5, uniform_int(generator) % (1 << 5));
-        return result;
-    }
-
-    arm::Instruction MutateDataProcessingBitfield::mutate(const arm::Program& program, int index) {
-        int index2 = discrete(generator);
-        switch (index2) {
-            case 0:
-                return mutate_sf_and_n(program, index);
-            case 1:
-                return mutate_opc(program, index);
-            case 2:
-                return mutate_immr(program, index);
-            case 3:
-                return mutate_imms(program, index);
-            case 4:
-                return mutate_rn(program, index);
-            case 5:
-                return mutate_rd(program, index);
-        }
-        assert(false);
-    }
 }
 
 // mutate extract
 namespace megumin {
-    MutateDataProcessingExtract::MutateDataProcessingExtract(std::mt19937 &generator, Prob prob)
-        : generator(generator),
-          discrete{{
-              prob.w_sf,
-              prob.w_rm,
-              prob.w_imms,
-              prob.w_rn,
-              prob.w_rd,
-          }}
+    MutateDataProcessingExtract::MutateDataProcessingExtract(Prob prob)
+        : InstructionMutation({
+            {mutate_sf, prob.w_sf},
+            {mutate_rm, prob.w_rm},
+            {mutate_imms, prob.w_imms},
+            {mutate_rn, prob.w_rn},
+            {mutate_rd, prob.w_rd}
+        })
     {}
 
     arm::Instruction MutateDataProcessingExtract::mutate_sf(const arm::Program& program, int index) {
@@ -271,13 +232,6 @@ namespace megumin {
         return result;
     }
 
-    arm::Instruction MutateDataProcessingExtract::mutate_rm(const arm::Program& program, int index) {
-        const arm::Instruction& instruction = program.get_instruction_const(index);
-        auto result = instruction;
-        result.set_range(16, 21, uniform_int(generator) % (1 << 5));
-        return result;
-    }
-
     arm::Instruction MutateDataProcessingExtract::mutate_imms(const arm::Program& program, int index) {
         const arm::Instruction& instruction = program.get_instruction_const(index);
         bool sf = instruction.is_set(31);
@@ -285,38 +239,5 @@ namespace megumin {
         auto result = instruction;
         result.set_range(10, 16, uniform_int(generator) % x);
         return result;
-    }
-
-    arm::Instruction MutateDataProcessingExtract::mutate_rn(const arm::Program& program, int index) {
-        const arm::Instruction& instruction = program.get_instruction_const(index);
-        auto result = instruction;
-
-        const auto& def_ins = program.get_def_in(index);
-        result.set_range(5, 10, def_ins.random_gp(generator));
-        return result;
-    }
-
-    arm::Instruction MutateDataProcessingExtract::mutate_rd(const arm::Program& program, int index) {
-        const arm::Instruction& instruction = program.get_instruction_const(index);
-        auto result = instruction;
-        result.set_range(0, 5, uniform_int(generator) % (1 << 5));
-        return result;
-    }
-
-    arm::Instruction MutateDataProcessingExtract::mutate(const arm::Program& program, int index) {
-        int index2 = discrete(generator);
-        switch (index2) {
-            case 0:
-                return mutate_sf(program, index);
-            case 1:
-                return mutate_rm(program, index);
-            case 2:
-                return mutate_imms(program, index);
-            case 3:
-                return mutate_rn(program, index);
-            case 4:
-                return mutate_rd(program, index);
-        }
-        assert(false);
     }
 }
