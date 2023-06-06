@@ -58,6 +58,7 @@ namespace megumin {
         static arm::Instruction mutate_sf(const arm::Program& program, int index);
     public:
         explicit MutateDataProcessingRegLogical(Prob prob);
+        explicit MutateDataProcessingRegLogical(): MutateDataProcessingRegLogical(Prob{}) {}
     };
 }
 

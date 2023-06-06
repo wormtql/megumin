@@ -25,6 +25,7 @@ namespace megumin {
 
         MutateDataProcessingReg2Source mutate_dp_reg_2source;
         MutateDataProcessingReg1Source mutate_dp_reg_1source;
+        MutateDataProcessingRegLogical mutate_dp_reg_logical_shifted_reg;
 
         MutateFPDataProcessing1 mutate_fp_simd_dp_1source;
         MutateFPDataProcessing2 mutate_fp_simd_dp_2source;
@@ -56,6 +57,8 @@ namespace megumin {
         void visit_fp_simd_dp_1source(const arm::Instruction &instruction) override;
 
         void visit_fp_simd_dp_2source(const arm::Instruction &instruction) override;
+
+        void visit_dp_reg_logical_shifted_reg(const arm::Instruction &instruction) override;
     };
 }
 

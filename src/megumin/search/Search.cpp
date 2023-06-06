@@ -52,6 +52,7 @@ namespace megumin {
                 state.current.print();
                 std::cout << "\n";
                 std::cout << new_cost << "\n\n";
+                std::flush(std::cout);
             }
 
             if (new_cost < state.current_correct_best_cost && is_correct) {

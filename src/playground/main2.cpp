@@ -23,7 +23,7 @@ using std::endl;
 using std::vector;
 
 void f(const arm::Program& target, vector<MachineState> test_cases) {
-    std::mt19937 generator{1000};
+    std::mt19937 generator{100};
 
     megumin::SimpleCost simple_cost{target, std::move(test_cases)};
 
@@ -95,6 +95,8 @@ int main() {
     Instruction instruction14{(void*)"\x41\x28\x63\x1e"};
     // lsl x14, x14, #1
     Instruction instruction15{(void*)"\xce\xf9\x7f\xd3"};
+    // and x1, x2, x10, lsl #2
+    Instruction instruction16{(void*)"\x41\x08\x0a\x8a"};
 
      Program program;
     program.add_instruction(instruction);
@@ -112,6 +114,7 @@ int main() {
 //     program.add_instruction(instruction13);
 //     program.add_instruction(instruction14);
 //     program.add_instruction(instruction15);
+//    program.add_instruction(instruction16);
 
 #ifdef USE_KEYSTONE
     // auto program = megumin::aarch64_asm("fmov d1, d2; fmov d3, d2");

@@ -80,7 +80,8 @@ arm::Instruction megumin::RandomDataProcessingRegLogical::random_instruction(con
     // N
     inst.set_bit(21, f() % 2);
     // rm
-    inst.set_range(16, 21, f() % (1 << 5));
+    const auto& def_ins = program.get_def_in(index);
+    inst.set_range(16, 21, def_ins.random_gp(generator));
     // imm6
     if (sf) {
         inst.set_range(10, 16, f() % (1 << 6));
@@ -88,7 +89,7 @@ arm::Instruction megumin::RandomDataProcessingRegLogical::random_instruction(con
         inst.set_range(10, 16, f() % (1 << 5));
     }
     // rn
-    inst.set_range(5, 10, f() % (1 << 5));
+    inst.set_range(5, 10, def_ins.random_gp(generator));
     // rd
     inst.set_range(0, 5, f() % (1 << 5));
 

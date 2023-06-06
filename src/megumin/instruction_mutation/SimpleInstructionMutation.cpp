@@ -44,6 +44,10 @@ namespace megumin {
         result = mutate_dp_reg_1source.mutate(*program, index);
     }
 
+    void SimpleInstructionMutation::visit_dp_reg_logical_shifted_reg(const arm::Instruction &instruction) {
+        result = mutate_dp_reg_logical_shifted_reg.mutate(*program, index);
+    }
+
     void SimpleInstructionMutation::visit_fp_simd_dp_1source(const arm::Instruction &instruction) {
         result = mutate_fp_simd_dp_1source.mutate(*program, index);
     }
