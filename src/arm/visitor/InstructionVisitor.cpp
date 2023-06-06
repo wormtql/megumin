@@ -44,6 +44,8 @@ namespace arm {
             visit_dp_reg_2source(instruction);
         } else if (op0 == 1 && op1 == 1 && op2 == 0b0110) {
             visit_dp_reg_1source(instruction);
+        } else if (op1 == 0 && op2[3] == 0) {
+            visit_dp_reg_logical_shifted_reg(instruction);
         }
         // todo
     }

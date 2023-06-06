@@ -44,6 +44,7 @@ void f(const arm::Program& target, vector<MachineState> test_cases) {
     }
     RegSet entry_def_ins;
     RegSet min_def_ins = target.get_minimum_def_ins();
+    min_def_ins.set_fp(1, true);
     cout << min_def_ins << endl;
 //    entry_def_ins.set_gp(1, true);
 //    entry_def_ins.set_fp(2, true);
@@ -68,7 +69,6 @@ int main() {
     Instruction instruction{(void*)"\x21\x28\x00\x91"};
     // add x1, x1, #100
     Instruction instruction1{(void*)"\x21\x90\x01\x91"};
-    Instruction instruction2{(void*)"\x21\x90\x01\x91"};
     // movk x1, #100
     Instruction instruction3{(void*)"\x81\x0c\x80\xf2"};
     // sbfm x1, x2, #10, #20
@@ -98,21 +98,20 @@ int main() {
 
      Program program;
     program.add_instruction(instruction);
-//    program.add_instruction(instruction1);
-//    program.add_instruction(instruction2);
+    program.add_instruction(instruction1);
 //    program.add_instruction(instruction3);
 //    program.add_instruction(instruction4);
 //    program.add_instruction(instruction5);
 //    program.add_instruction(instruction6);
-//    program.add_instruction(instruction7);
+    program.add_instruction(instruction7);
 //    program.add_instruction(instruction8);
 //    program.add_instruction(instruction9);
-//    program.add_instruction(instruction10);
-//    program.add_instruction(instruction11);
+    program.add_instruction(instruction10);
+    program.add_instruction(instruction11);
     // program.add_instruction(instruction12);
-     program.add_instruction(instruction13);
-     program.add_instruction(instruction14);
-     program.add_instruction(instruction15);
+//     program.add_instruction(instruction13);
+//     program.add_instruction(instruction14);
+//     program.add_instruction(instruction15);
 
 #ifdef USE_KEYSTONE
     // auto program = megumin::aarch64_asm("fmov d1, d2; fmov d3, d2");

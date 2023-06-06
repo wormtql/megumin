@@ -276,9 +276,12 @@ namespace megumin {
 
     arm::Instruction MutateDataProcessingImmMoveWide::mutate_imm16(const arm::Program& program, int index) {
         const arm::Instruction& instruction = program.get_instruction_const(index);
-        int imm16 = uniform_int(generator) % (1 << 16);
         auto result = instruction;
-        result.set_range(5, 21, imm16);
+//        int imm16 = uniform_int(generator) % (1 << 16);
+//        result.set_range(5, 21, imm16);
+        int index2 = uniform_int(generator) % 16;
+        result.inverse_bit(5 + index2);
+
         return result;
     }
 

@@ -72,6 +72,7 @@ namespace arm {
         // helper functions for instructions
         [[nodiscard]] bits get_rd() const { return get_range(0, 5); }
         [[nodiscard]] bits get_rn() const { return get_range(5, 10); }
+        [[nodiscard]] bits get_rm() const { return get_range(16, 21); }
         [[nodiscard]] bits get_imms() const { return get_range(10, 16); }
 
         void print_bin(std::ostream& os) const;

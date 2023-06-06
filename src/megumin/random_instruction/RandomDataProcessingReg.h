@@ -32,19 +32,13 @@ namespace megumin {
         arm::Instruction random_instruction(const arm::Program& program, int index) override;
     };
 
-    class RandomDataProcessingReg: public RandomInstruction {
-    public:
-        struct Prob {
-            double w_2_source = 1.0;
-            double w_1_source = 1.0;
-        };
+    class RandomDataProcessingRegLogical: public RandomInstruction {
     private:
-        std::discrete_distribution<> discrete;
+        std::uniform_int_distribution<> uniform_int;
         std::mt19937& generator;
-        std::vector<std::unique_ptr<RandomInstruction>> dispatches;
     public:
-        RandomDataProcessingReg(std::mt19937& generator, Prob prob);
-        explicit RandomDataProcessingReg(std::mt19937& generator): RandomDataProcessingReg(generator, {}) {}
+        explicit RandomDataProcessingRegLogical(std::mt19937& generator): generator(generator) {}
+
         arm::Instruction random_instruction(const arm::Program& program, int index) override;
     };
 }

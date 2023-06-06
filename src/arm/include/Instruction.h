@@ -45,6 +45,7 @@ namespace arm {
         static Instruction nop() { return Instruction{bits{32, 0}}; }
         [[nodiscard]] InstructionType get_type() const;
         [[nodiscard]] const arm::bits& get_bits() const { return instruction; }
+        [[nodiscard]] arm::bits& get_bits_mut() { return instruction; }
 
         void set_bit(int index, bool value);
         void set_range(int low, int high, int64_t value);
@@ -56,6 +57,7 @@ namespace arm {
         [[nodiscard]] bits get_range(int low, int high) const { return instruction.get_range(low, high); }
         [[nodiscard]] bits get_rn() const { return instruction.get_rn(); }
         [[nodiscard]] bits get_rd() const { return instruction.get_rd(); }
+        [[nodiscard]] bits get_rm() const { return instruction.get_rm(); }
 
         [[nodiscard]] std::optional<Reg> get_def_register() const;
         [[nodiscard]] int get_read_registers(Reg result[3]) const;

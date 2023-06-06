@@ -59,6 +59,28 @@ namespace megumin {
 
         arm::Instruction mutate(const arm::Program& program, int index) override;
     };
+
+    class MutateDataProcessingRegLogical: public InstructionMutation {
+    public:
+        struct Prob {
+            double w_sf = 0.1;
+            double w_opc = 1;
+            double w_shift = 1;
+            double w_N = 1;
+            double w_rm = 5;
+            double w_imm6 = 1;
+            double w_rn = 5;
+            double w_rd = 5;
+        };
+    private:
+        arm::Instruction mutate_opc(const arm::Program& program, int index);
+        arm::Instruction mutate_shift(const arm::Program& program, int index);
+        arm::Instruction mutate_N(const arm::Program& program, int index);
+        arm::Instruction mutate_imm6(const arm::Program& program, int index);
+
+        std::mt19937& generator;
+        std::uniform_int_distribution<> uniform_int;
+    };
 }
 
 

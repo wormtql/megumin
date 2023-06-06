@@ -13,6 +13,8 @@ namespace arm {
     class InstructionPrinter: public InstructionVisitor {
     private:
         std::ostream& os;
+
+        void print_shift_type(int shift_type);
     public:
         explicit InstructionPrinter(std::ostream& os);
 
@@ -33,6 +35,8 @@ namespace arm {
         void visit_dp_reg_2source(const Instruction &instruction) override;
 
         void visit_dp_reg_1source(const Instruction &instruction) override;
+
+        void visit_dp_reg_logical_shifted_reg(const Instruction &instruction) override;
 
         void visit_fp_simd_dp_1source(const Instruction &instruction) override;
 

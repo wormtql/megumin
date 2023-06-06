@@ -564,4 +564,49 @@ namespace arm {
             // fmin
         }
     }
+
+    void InstructionExecution::visit_dp_reg_logical_shifted_reg(const Instruction &instruction) {
+        bool sf = instruction.is_set(31);
+        bits opc = instruction.get_range(29, 31);
+        bits shift = instruction.get_range(22, 24);
+        bool N = instruction.is_set(21);
+        bits rm = instruction.get_rm();
+        bits imm6 = instruction.get_range(10, 16);
+        bits rn = instruction.get_rn();
+        bits rd = instruction.get_rd();
+
+        int datasize = sf ? 64 : 32;
+        int d = rd.as_i32();
+        int n = rn.as_i32();
+        int m = rm.as_i32();
+
+        megumin::megumin_assert(!(!sf && imm6[5] == 1));
+        int shift_amount = imm6.as_i32();
+
+        bits operand1 = state.gp.get(datasize, n);
+        bits operand2 = ArmUtils::shift_reg(state.gp.get(datasize, m), shift.as_i32(), shift_amount);
+        if (N) {
+            operand2 = ~operand2;
+        }
+
+        if (opc == 0b00) {
+            // and bic
+            bits result = operand1 & operand2;
+            state.gp.set(datasize, d, result);
+        } else if (opc == 0b01) {
+            // orr orn
+            bits result = operand1 | operand2;
+            state.gp.set(datasize, d, result);
+        } else if (opc == 0b10) {
+            // eor eon
+            bits result = operand1 ^ operand2;
+            state.gp.set(datasize, d, result);
+        } else if (opc == 0b11) {
+            // ands bics
+            bits result = operand1 & operand2;
+            bits nzcv = bits::from_bools({result.is_set(datasize - 1), result == 0, 0, 0});
+            state.gp.set(datasize, d, result);
+            state.p_state.set_nzcv(nzcv);
+        }
+    }
 }

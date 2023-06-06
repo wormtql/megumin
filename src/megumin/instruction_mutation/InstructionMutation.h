@@ -6,15 +6,23 @@
 #define MEGUMIN_INSTRUCTIONMUTATION_H
 
 #include <random>
+#include <vector>
+#include <functional>
 #include <Instruction.h>
 #include <Program.h>
 
 namespace megumin {
     class InstructionMutation {
+    private:
+        std::vector<std::function<arm::Instruction(const arm::Program&, int)>> mutation_functions;
     protected:
 //        static std::uniform_int_distribution<> dist;
+        static std::uniform_int_distribution<> uniform_int;
+
         static arm::Instruction mutate_rn(int value, const arm::Instruction& instruction);
         static arm::Instruction mutate_rd(int value, const arm::Instruction& instruction);
+        static arm::Instruction mutate_sf(int value, const arm::Instruction& instruction);
+        static arm::Instruction mutate_rm(const arm::Instruction& instruction, std::mt19937& generator);
     public:
         InstructionMutation() = default;
         virtual ~InstructionMutation() = default;

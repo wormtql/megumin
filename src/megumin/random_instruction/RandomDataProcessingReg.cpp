@@ -76,3 +76,42 @@ arm::Instruction megumin::RandomDataProcessing1Source::random_instruction(const 
 
     return arm::Instruction{inst};
 }
+
+arm::Instruction megumin::RandomDataProcessingRegLogical::random_instruction(const arm::Program &program, int index) {
+    arm::bits inst{32, 0};
+    inst.set_range(24, 29, 0b01010);
+
+    auto f = [&] () { return uniform_int(generator); };
+
+    bool sf = false;
+#ifdef MEGUMIN_INST_64_ONLY
+    sf = true;
+    inst.set_bit(31, true); // always generate 64-bit instructions
+#endif
+
+#ifndef MEGUMIN_INST_64_ONLY
+    // sf
+    sf = uniform_int(generator) % 2;
+    inst.set_bit(31, sf);
+#endif
+    // opc
+    inst.set_range(29, 31, uniform_int(generator) % 4);
+    // shift
+    inst.set_range(22, 24, f() % 4);
+    // N
+    inst.set_bit(21, f() % 2);
+    // rm
+    inst.set_range(16, 21, f() % (1 << 5));
+    // imm6
+    if (sf) {
+        inst.set_range(10, 16, f() % (1 << 6));
+    } else {
+        inst.set_range(10, 16, f() % (1 << 5));
+    }
+    // rn
+    inst.set_range(5, 10, f() % (1 << 5));
+    // rd
+    inst.set_range(0, 5, f() % (1 << 5));
+
+    return arm::Instruction{inst};
+}

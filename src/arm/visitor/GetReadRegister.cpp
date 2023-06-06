@@ -74,3 +74,8 @@ void arm::GetReadRegister::visit_fp_simd_dp_2source(const arm::Instruction &inst
     add_rn_fp(instruction);
     add_rm_fp(instruction);
 }
+
+void arm::GetReadRegister::visit_dp_reg_logical_shifted_reg(const arm::Instruction &instruction) {
+    add_rn(instruction);
+    add_rm(instruction);
+}

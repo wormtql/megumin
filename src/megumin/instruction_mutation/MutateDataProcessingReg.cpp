@@ -165,3 +165,24 @@ namespace megumin {
           }}
     {}
 }
+
+// mutate logical shifted reg
+namespace megumin {
+    arm::Instruction MutateDataProcessingRegLogical::mutate_opc(const arm::Program& program, int index) {
+        auto result = program.get_instruction_const(index);
+        result.set_range(29, 31, uniform_int(generator) % (1 << 2));
+        return result;
+    }
+
+    arm::Instruction MutateDataProcessingRegLogical::mutate_shift(const arm::Program &program, int index) {
+        auto result = program.get_instruction_const(index);
+        result.set_range(22, 24, uniform_int(generator) % (1 << 2));
+        return result;
+    }
+
+    arm::Instruction MutateDataProcessingRegLogical::mutate_N(const arm::Program &program, int index) {
+        auto result = program.get_instruction_const(index);
+        result.inverse_bit(21);
+        return result;
+    }
+}

@@ -11,6 +11,18 @@ namespace arm {
         :os(os)
     {}
 
+    void InstructionPrinter::print_shift_type(int shift_type) {
+        if (shift_type == 0) {
+            os << "lsl";
+        } else if (shift_type == 1) {
+            os << "lsr";
+        } else if (shift_type == 2) {
+            os << "asr";
+        } else if (shift_type == 3) {
+            os << "ror";
+        }
+    }
+
     void InstructionPrinter::visit_nop(const Instruction &instruction) {
         os << "nop";
     }
@@ -303,5 +315,36 @@ namespace arm {
         os << reg << rd.as_u32() << ", ";
         os << reg << rn.as_u32() << ", ";
         os << reg << rm.as_u32();
+    }
+
+    void InstructionPrinter::visit_dp_reg_logical_shifted_reg(const Instruction &instruction) {
+        bool sf = instruction.is_set(31);
+        bits opc = instruction.get_range(29, 31);
+        bits shift = instruction.get_range(22, 24);
+        bool N = instruction.is_set(21);
+        bits rm = instruction.get_rm();
+        bits imm6 = instruction.get_range(10, 16);
+        bits rn = instruction.get_rn();
+        bits rd = instruction.get_rd();
+
+        if (opc == 0b00) {
+            os << (N ? "bic" : "and");
+        } else if (opc == 0b01) {
+            os << (N ? "orn" : "orr");
+        } else if (opc == 0b10) {
+            os << (N ? "eon" : "eor");
+        } else if (opc == 0b11) {
+            os << (N ? "bics" : "ands");
+        }
+        os << " ";
+        auto reg = sf ? "x" : "w";
+        os << reg << rd.as_i32() << ", ";
+        os << reg << rn.as_i32() << ", ";
+        os << reg << rm.as_i32();
+        if (imm6 != 0) {
+            os << ", ";
+            print_shift_type(shift.as_i32());
+            os << " #" << imm6.as_u32();
+        }
     }
 }
