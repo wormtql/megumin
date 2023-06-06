@@ -2,11 +2,14 @@
 // Created by 58413 on 2023/4/22.
 //
 
+#include <functional>
+
 #include <Bitvec.h>
 #include "MutateDataProcessingReg.h"
 #include "megumin_utils.h"
 
 using arm::bits;
+using namespace std::placeholders;
 
 // mutate 2-source
 namespace megumin {
@@ -23,65 +26,14 @@ namespace megumin {
         return result;
     }
 
-    arm::Instruction MutateDataProcessingReg2Source::mutate_sf(const arm::Program& program, int index) {
-        const arm::Instruction& instruction = program.get_instruction_const(index);
-        bool sf = instruction.is_set(31);
-        auto result = instruction;
-        result.set_bit(31, !sf);
-        return result;
-    }
-
-    arm::Instruction MutateDataProcessingReg2Source::mutate_rm(const arm::Program& program, int index) {
-        const arm::Instruction& instruction = program.get_instruction_const(index);
-        auto result = instruction;
-
-        const auto& def_ins = program.get_def_in(index);
-        result.set_range(16, 21, def_ins.random_gp(generator));
-        return result;
-    }
-
-    arm::Instruction MutateDataProcessingReg2Source::mutate_rn(const arm::Program& program, int index) {
-        const arm::Instruction& instruction = program.get_instruction_const(index);
-        auto result = instruction;
-
-        const auto& def_ins = program.get_def_in(index);
-        result.set_range(5, 10, def_ins.random_gp(generator));
-        return result;
-    }
-
-    arm::Instruction MutateDataProcessingReg2Source::mutate_rd(const arm::Program& program, int index) {
-        const arm::Instruction& instruction = program.get_instruction_const(index);
-        auto result = instruction;
-        result.set_range(0, 5, uniform_int(generator) % (1 << 5));
-        return result;
-    }
-
-    arm::Instruction MutateDataProcessingReg2Source::mutate(const arm::Program& program, int index) {
-        int index2 = discrete(generator);
-        switch (index2) {
-            case 0:
-                return mutate_opcode(program, index);
-            case 1:
-                return mutate_sf(program, index);
-            case 2:
-                return mutate_rm(program, index);
-            case 3:
-                return mutate_rn(program, index);
-            case 4:
-                return mutate_rd(program, index);
-        }
-        megumin_assert(false);
-    }
-
-    MutateDataProcessingReg2Source::MutateDataProcessingReg2Source(std::mt19937 &generator, Prob prob)
-        : generator(generator),
-          discrete{{
-              prob.w_opcode,
-              prob.w_sf,
-              prob.w_rm,
-              prob.w_rn,
-              prob.w_rd
-          }}
+    MutateDataProcessingReg2Source::MutateDataProcessingReg2Source(Prob prob)
+        : InstructionMutation({
+            {mutate_opcode, prob.w_opcode},
+            {make_mutate_bit(31), prob.w_sf},
+            {mutate_rm, prob.w_rm},
+            {mutate_rn, prob.w_rn},
+            {mutate_rd, prob.w_rd},
+        })
     {}
 }
 
@@ -128,61 +80,47 @@ namespace megumin {
         return result;
     }
 
-    arm::Instruction MutateDataProcessingReg1Source::mutate_rn(const arm::Program& program, int index) {
-        const arm::Instruction& instruction = program.get_instruction_const(index);
-
-        const auto& def_ins = program.get_def_in(index);
-        return InstructionMutation::mutate_rn(def_ins.random_gp(generator), instruction);
-    }
-
-    arm::Instruction MutateDataProcessingReg1Source::mutate_rd(const arm::Program& program, int index) {
-        const arm::Instruction& instruction = program.get_instruction_const(index);
-        return InstructionMutation::mutate_rd(uniform_int(generator), instruction);
-    }
-
-    arm::Instruction MutateDataProcessingReg1Source::mutate(const arm::Program& program, int index) {
-        int index2 = discrete(generator);
-        switch (index2) {
-            case 0:
-                return mutate_sf(program, index);
-            case 1:
-                return mutate_opcode(program, index);
-            case 2:
-                return mutate_rn(program, index);
-            case 3:
-                return mutate_rd(program, index);
-        }
-        megumin_assert(false);
-    }
-
-    MutateDataProcessingReg1Source::MutateDataProcessingReg1Source(std::mt19937 &generator, Prob prob)
-        : generator(generator),
-          discrete{{
-              prob.w_sf,
-              prob.w_opcode,
-              prob.w_rn,
-              prob.w_rd
-          }}
+    MutateDataProcessingReg1Source::MutateDataProcessingReg1Source(Prob prob)
+        : InstructionMutation({
+            {mutate_sf, prob.w_sf},
+            {mutate_opcode, prob.w_opcode},
+            {mutate_rn, prob.w_rn},
+            {mutate_rd, prob.w_rd}
+        })
     {}
 }
 
 // mutate logical shifted reg
 namespace megumin {
-    arm::Instruction MutateDataProcessingRegLogical::mutate_opc(const arm::Program& program, int index) {
+    MutateDataProcessingRegLogical::MutateDataProcessingRegLogical(Prob p)
+        : InstructionMutation({
+            {mutate_sf, p.w_sf},
+            {make_mutate_range(29, 31), p.w_opc},
+            {make_mutate_range(22, 24), p.w_shift},
+            {make_mutate_bit(21), p.w_N},
+            {mutate_rm, p.w_rm},
+            {mutate_imm6, p.w_imm6},
+            {mutate_rn, p.w_rn},
+            {mutate_rd, p.w_rd},
+        })
+    {}
+
+    arm::Instruction MutateDataProcessingRegLogical::mutate_imm6(const arm::Program &program, int index) {
         auto result = program.get_instruction_const(index);
-        result.set_range(29, 31, uniform_int(generator) % (1 << 2));
+        if (result.is_set(31)) {
+            result.set_range(10, 16, uniform_int(generator) % (1 << 6));
+        } else {
+            result.set_range(10, 16, uniform_int(generator) % (1 << 5));
+        }
         return result;
     }
 
-    arm::Instruction MutateDataProcessingRegLogical::mutate_shift(const arm::Program &program, int index) {
+    arm::Instruction MutateDataProcessingRegLogical::mutate_sf(const arm::Program &program, int index) {
         auto result = program.get_instruction_const(index);
-        result.set_range(22, 24, uniform_int(generator) % (1 << 2));
-        return result;
-    }
-
-    arm::Instruction MutateDataProcessingRegLogical::mutate_N(const arm::Program &program, int index) {
-        auto result = program.get_instruction_const(index);
-        result.inverse_bit(21);
+        if (result.is_set(15)) {
+            return result;
+        }
+        result.inverse_bit(31);
         return result;
     }
 }

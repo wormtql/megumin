@@ -103,11 +103,11 @@ int main() {
 //    program.add_instruction(instruction4);
 //    program.add_instruction(instruction5);
 //    program.add_instruction(instruction6);
-    program.add_instruction(instruction7);
+//    program.add_instruction(instruction7);
 //    program.add_instruction(instruction8);
 //    program.add_instruction(instruction9);
-    program.add_instruction(instruction10);
-    program.add_instruction(instruction11);
+//    program.add_instruction(instruction10);
+//    program.add_instruction(instruction11);
     // program.add_instruction(instruction12);
 //     program.add_instruction(instruction13);
 //     program.add_instruction(instruction14);

@@ -13,73 +13,51 @@ namespace megumin {
     class MutateDataProcessingReg2Source: public InstructionMutation {
     public:
         struct Prob {
-            double w_opcode = 2.5;
-            double w_sf = 1;
-            double w_rm = 5;
-            double w_rn = 5;
-            double w_rd = 5;
+            int w_opcode = 3;
+            int w_sf = 1;
+            int w_rm = 5;
+            int w_rn = 5;
+            int w_rd = 5;
         };
     private:
-        arm::Instruction mutate_opcode(const arm::Program& program, int index);
-        arm::Instruction mutate_sf(const arm::Program& program, int index);
-        arm::Instruction mutate_rm(const arm::Program& program, int index);
-        arm::Instruction mutate_rn(const arm::Program& program, int index);
-        arm::Instruction mutate_rd(const arm::Program& program, int index);
-
-        std::mt19937& generator;
-        std::uniform_int_distribution<> uniform_int;
-        std::discrete_distribution<> discrete;
+        static arm::Instruction mutate_opcode(const arm::Program& program, int index);
     public:
-        MutateDataProcessingReg2Source(std::mt19937& generator, Prob prob);
-        explicit MutateDataProcessingReg2Source(std::mt19937& generator): MutateDataProcessingReg2Source(generator, {}) {}
-        arm::Instruction mutate(const arm::Program& program, int index) override;
-
+        explicit MutateDataProcessingReg2Source(Prob prob);
+        MutateDataProcessingReg2Source(): MutateDataProcessingReg2Source(Prob{}) {}
     };
 
     class MutateDataProcessingReg1Source: public InstructionMutation {
     public:
         struct Prob {
-            double w_sf = 1;
-            double w_opcode = 2;
-            double w_rn = 5;
-            double w_rd = 5;
+            int w_sf = 1;
+            int w_opcode = 2;
+            int w_rn = 5;
+            int w_rd = 5;
         };
     private:
-        arm::Instruction mutate_sf(const arm::Program& program, int index);
-        arm::Instruction mutate_opcode(const arm::Program& program, int index);
-        arm::Instruction mutate_rn(const arm::Program& program, int index);
-        arm::Instruction mutate_rd(const arm::Program& program, int index);
-
-        std::mt19937& generator;
-        std::uniform_int_distribution<> uniform_int;
-        std::discrete_distribution<> discrete;
+        static arm::Instruction mutate_sf(const arm::Program& program, int index);
+        static arm::Instruction mutate_opcode(const arm::Program& program, int index);
     public:
-        MutateDataProcessingReg1Source(std::mt19937& generator, Prob prob);
-        explicit MutateDataProcessingReg1Source(std::mt19937& generator): MutateDataProcessingReg1Source(generator, {}) {}
-
-        arm::Instruction mutate(const arm::Program& program, int index) override;
+        explicit MutateDataProcessingReg1Source(Prob prob = Prob{.w_sf=1, .w_opcode=2, .w_rn=5, .w_rd=5});
     };
 
     class MutateDataProcessingRegLogical: public InstructionMutation {
     public:
         struct Prob {
-            double w_sf = 0.1;
-            double w_opc = 1;
-            double w_shift = 1;
-            double w_N = 1;
-            double w_rm = 5;
-            double w_imm6 = 1;
-            double w_rn = 5;
-            double w_rd = 5;
+            int w_sf = 0;
+            int w_opc = 1;
+            int w_shift = 1;
+            int w_N = 1;
+            int w_rm = 5;
+            int w_imm6 = 1;
+            int w_rn = 5;
+            int w_rd = 5;
         };
     private:
-        arm::Instruction mutate_opc(const arm::Program& program, int index);
-        arm::Instruction mutate_shift(const arm::Program& program, int index);
-        arm::Instruction mutate_N(const arm::Program& program, int index);
-        arm::Instruction mutate_imm6(const arm::Program& program, int index);
-
-        std::mt19937& generator;
-        std::uniform_int_distribution<> uniform_int;
+        static arm::Instruction mutate_imm6(const arm::Program& program, int index);
+        static arm::Instruction mutate_sf(const arm::Program& program, int index);
+    public:
+        explicit MutateDataProcessingRegLogical(Prob prob);
     };
 }
 

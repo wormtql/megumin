@@ -12,8 +12,8 @@ namespace megumin {
           mutate_dp_imm_move_wide(generator),
           mutate_dp_imm_bitfield(generator),
           mutate_dp_imm_extract(generator),
-          mutate_dp_reg_1source(generator),
-          mutate_dp_reg_2source(generator),
+          mutate_dp_reg_1source(),
+          mutate_dp_reg_2source(),
           mutate_fp_simd_dp_2source(generator),
           mutate_fp_simd_dp_1source(generator)
     {}

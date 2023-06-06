@@ -4,27 +4,6 @@
 
 #include "RandomDataProcessingReg.h"
 
-namespace megumin {
-
-}
-
-megumin::RandomDataProcessingReg::RandomDataProcessingReg(std::mt19937 &generator, Prob prob)
-    : generator(generator),
-      discrete{{
-          prob.w_2_source,
-          prob.w_1_source,
-      }}
-{
-    dispatches.push_back(std::make_unique<RandomDataProcessing2Source>(generator));
-    dispatches.push_back(std::make_unique<RandomDataProcessing1Source>(generator));
-}
-
-arm::Instruction megumin::RandomDataProcessingReg::random_instruction(const arm::Program& program, int index) {
-    int index2 = discrete(generator);
-    auto& dispatch = dispatches[index2];
-    return dispatch->random_instruction(program, index);
-}
-
 arm::Instruction megumin::RandomDataProcessing2Source::random_instruction(const arm::Program& program, int index) {
     arm::bits inst{32, 0};
     inst.set_range(21, 29, 0b11010110);
