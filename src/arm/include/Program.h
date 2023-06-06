@@ -38,6 +38,8 @@ namespace arm {
 
         void calculate_def_ins();
         [[nodiscard]] const RegSet& get_def_in(int index) const;
+
+        [[nodiscard]] RegSet get_minimum_def_ins() const;
     };
 }
 

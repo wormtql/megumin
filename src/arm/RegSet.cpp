@@ -15,6 +15,15 @@ namespace arm {
         return fp.is_set(index);
     }
 
+    bool RegSet::have_reg(const Reg &reg) const {
+        if (reg.reg_type == RegType::FP) {
+            return have_fp(reg.index);
+        } else if (reg.reg_type == RegType::GP) {
+            return have_gp(reg.index);
+        }
+        return false;
+    }
+
     void RegSet::set_fp(int index, bool value) {
         fp.set_bit(index, value);
     }

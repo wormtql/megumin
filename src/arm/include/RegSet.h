@@ -23,6 +23,7 @@ namespace arm {
         bool have_fp(int index) const;
         void set_fp(int index, bool value);
         void set_gp(int index, bool value);
+        bool have_reg(const Reg& reg) const;
         void add_reg(const Reg& other);
 
         RegSet operator|(const Reg& other);

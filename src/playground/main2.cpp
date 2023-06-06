@@ -43,10 +43,14 @@ void f(const arm::Program& target, vector<MachineState> test_cases) {
         empty_program.add_instruction(Instruction::nop());
     }
     RegSet entry_def_ins;
-    entry_def_ins.set_gp(1, true);
-    entry_def_ins.set_fp(2, true);
-    entry_def_ins.set_fp(3, true);
-    empty_program.set_entry_def_ins(entry_def_ins);
+    RegSet min_def_ins = target.get_minimum_def_ins();
+    cout << min_def_ins << endl;
+//    entry_def_ins.set_gp(1, true);
+//    entry_def_ins.set_fp(2, true);
+//    entry_def_ins.set_fp(3, true);
+//    empty_program.set_entry_def_ins(entry_def_ins);
+
+    empty_program.set_entry_def_ins(min_def_ins);
     empty_program.calculate_def_ins();
 
     state.current = empty_program;
@@ -89,6 +93,8 @@ int main() {
     Instruction instruction13{(void*)"\x62\xc0\x60\x1e"};
     // fadd d1, d2, d3
     Instruction instruction14{(void*)"\x41\x28\x63\x1e"};
+    // lsl x14, x14, #1
+    Instruction instruction15{(void*)"\xce\xf9\x7f\xd3"};
 
      Program program;
     program.add_instruction(instruction);
@@ -106,6 +112,7 @@ int main() {
     // program.add_instruction(instruction12);
      program.add_instruction(instruction13);
      program.add_instruction(instruction14);
+     program.add_instruction(instruction15);
 
 #ifdef USE_KEYSTONE
     // auto program = megumin::aarch64_asm("fmov d1, d2; fmov d3, d2");

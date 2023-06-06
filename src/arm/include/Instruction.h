@@ -58,6 +58,7 @@ namespace arm {
         [[nodiscard]] bits get_rd() const { return instruction.get_rd(); }
 
         [[nodiscard]] std::optional<Reg> get_def_register() const;
+        [[nodiscard]] int get_read_registers(Reg result[3]) const;
     };
 }
 

@@ -10,6 +10,7 @@
 #include "MyFloat.h"
 #include "visitor/GetDefRegister.h"
 #include "visitor/InstructionExecution.h"
+#include "visitor/GetReadRegister.h"
 
 namespace arm {
     uint64_t Instruction::ID = 0;
@@ -85,5 +86,15 @@ namespace arm {
         } else {
             return get_def_register.result;
         }
+    }
+
+    int Instruction::get_read_registers(Reg *result) const {
+        GetReadRegister get_read_register;
+        get_read_register.results;
+        get_read_register.visit_instruction(*this);
+        for (int i = 0; i < get_read_register.size; i++) {
+            result[i] = get_read_register.results[i];
+        }
+        return get_read_register.size;
     }
 }

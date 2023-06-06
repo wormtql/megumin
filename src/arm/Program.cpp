@@ -90,4 +90,26 @@ namespace arm {
     void Program::set_entry_def_ins(const RegSet& def_ins0) {
         entry_def_ins = def_ins0;
     }
+
+    RegSet Program::get_minimum_def_ins() const {
+        RegSet gen;
+        RegSet result;
+        for (int i = 0; i < instructions.size(); i++) {
+            const Instruction& instruction = instructions[i];
+
+            Reg read_regs[3];
+            int read_reg_size = instruction.get_read_registers(read_regs);
+            for (int j = 0; j < read_reg_size; j++) {
+                if (!gen.have_reg(read_regs[j])) {
+                    result.add_reg(read_regs[j]);
+                }
+            }
+
+            auto def_reg = instruction.get_def_register();
+            if (def_reg.has_value()) {
+                gen.add_reg(def_reg.value());
+            }
+        }
+        return result;
+    }
 }
