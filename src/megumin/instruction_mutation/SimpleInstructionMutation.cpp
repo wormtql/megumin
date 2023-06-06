@@ -7,9 +7,9 @@
 
 namespace megumin {
     SimpleInstructionMutation::SimpleInstructionMutation(std::mt19937& generator)
-        : mutate_dp_imm_add_sub(generator),
-          mutate_dp_imm_logical(generator),
-          mutate_dp_imm_move_wide(generator),
+        : mutate_dp_imm_add_sub(),
+          mutate_dp_imm_logical(),
+          mutate_dp_imm_move_wide(),
           mutate_dp_imm_bitfield(generator),
           mutate_dp_imm_extract(generator),
           mutate_dp_reg_1source(),

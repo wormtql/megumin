@@ -8,17 +8,22 @@ namespace megumin {
     std::uniform_int_distribution<> InstructionMutation::uniform_int;
     std::mt19937 InstructionMutation::generator{100};
 
-    arm::Instruction InstructionMutation::LambdaMutateBit::operator()(const arm::Program &program, int index) {
+    arm::Instruction InstructionMutation::LambdaMutateBit::operator()(const arm::Program &program, int index) const {
         auto result = program.get_instruction_const(index);
         result.inverse_bit(mutate_index);
         return result;
     }
 
-    arm::Instruction InstructionMutation::LambdaMutateRange::operator()(const arm::Program &program, int index) {
+    arm::Instruction InstructionMutation::LambdaMutateRange::operator()(const arm::Program &program, int index) const {
         auto result = program.get_instruction_const(index);
         int size = high - low;
-        result.set_range(low, high, uniform_int(generator) % (1 << size));
-        return result;
+        if (bitwise) {
+            result.inverse_bit(low + uniform_int(generator) % size);
+            return result;
+        } else {
+            result.set_range(low, high, uniform_int(generator) % (1 << size));
+            return result;
+        }
     }
 
     InstructionMutation::InstructionMutation(std::initializer_list<MutationFuncPair> func_pairs) {
@@ -48,20 +53,6 @@ namespace megumin {
 
         const auto& def_ins = program.get_def_in(index);
         result.set_range(16, 21, def_ins.random_gp(generator));
-        return result;
-    }
-
-    arm::Instruction InstructionMutation::mutate_bit(int mutate_index, const arm::Program &program, int index) {
-        auto result = program.get_instruction_const(index);
-        result.inverse_bit(mutate_index);
-        return result;
-    }
-
-    arm::Instruction InstructionMutation::mutate_range(int low, int high,
-                                                       const arm::Program &program, int index) {
-        auto result = program.get_instruction_const(index);
-        int size = high - low;
-        result.set_range(low, high, uniform_int(generator) % (1 << size));
         return result;
     }
 

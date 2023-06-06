@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include <cmath>
+#include <chrono>
 #include "Search.h"
 #include "Program.h"
 
@@ -15,6 +16,7 @@ namespace megumin {
     {}
 
     void Search::do_search(SearchState &state) {
+        auto start = std::chrono::steady_clock::now();
         for (unsigned long long i = 0; i < max_iteration; i++) {
 //            arm::Program new_program = program_mutation->mutate(state.current);
             arm::Program& program = state.current;
@@ -42,6 +44,8 @@ namespace megumin {
 //            state.current = new_program;
 
             if (state.current_best_cost > new_cost) {
+                auto now = std::chrono::steady_clock::now();
+                cout << "time: " << (now - start) / 1e9 << endl;
                 state.current_best_cost = new_cost;
                 state.current_best = state.current;
                 std::cout << "iteration: " << i << "\n";
