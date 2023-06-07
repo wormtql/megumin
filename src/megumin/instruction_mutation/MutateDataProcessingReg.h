@@ -60,6 +60,27 @@ namespace megumin {
         explicit MutateDataProcessingRegLogical(Prob prob);
         explicit MutateDataProcessingRegLogical(): MutateDataProcessingRegLogical(Prob{}) {}
     };
+
+    class MutateDataProcessingRegAddSubShiftedReg: public InstructionMutation {
+    public:
+        struct Prob {
+            int w_sf = 0;
+            int w_op = 1;
+            int w_S = 1;
+            int w_shift = 3;
+            int w_rm = 5;
+            int w_imm6 = 6;
+            int w_rn = 5;
+            int w_rd = 5;
+        };
+    private:
+        static arm::Instruction mutate_imm6(const arm::Program& program, int index);
+        static arm::Instruction mutate_sf(const arm::Program& program, int index);
+        static arm::Instruction mutate_shift(const arm::Program& program, int index);
+    public:
+        explicit MutateDataProcessingRegAddSubShiftedReg(Prob prob);
+        explicit MutateDataProcessingRegAddSubShiftedReg(): MutateDataProcessingRegAddSubShiftedReg(Prob{}) {}
+    };
 }
 
 

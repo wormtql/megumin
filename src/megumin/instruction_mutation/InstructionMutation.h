@@ -30,6 +30,10 @@ namespace megumin {
         static std::uniform_int_distribution<> uniform_int;
         static std::mt19937 generator;
 
+        static std::uniform_int_distribution<>::result_type r() {
+            return uniform_int(generator);
+        }
+
         static arm::Instruction mutate_rn(const arm::Program& program, int index);
         static arm::Instruction mutate_rd(const arm::Program& program, int index);
         static arm::Instruction mutate_rm(const arm::Program& program, int index);

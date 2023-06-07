@@ -97,10 +97,12 @@ int main() {
     Instruction instruction15{(void*)"\xce\xf9\x7f\xd3"};
     // and x1, x2, x10, lsl #2
     Instruction instruction16{(void*)"\x41\x08\x0a\x8a"};
+    // add x1, x2, x3, lsl #2
+    Instruction instruction17{(void*)"\x41\x08\x03\x8b"};
 
      Program program;
-    program.add_instruction(instruction);
-    program.add_instruction(instruction1);
+//    program.add_instruction(instruction);
+//    program.add_instruction(instruction1);
 //    program.add_instruction(instruction3);
 //    program.add_instruction(instruction4);
 //    program.add_instruction(instruction5);
@@ -110,11 +112,12 @@ int main() {
 //    program.add_instruction(instruction9);
 //    program.add_instruction(instruction10);
 //    program.add_instruction(instruction11);
-    // program.add_instruction(instruction12);
+//     program.add_instruction(instruction12);
 //     program.add_instruction(instruction13);
 //     program.add_instruction(instruction14);
 //     program.add_instruction(instruction15);
 //    program.add_instruction(instruction16);
+    program.add_instruction(instruction17);
 
 #ifdef USE_KEYSTONE
     // auto program = megumin::aarch64_asm("fmov d1, d2; fmov d3, d2");

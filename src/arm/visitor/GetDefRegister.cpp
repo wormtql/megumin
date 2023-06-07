@@ -56,3 +56,8 @@ void arm::GetDefRegister::visit_dp_reg_logical_shifted_reg(const arm::Instructio
     bits rd = instruction.get_range(0, 5);
     result = Reg::gp(rd.as_i32());
 }
+
+void arm::GetDefRegister::visit_dp_reg_add_sub_shifted_reg(const arm::Instruction &instruction) {
+    bits rd = instruction.get_range(0, 5);
+    result = Reg::gp(rd.as_i32());
+}

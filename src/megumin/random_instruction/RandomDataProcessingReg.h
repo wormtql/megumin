@@ -41,6 +41,13 @@ namespace megumin {
 
         arm::Instruction random_instruction(const arm::Program& program, int index) override;
     };
+
+    class RandomDataProcessingRegAddSubShiftedReg: public RandomInstruction {
+    public:
+//        explicit RandomDataProcessingRegAddSubShiftedReg(std::mt19937& generator) {}
+
+        arm::Instruction random_instruction(const arm::Program &program, int index) override;
+    };
 }
 
 #endif //MEGUMIN_RANDOMDATAPROCESSINGREG_H

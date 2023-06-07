@@ -124,3 +124,44 @@ namespace megumin {
         return result;
     }
 }
+
+// mutate add sub shifted reg
+namespace megumin {
+    MutateDataProcessingRegAddSubShiftedReg::MutateDataProcessingRegAddSubShiftedReg(Prob prob)
+        : InstructionMutation({
+            {mutate_sf, prob.w_sf},
+            {make_mutate_bit(30), prob.w_op},
+            {make_mutate_bit(29), prob.w_S},
+            {mutate_shift, prob.w_shift},
+            {mutate_rm, prob.w_rm},
+            {mutate_imm6, prob.w_imm6},
+            {mutate_rn, prob.w_rn},
+            {mutate_rd, prob.w_rd},
+        })
+    {}
+
+    arm::Instruction MutateDataProcessingRegAddSubShiftedReg::mutate_imm6(const arm::Program &program, int index) {
+        auto result = program.get_instruction_const(index);
+        if (result.is_set(31)) {
+            result.set_range(10, 16, uniform_int(generator) % (1 << 6));
+        } else {
+            result.set_range(10, 16, uniform_int(generator) % (1 << 5));
+        }
+        return result;
+    }
+
+    arm::Instruction MutateDataProcessingRegAddSubShiftedReg::mutate_sf(const arm::Program &program, int index) {
+        auto result = program.get_instruction_const(index);
+        if (result.is_set(15)) {
+            return result;
+        }
+        result.inverse_bit(31);
+        return result;
+    }
+
+    arm::Instruction MutateDataProcessingRegAddSubShiftedReg::mutate_shift(const arm::Program &program, int index) {
+        auto result = program.get_instruction_const(index);
+        result.set_range(22, 24, r() % 3);
+        return result;
+    }
+}

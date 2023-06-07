@@ -25,6 +25,7 @@ namespace megumin {
             int dp_reg_1source = 1;
             int dp_reg_2source = 1;
             int dp_reg_logical_shifted_reg = 1;
+            int dp_reg_add_sub_shifted_reg = 1;
 
             int fp_and_simd_dp_1source = 1;
             int fp_and_simd_dp_2source = 1;
