@@ -10,6 +10,10 @@
 #include "utils.h"
 #include "Program.h"
 
+#ifdef USE_KEYSTONE
+#include "keystone/keystone.h"
+#endif
+
 using std::string;
 
 namespace megumin {

@@ -45,7 +45,7 @@ void f(const arm::Program& target, vector<MachineState> test_cases) {
     RegSet entry_def_ins;
     RegSet min_def_ins = target.get_minimum_def_ins();
     min_def_ins.set_fp(1, true);
-    min_def_ins.set_gp(1, true);
+    // min_def_ins.set_gp(1, true);
     cout << min_def_ins << endl;
 //    entry_def_ins.set_gp(1, true);
 //    entry_def_ins.set_fp(2, true);
@@ -105,7 +105,7 @@ int main() {
     // sbcs x5, x6, x4
     Instruction instruction19{(void*)"\xc5\x00\x04\xfa"};
 
-     Program program;
+    // Program program;
 //    program.add_instruction(instruction);
 //    program.add_instruction(instruction1);
 //    program.add_instruction(instruction3);
@@ -122,9 +122,9 @@ int main() {
 //     program.add_instruction(instruction14);
 //     program.add_instruction(instruction15);
 //    program.add_instruction(instruction16);
-//    program.add_instruction(instruction17);
-    program.add_instruction(instruction18);
-    program.add_instruction(instruction19);
+    // program.add_instruction(instruction17);
+    // program.add_instruction(instruction18);
+    // program.add_instruction(instruction19);
 
 #ifdef USE_KEYSTONE
     // auto program = megumin::aarch64_asm("fmov d1, d2; fmov d3, d2");
@@ -136,8 +136,18 @@ int main() {
     // auto program = megumin::aarch64_asm("extr x0, x1, x2, #5");
     // auto program = megumin::aarch64_asm("fadd d1, d2, d3");
     // auto program = megumin::aarch64_asm("fsub d1, d2, d3; fadd d4, d5, d2");
-    auto program = megumin::aarch64_asm("sub x10, x8, #1; lsl x11, x10, #4");
+    // auto program = megumin::aarch64_asm("sub x10, x8, #1; lsl x11, x10, #4");
     // auto program = megumin::aarch64_asm("fadd d4, d5, d1");
+    // auto program = megumin::aarch64_asm("mov w8, #3; mov w9, #7");
+    // auto program = megumin::aarch64_asm("mov w9, #7; bfi x9, x27, #3, #61");
+    // auto program = megumin::aarch64_asm("mov w8, #3");
+    // auto program = megumin::aarch64_asm("movk x1, #100");
+    // auto program = megumin::aarch64_asm("movz x1, #100");
+    // auto program = megumin::aarch64_asm("movn x1, #100");
+    // auto program = megumin::aarch64_asm("add x8, x23, x8, lsl #5");
+    auto program = megumin::aarch64_asm("add x8, x8, x2; lsl x18, x8, #1; lsl x3, x12, #5; add x23, x5, x3; mov w30, #96");
+    // auto program = megumin::aarch64_asm("add x11, x9, x11; add x10, x9, x10");
+    // auto program = megumin::aarch64_asm("add	x11, x4, #8;add	x12, x11, x9");
 #endif
 
     cout << "size: " << program.get_size() << endl;
@@ -145,7 +155,7 @@ int main() {
     cout << endl;
 
     std::vector<MachineState> test_cases;
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < 2; i++) {
         test_cases.emplace_back(MachineState{});
         test_cases[i].fill_gp_random();
         test_cases[i].fill_fp_random();

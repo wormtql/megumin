@@ -116,7 +116,7 @@ namespace megumin {
 
     arm::Instruction MutateDataProcessingImmMoveWide::mutate_opc(const arm::Program& program, int index) {
         const arm::Instruction& instruction = program.get_instruction_const(index);
-        int opc = uniform_int(generator) % 4;
+        int opc = uniform_int(generator) % 3;
         if (opc == 0b01) {
             opc = 0b11;
         }

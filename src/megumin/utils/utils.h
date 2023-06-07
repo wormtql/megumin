@@ -2,7 +2,7 @@
 // Created by 58413 on 2023/5/15.
 //
 
-#ifndef MEGUMIN_MEGUMIN_UTILS_H
+#ifndef MEGUMIN_UTILS_H
 #define MEGUMIN_UTILS_H
 
 #include <string>
@@ -20,4 +20,4 @@ namespace megumin {
 #endif
 }
 
-#endif //MEGUMIN_MEGUMIN_UTILS_H
+#endif //MEGUMIN_UTILS_H

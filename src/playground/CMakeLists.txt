@@ -25,5 +25,6 @@ endif()
 add_executable(main4 main4.cpp)
 
 if (NOT WIN32)
+    target_link_libraries(main2 keystone)
     target_link_libraries(main4 keystone)
 endif()

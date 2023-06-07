@@ -16,6 +16,7 @@ if (NOT WIN32)
 endif()
 
 if(NOT WIN32)
+    message(STATUS "using keystone")
     # keystone
     include_directories(keystone_install/include)
     link_directories(keystone_install/lib)

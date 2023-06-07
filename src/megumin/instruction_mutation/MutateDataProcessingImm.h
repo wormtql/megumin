@@ -60,10 +60,10 @@ namespace megumin {
     public:
         struct Prob {
             int w_sf = 1;
-            int w_opc = 1;
-            int w_hw = 1;
-            int w_imm16 = 10;
-            int w_rd = 2;
+            int w_opc = 3;
+            int w_hw = 4;
+            int w_imm16 = 16;
+            int w_rd = 5;
         };
     private:
         static arm::Instruction mutate_sf(const arm::Program& program, int index);
