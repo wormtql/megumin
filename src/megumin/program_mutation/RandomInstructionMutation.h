@@ -31,7 +31,7 @@ namespace megumin {
             int fp_and_simd_dp_2source = 1;
         };
     private:
-        std::uniform_int<> uniform_int;
+        std::uniform_int_distribution<> uniform_int;
         std::mt19937& generator;
 
         std::vector<std::unique_ptr<RandomInstruction>> random_functions;

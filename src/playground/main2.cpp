@@ -45,6 +45,7 @@ void f(const arm::Program& target, vector<MachineState> test_cases) {
     RegSet entry_def_ins;
     RegSet min_def_ins = target.get_minimum_def_ins();
     min_def_ins.set_fp(1, true);
+    min_def_ins.set_gp(1, true);
     cout << min_def_ins << endl;
 //    entry_def_ins.set_gp(1, true);
 //    entry_def_ins.set_fp(2, true);
@@ -101,9 +102,9 @@ int main() {
     Instruction instruction17{(void*)"\x41\x08\x03\x8b"};
 
      Program program;
-//    program.add_instruction(instruction);
-//    program.add_instruction(instruction1);
-//    program.add_instruction(instruction3);
+    program.add_instruction(instruction);
+    program.add_instruction(instruction1);
+    program.add_instruction(instruction3);
 //    program.add_instruction(instruction4);
 //    program.add_instruction(instruction5);
 //    program.add_instruction(instruction6);
@@ -112,11 +113,11 @@ int main() {
 //    program.add_instruction(instruction9);
 //    program.add_instruction(instruction10);
 //    program.add_instruction(instruction11);
-//     program.add_instruction(instruction12);
-//     program.add_instruction(instruction13);
-//     program.add_instruction(instruction14);
-//     program.add_instruction(instruction15);
-//    program.add_instruction(instruction16);
+     program.add_instruction(instruction12);
+     program.add_instruction(instruction13);
+     program.add_instruction(instruction14);
+     program.add_instruction(instruction15);
+    program.add_instruction(instruction16);
     program.add_instruction(instruction17);
 
 #ifdef USE_KEYSTONE

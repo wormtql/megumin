@@ -33,25 +33,6 @@ namespace megumin {
 
         arm::Instruction random_instruction(const arm::Program& program, int index) override;
     };
-
-    // top
-    class RandomFPAndSIMD: public RandomInstruction {
-    public:
-        struct Prob {
-            double w_fp_data_processing1 = 1.0;
-            double w_fp_data_processing2 = 1.0;
-        };
-    private:
-        std::mt19937& generator;
-        std::discrete_distribution<> discrete;
-
-        std::vector<std::unique_ptr<RandomInstruction>> dispatches;
-    public:
-        RandomFPAndSIMD(std::mt19937& generator, Prob prob);
-        explicit RandomFPAndSIMD(std::mt19937& generator): RandomFPAndSIMD(generator, {}) {}
-
-        arm::Instruction random_instruction(const arm::Program& program, int index) override;
-    };
 }
 
 
