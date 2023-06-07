@@ -63,10 +63,11 @@ namespace megumin {
         int sf = uniform_int(generator) % 2;
         result.set_bit(31, sf);
         // opc
-        int opc = uniform_int(generator) % 2;
+        int opc = uniform_int(generator) % 3;
         if (opc == 0b01) {
             opc = 0b11;
         }
+        // int opc = 0b10;
         result.set_range(29, 31, opc);
         // hw
         int hw;

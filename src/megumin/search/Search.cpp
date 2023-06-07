@@ -45,7 +45,8 @@ namespace megumin {
 
             if (state.current_best_cost > new_cost) {
                 auto now = std::chrono::steady_clock::now();
-                cout << "time: " << (now - start) / 1e9 << endl;
+                auto duration = now - start;
+                cout << "time: " << std::chrono::duration_cast<std::chrono::seconds>(duration).count() << endl;
                 state.current_best_cost = new_cost;
                 state.current_best = state.current;
                 std::cout << "iteration: " << i << "\n";
