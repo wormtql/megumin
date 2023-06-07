@@ -81,6 +81,20 @@ namespace megumin {
             result += ulp_distance(reg_target, reg_rewrite);
         }
 
+        // nzcv cost
+        if (target_state.p_state.n != rewrite_state.p_state.n) {
+            result++;
+        }
+        if (target_state.p_state.z != rewrite_state.p_state.z) {
+            result++;
+        }
+        if (target_state.p_state.c != rewrite_state.p_state.c) {
+            result++;
+        }
+        if (target_state.p_state.v != rewrite_state.p_state.v) {
+            result++;
+        }
+
         // cout << "result: " << result << endl;
         return result;
     }

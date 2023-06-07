@@ -10,7 +10,7 @@
 
 namespace arm {
     class PState {
-    private:
+    public:
         bool n = false;
         bool z = false;
         bool c = false;
