@@ -59,4 +59,8 @@ namespace megumin {
     void SimpleInstructionMutation::visit_dp_reg_add_sub_shifted_reg(const arm::Instruction &instruction) {
         result = mutate_dp_reg_add_sub_shifted_reg.mutate(*program, index);
     }
+
+    void SimpleInstructionMutation::visit_dp_reg_add_sub_with_carry(const arm::Instruction &instruction) {
+        result = mutate_dp_reg_add_sub_with_carry.mutate(*program, index);
+    }
 }

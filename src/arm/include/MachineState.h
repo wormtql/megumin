@@ -19,7 +19,8 @@ namespace arm {
         bool a = false;
 
     public:
-         void set_nzcv(bits nzcv);
+        void set_nzcv(bits nzcv);
+        [[nodiscard]] bool get_c() const { return c; }
     };
 
     class MachineState {

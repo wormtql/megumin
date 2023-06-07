@@ -81,6 +81,21 @@ namespace megumin {
         explicit MutateDataProcessingRegAddSubShiftedReg(Prob prob);
         explicit MutateDataProcessingRegAddSubShiftedReg(): MutateDataProcessingRegAddSubShiftedReg(Prob{}) {}
     };
+
+    class MutateDataProcessingRegAddSubWithCarry: public InstructionMutation {
+    public:
+        struct Prob {
+            int w_sf = 0;
+            int w_op = 1;
+            int w_S = 1;
+            int w_rm = 5;
+            int w_rn = 5;
+            int w_rd = 5;
+        };
+    public:
+        explicit MutateDataProcessingRegAddSubWithCarry(Prob prob);
+        MutateDataProcessingRegAddSubWithCarry(): MutateDataProcessingRegAddSubWithCarry(Prob{}) {}
+    };
 }
 
 

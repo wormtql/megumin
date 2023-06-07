@@ -375,4 +375,24 @@ namespace arm {
             os << " #" << imm6.as_u32();
         }
     }
+
+    void InstructionPrinter::visit_dp_reg_add_sub_with_carry(const Instruction &instruction) {
+        bool sf = instruction.is_set(31);
+        bool op = instruction.is_set(30);
+        bool S = instruction.is_set(29);
+        bits rm = instruction.get_rm();
+        bits rn = instruction.get_rn();
+        bits rd = instruction.get_rd();
+
+        if (op == 0) {
+            os << (S ? "adcs" : "adc");
+        } else {
+            os << (S ? "sbcs" : "sbc");
+        }
+        os << " ";
+        auto reg = sf ? "x" : "w";
+        os << reg << rd.as_i32() << ", ";
+        os << reg << rn.as_i32() << ", ";
+        os << reg << rm.as_i32();
+    }
 }

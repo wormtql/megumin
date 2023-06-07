@@ -165,3 +165,17 @@ namespace megumin {
         return result;
     }
 }
+
+// add sub with carry
+namespace megumin {
+    MutateDataProcessingRegAddSubWithCarry::MutateDataProcessingRegAddSubWithCarry(Prob prob)
+        : InstructionMutation({
+            {make_mutate_bit(31), prob.w_sf},
+            {make_mutate_bit(30), prob.w_op},
+            {make_mutate_bit(29), prob.w_S},
+            {mutate_rm, prob.w_rm},
+            {mutate_rn, prob.w_rn},
+            {mutate_rd, prob.w_rd}
+        })
+    {}
+}

@@ -648,4 +648,36 @@ namespace arm {
             }
         }
     }
+
+    void InstructionExecution::visit_dp_reg_add_sub_with_carry(const Instruction &instruction) {
+        bool sf = instruction.is_set(31);
+        bool op = instruction.is_set(30);
+        bool S = instruction.is_set(29);
+        bits rm = instruction.get_rm();
+        bits rn = instruction.get_rn();
+        bits rd = instruction.get_rd();
+
+        int d = rd.as_i32();
+        int m = rm.as_i32();
+        int n = rn.as_i32();
+        int datasize = sf ? 64 : 32;
+
+        bits operand1 = state.gp.get(datasize, n);
+        bits operand2 = state.gp.get(datasize, m);
+
+        if (op == 0) {
+            auto result = ArmUtils::add_with_carry(operand1, operand2, state.p_state.get_c());
+            state.gp.set(datasize, d, result.first);
+            if (S) {
+                state.p_state.set_nzcv(result.second);
+            }
+        } else if (op == 1) {
+            operand2 = ~operand2;
+            auto result = ArmUtils::add_with_carry(operand1, operand2, state.p_state.get_c());
+            state.gp.set(datasize, d, result.first);
+            if (S) {
+                state.p_state.set_nzcv(result.second);
+            }
+        }
+    }
 }

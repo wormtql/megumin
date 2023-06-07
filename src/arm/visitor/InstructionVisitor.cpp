@@ -48,6 +48,8 @@ namespace arm {
             visit_dp_reg_logical_shifted_reg(instruction);
         } else if (op1 == 0 && op2[3] == 1 && op2[0] == 0) {
             visit_dp_reg_add_sub_shifted_reg(instruction);
+        } else if (op1 == 1 && op2 == 0 && op3 == 0) {
+            visit_dp_reg_add_sub_with_carry(instruction);
         }
         // todo
     }

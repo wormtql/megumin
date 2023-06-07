@@ -4,6 +4,11 @@
 
 #include "GetDefRegister.h"
 
+void arm::GetDefRegister::set_rd(const Instruction &instruction) {
+    bits rd = instruction.get_range(0, 5);
+    result = Reg::gp(rd.as_i32());
+}
+
 void arm::GetDefRegister::visit_dp_imm_add_sub(const arm::Instruction &instruction) {
     bits rd = instruction.get_range(0, 5);
     result = Reg::gp(rd.as_i32());
@@ -60,4 +65,8 @@ void arm::GetDefRegister::visit_dp_reg_logical_shifted_reg(const arm::Instructio
 void arm::GetDefRegister::visit_dp_reg_add_sub_shifted_reg(const arm::Instruction &instruction) {
     bits rd = instruction.get_range(0, 5);
     result = Reg::gp(rd.as_i32());
+}
+
+void arm::GetDefRegister::visit_dp_reg_add_sub_with_carry(const arm::Instruction &instruction) {
+    set_rd(instruction);
 }

@@ -40,6 +40,8 @@ namespace arm {
 
         void visit_dp_reg_add_sub_shifted_reg(const Instruction &instruction) override;
 
+        void visit_dp_reg_add_sub_with_carry(const Instruction &instruction) override;
+
         void visit_fp_simd_dp_1source(const Instruction &instruction) override;
 
         void visit_fp_simd_dp_2source(const Instruction &instruction) override;

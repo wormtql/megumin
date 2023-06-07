@@ -129,3 +129,30 @@ arm::Instruction megumin::RandomDataProcessingRegAddSubShiftedReg::random_instru
 
     return arm::Instruction{inst};
 }
+
+arm::Instruction
+megumin::RandomDataProcessingRegAddSubWithCarry::random_instruction(const arm::Program &program, int index) {
+    arm::bits inst{32, 0};
+    inst.set_range(21, 29, 0b11010000);
+
+    bool sf = false;
+#ifdef MEGUMIN_INST_64_ONLY
+    sf = true;
+#else
+    sf = r() % 2;
+#endif
+    inst.set_bit(31, sf);
+    // op
+    inst.set_bit(30, r() % 2);
+    // S
+    inst.set_bit(29, r() % 2);
+    // rm
+    const auto& def_ins = program.get_def_in(index);
+    inst.set_range(16, 21, def_ins.random_gp(generator));
+    // rn
+    inst.set_range(5, 10, def_ins.random_gp(generator));
+    // rd
+    inst.set_range(0, 5, r() % (1 << 5));
+
+    return arm::Instruction{inst};
+}
