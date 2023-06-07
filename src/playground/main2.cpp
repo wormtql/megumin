@@ -121,10 +121,10 @@ int main() {
 //     program.add_instruction(instruction13);
 //     program.add_instruction(instruction14);
 //     program.add_instruction(instruction15);
-//    program.add_instruction(instruction16);
+    program.add_instruction(instruction16);
 //    program.add_instruction(instruction17);
     program.add_instruction(instruction18);
-    program.add_instruction(instruction19);
+//    program.add_instruction(instruction19);
 
 #ifdef USE_KEYSTONE
     // auto program = megumin::aarch64_asm("fmov d1, d2; fmov d3, d2");

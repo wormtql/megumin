@@ -19,4 +19,6 @@ target_include_directories(megumin
         .
         )
 
+#add_definitions(-DMEGUMIN_INST_64_ONLY)
+
 #target_link_libraries(megumin keystone)

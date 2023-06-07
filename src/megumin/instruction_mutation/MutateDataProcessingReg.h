@@ -44,7 +44,11 @@ namespace megumin {
     class MutateDataProcessingRegLogical: public InstructionMutation {
     public:
         struct Prob {
+#ifdef MEGUMIN_INST_64_ONLY
             int w_sf = 0;
+#else
+            int w_sf = 1;
+#endif
             int w_opc = 1;
             int w_shift = 1;
             int w_N = 1;
@@ -64,7 +68,11 @@ namespace megumin {
     class MutateDataProcessingRegAddSubShiftedReg: public InstructionMutation {
     public:
         struct Prob {
+#ifdef MEGUMIN_INST_64_ONLY
             int w_sf = 0;
+#else
+            int w_sf = 1;
+#endif
             int w_op = 1;
             int w_S = 1;
             int w_shift = 3;
@@ -85,7 +93,11 @@ namespace megumin {
     class MutateDataProcessingRegAddSubWithCarry: public InstructionMutation {
     public:
         struct Prob {
+#ifdef MEGUMIN_INST_64_ONLY
             int w_sf = 0;
+#else
+            int w_sf = 1;
+#endif
             int w_op = 1;
             int w_S = 1;
             int w_rm = 5;
