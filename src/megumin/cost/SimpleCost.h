@@ -18,6 +18,7 @@ namespace megumin {
         CorrectnessCost correctness_cost;
     public:
         SimpleCost(const arm::Program& target, vector<arm::MachineState>&& test_cases);
+        SimpleCost(vector<arm::MachineState>&& start_states, vector<arm::MachineState>&& end_states);
 
         [[nodiscard]] std::pair<CorrectState, double> cost(const arm::Program &program, double max_cost) const override;
     };

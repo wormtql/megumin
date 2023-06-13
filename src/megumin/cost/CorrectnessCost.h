@@ -14,15 +14,17 @@ using std::vector;
 
 namespace megumin {
     class CorrectnessCost: public CostFunction {
-    private: arm::Program target;
-    private: vector<arm::MachineState> target_states;
-    private: vector<arm::MachineState> test_cases;
+    private:
+        vector<arm::MachineState> target_states;
+        vector<arm::MachineState> test_cases;
 
-    public: explicit CorrectnessCost(const arm::Program& target, vector<arm::MachineState>&& test_cases);
+    public:
+        explicit CorrectnessCost(const arm::Program& target, vector<arm::MachineState>&& test_cases);
+        explicit CorrectnessCost(vector<arm::MachineState>&& test_cases, vector<arm::MachineState>&& target_states);
 
-    public: [[nodiscard]] std::pair<CorrectState, double> cost(const arm::Program &program, double max_cost) const override;
+        [[nodiscard]] std::pair<CorrectState, double> cost(const arm::Program &program, double max_cost) const override;
 
-    private: [[nodiscard]] double calc_single_cost(const arm::MachineState& target_state, const arm::MachineState& rewrite_state) const;
+        [[nodiscard]] double calc_single_cost(const arm::MachineState& target_state, const arm::MachineState& rewrite_state) const;
     };
 }
 

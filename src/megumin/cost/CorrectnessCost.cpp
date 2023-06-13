@@ -54,13 +54,17 @@ double ulp_distance(const arm::bits& v1, const arm::bits& v2) {
 
 namespace megumin {
     CorrectnessCost::CorrectnessCost(const arm::Program &target, std::vector<arm::MachineState>&& test_cases)
-        : target(target), test_cases(test_cases) {
+        : test_cases(test_cases) {
         for (int i = 0; i < test_cases.size(); i++) {
             arm::MachineState state{test_cases[i]};
             target.execute(state);
             target_states.push_back(state);
         }
     }
+
+    CorrectnessCost::CorrectnessCost(vector<arm::MachineState>&& test_cases, vector<arm::MachineState> &&target_states)
+        : target_states(target_states), test_cases(test_cases)
+    {}
 
     double CorrectnessCost::calc_single_cost(const arm::MachineState &target_state,
                                                       const arm::MachineState &rewrite_state) const {

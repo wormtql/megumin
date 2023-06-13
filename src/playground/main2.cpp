@@ -16,6 +16,7 @@
 #include <program_mutation/WeightedProgramMutation.h>
 #include <random_instruction/RandomDataProcessingImm.h>
 #include <utils/utils.h>
+#include <blackbox_program/blackbox_program.h>
 
 using namespace arm;
 using std::cout;
@@ -25,7 +26,15 @@ using std::vector;
 void f(const arm::Program& target, vector<MachineState> test_cases) {
     std::mt19937 generator{100};
 
-    megumin::SimpleCost simple_cost{target, std::move(test_cases)};
+    vector<MachineState> end_states;
+    end_states.reserve(test_cases.size());
+    for (const auto& s: test_cases) {
+        end_states.push_back(megumin::blackbox::swap(s));
+//        end_states.push_back(megumin::blackbox::add10(s));
+    }
+
+//    megumin::SimpleCost simple_cost{target, std::move(test_cases)};
+    megumin::SimpleCost simple_cost{std::move(test_cases), std::move(end_states)};
 
 //    megumin::RandomDataProcessingImm random_data_processing_imm{generator};
 //    megumin::RandomInstructionTop random_instruction{generator};
@@ -39,20 +48,28 @@ void f(const arm::Program& target, vector<MachineState> test_cases) {
 
 
     arm::Program empty_program{};
-    for (int i = 0; i < target.get_size(); i++) {
+//    for (int i = 0; i < target.get_size(); i++) {
+//        empty_program.add_instruction(Instruction::nop());
+//    }
+    for (int i = 0; i < 5; i++) {
         empty_program.add_instruction(Instruction::nop());
     }
     RegSet entry_def_ins;
-    RegSet min_def_ins = target.get_minimum_def_ins();
-    min_def_ins.set_fp(1, true);
+    entry_def_ins.set_gp(1, true);
+    entry_def_ins.set_gp(2, true);
+    entry_def_ins.set_fp(1, true);
+    cout << entry_def_ins << endl;
+//    RegSet min_def_ins = target.get_minimum_def_ins();
+//    min_def_ins.set_fp(1, true);
     // min_def_ins.set_gp(1, true);
-    cout << min_def_ins << endl;
+//    cout << min_def_ins << endl;
 //    entry_def_ins.set_gp(1, true);
 //    entry_def_ins.set_fp(2, true);
 //    entry_def_ins.set_fp(3, true);
 //    empty_program.set_entry_def_ins(entry_def_ins);
 
-    empty_program.set_entry_def_ins(min_def_ins);
+//    empty_program.set_entry_def_ins(min_def_ins);
+    empty_program.set_entry_def_ins(entry_def_ins);
     empty_program.calculate_def_ins();
 
     state.current = empty_program;
@@ -106,25 +123,25 @@ int main() {
     Instruction instruction19{(void*)"\xc5\x00\x04\xfa"};
 
      Program program;
-//    program.add_instruction(instruction);
-//    program.add_instruction(instruction1);
-//    program.add_instruction(instruction3);
-//    program.add_instruction(instruction4);
-//    program.add_instruction(instruction5);
-//    program.add_instruction(instruction6);
-//    program.add_instruction(instruction7);
-//    program.add_instruction(instruction8);
-//    program.add_instruction(instruction9);
-//    program.add_instruction(instruction10);
-//    program.add_instruction(instruction11);
-//     program.add_instruction(instruction12);
-//     program.add_instruction(instruction13);
-//     program.add_instruction(instruction14);
-//     program.add_instruction(instruction15);
+    program.add_instruction(instruction);
+    program.add_instruction(instruction1);
+    program.add_instruction(instruction3);
+    program.add_instruction(instruction4);
+    program.add_instruction(instruction5);
+    program.add_instruction(instruction6);
+    program.add_instruction(instruction7);
+    program.add_instruction(instruction8);
+    program.add_instruction(instruction9);
+    program.add_instruction(instruction10);
+    program.add_instruction(instruction11);
+     program.add_instruction(instruction12);
+     program.add_instruction(instruction13);
+     program.add_instruction(instruction14);
+     program.add_instruction(instruction15);
     program.add_instruction(instruction16);
-//    program.add_instruction(instruction17);
+    program.add_instruction(instruction17);
     program.add_instruction(instruction18);
-//    program.add_instruction(instruction19);
+    program.add_instruction(instruction19);
 
 #ifdef USE_KEYSTONE
     // auto program = megumin::aarch64_asm("fmov d1, d2; fmov d3, d2");
@@ -155,7 +172,7 @@ int main() {
     cout << endl;
 
     std::vector<MachineState> test_cases;
-    for (int i = 0; i < 2; i++) {
+    for (int i = 0; i < 10; i++) {
         test_cases.emplace_back(MachineState{});
         test_cases[i].fill_gp_random();
         test_cases[i].fill_fp_random();
