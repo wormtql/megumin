@@ -14,6 +14,8 @@ namespace megumin {
     void megumin_assert(bool expression, std::optional<string> message = {});
 
     void megumin_todo();
+
+    string trim(const string& s);
 }
 
 #endif //MEGUMIN_MEGUMIN_UTILS_H

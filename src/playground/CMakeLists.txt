@@ -1,9 +1,12 @@
 add_executable(playground main.cpp)
 add_executable(main2 main2.cpp)
+add_executable(main main.cpp)
 
 target_link_libraries(playground
         arm_asm
         )
+
+target_link_libraries(main arm_asm megumin)
 
 target_link_libraries(main2
         arm_asm
