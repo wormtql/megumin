@@ -1,6 +1,6 @@
 [submodule "3rd/keystone"]
 	path = 3rd/keystone
-	url = https://gitee.com/iatow/keystone.git
+	url = https://github.com/wormtql/keystone.git
 [submodule "3rd/pocketfft"]
 	path = 3rd/pocketfft
 	url = https://github.com/hayguen/pocketfft.git
