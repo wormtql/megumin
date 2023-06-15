@@ -23,6 +23,9 @@ namespace arm {
 
     }
 
+    std::mt19937 MachineState::generator{100};
+    std::uniform_int_distribution<> MachineState::uniform_int;
+
     MachineState::MachineState(const MachineState &other) {
         this->gp = other.gp;
         this->fp = other.fp;
@@ -50,5 +53,12 @@ namespace arm {
                 fp.get_mut_ref(i, j).set_value(r);
             }
         }
+    }
+
+    void MachineState::fill_nzcv_random() {
+        p_state.n = r() % 2;
+        p_state.z = r() % 2;
+        p_state.c = r() % 2;
+        p_state.v = r() % 2;
     }
 }

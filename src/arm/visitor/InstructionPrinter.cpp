@@ -23,6 +23,59 @@ namespace arm {
         }
     }
 
+    void InstructionPrinter::print_cond(int cond) {
+        switch (cond) {
+            case 0b0000:
+                os << "eq";
+                break;
+            case 0b0001:
+                os << "ne";
+                break;
+            case 0b0010:
+                os << "cs";
+                break;
+            case 0b0011:
+                os << "cc";
+                break;
+            case 0b0100:
+                os << "mi";
+                break;
+            case 0b0101:
+                os << "pl";
+                break;
+            case 0b0110:
+                os << "vs";
+                break;
+            case 0b0111:
+                os << "vc";
+                break;
+            case 0b1000:
+                os << "hi";
+                break;
+            case 0b1001:
+                os << "ls";
+                break;
+            case 0b1010:
+                os << "ge";
+                break;
+            case 0b1011:
+                os << "lt";
+                break;
+            case 0b1100:
+                os << "gt";
+                break;
+            case 0b1101:
+                os << "le";
+                break;
+            case 0b1110:
+                os << "al";
+                break;
+            case 0b1111:
+                os << "nv";
+                break;
+        }
+    }
+
     void InstructionPrinter::visit_nop(const Instruction &instruction) {
         os << "nop";
     }
@@ -394,5 +447,33 @@ namespace arm {
         os << reg << rd.as_i32() << ", ";
         os << reg << rn.as_i32() << ", ";
         os << reg << rm.as_i32();
+    }
+
+    void InstructionPrinter::visit_dp_reg_cond_select(const Instruction &instruction) {
+        bool sf = instruction.is_set(31);
+        bool op = instruction.is_set(30);
+        bool S = instruction.is_set(29);
+        bits rm = instruction.get_range(16, 21);
+        bits cond = instruction.get_range(12, 16);
+        bits op2 = instruction.get_range(10, 12);
+        bits rn = instruction.get_range(5, 10);
+        bits rd = instruction.get_range(0, 5);
+
+        if (op == 0 && op2 == 0b00) {
+            os << "csel";
+        } else if (op == 0 && op2 == 0b01) {
+            os << "csinc";
+        } else if (op == 1 && op2 == 0b00) {
+            os << "csinv";
+        } else if (op == 1 && op2 == 0b01) {
+            os << "csneg";
+        }
+        os << " ";
+
+        auto reg = sf ? "x" : "w";
+        os << reg << rd.as_i32() << ", ";
+        os << reg << rn.as_i32() << ", ";
+        os << reg << rm.as_i32() << ", ";
+        print_cond(cond.as_i32());
     }
 }

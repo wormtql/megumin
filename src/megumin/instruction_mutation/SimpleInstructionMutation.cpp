@@ -63,4 +63,8 @@ namespace megumin {
     void SimpleInstructionMutation::visit_dp_reg_add_sub_with_carry(const arm::Instruction &instruction) {
         result = mutate_dp_reg_add_sub_with_carry.mutate(*program, index);
     }
+
+    void SimpleInstructionMutation::visit_dp_reg_cond_select(const arm::Instruction &instruction) {
+        result = mutate_dp_reg_cond_select.mutate(*program, index);
+    }
 }

@@ -50,6 +50,8 @@ namespace arm {
             visit_dp_reg_add_sub_shifted_reg(instruction);
         } else if (op1 == 1 && op2 == 0 && op3 == 0) {
             visit_dp_reg_add_sub_with_carry(instruction);
+        } else if (op1 == 1 && op2 == 0b0100) {
+            visit_dp_reg_cond_select(instruction);
         }
         // todo
     }

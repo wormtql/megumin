@@ -179,3 +179,33 @@ namespace megumin {
         })
     {}
 }
+
+// conditional select
+namespace megumin {
+    MutateDataProcessingRegCondSelect::MutateDataProcessingRegCondSelect(Prob prob)
+        : InstructionMutation({
+            {make_mutate_bit(31), prob.w_sf},
+            {mutate_op, prob.w_op},
+            {mutate_rm, prob.w_rm},
+            {mutate_cond, prob.w_cond},
+            {mutate_rn, prob.w_rn},
+            {mutate_rd, prob.w_rd}
+        })
+    {}
+
+    arm::Instruction MutateDataProcessingRegCondSelect::mutate_op(const arm::Program &program, int index) {
+        int op = r() % 2;
+        int op2 = r() % 2;
+
+        auto result = program.get_instruction_const(index);
+        result.set_bit(30, op);
+        result.set_range(10, 11, op2);
+        return result;
+    }
+
+    arm::Instruction MutateDataProcessingRegCondSelect::mutate_cond(const arm::Program &program, int index) {
+        auto result = program.get_instruction_const(index);
+        result.set_range(12, 16, r() % 14);
+        return result;
+    }
+}

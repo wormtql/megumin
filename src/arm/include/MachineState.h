@@ -5,6 +5,7 @@
 #ifndef MEGUMIN_MACHINESTATE_H
 #define MEGUMIN_MACHINESTATE_H
 
+#include <random>
 #include "Bitvec.h"
 #include "RegBank.h"
 
@@ -25,7 +26,12 @@ namespace arm {
 
     class MachineState {
     private:
+        static std::mt19937 generator;
+        static std::uniform_int_distribution<> uniform_int;
 
+        static std::uniform_int_distribution<>::result_type r() {
+            return uniform_int(generator);
+        }
     public:
         GPRegBank gp;
         FPRegBank fp;
@@ -37,6 +43,7 @@ namespace arm {
 
         void fill_gp_random();
         void fill_fp_random();
+        void fill_nzcv_random();
 
         [[nodiscard]] bool is_merging() const {
             return fpcr.is_set(2);

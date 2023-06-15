@@ -47,6 +47,9 @@ namespace megumin {
         for (int i = 0; i < weight.dp_reg_add_sub_with_carry; i++) {
             random_functions.push_back(std::make_unique<RandomDataProcessingRegAddSubWithCarry>());
         }
+        for (int i = 0; i < weight.dp_reg_cond_select; i++) {
+            random_functions.push_back(std::make_unique<RandomDataProcessingRegCondSelect>());
+        }
 
         // fp and simd
         for (int i = 0; i < weight.fp_and_simd_dp_1source; i++) {

@@ -51,6 +51,11 @@ namespace megumin {
     public:
         arm::Instruction random_instruction(const arm::Program &program, int index) override;
     };
+
+    class RandomDataProcessingRegCondSelect: public RandomInstruction {
+    public:
+        arm::Instruction random_instruction(const arm::Program &program, int index) override;
+    };
 }
 
 #endif //MEGUMIN_RANDOMDATAPROCESSINGREG_H

@@ -182,4 +182,42 @@ namespace arm {
         bits temp = x.get_range(1, N) ^ x.get_range(0, N - 1);
         return count_leading_zero_bits(temp);
     }
+
+    bool ArmUtilsSharedFunctions::condition_holds(int cond, const MachineState& state) {
+        int temp = cond >> 1;
+        bool result = false;
+
+        switch (temp) {
+            case 0b000:
+                result = state.p_state.z == 1;
+                break;
+            case 0b001:
+                result = state.p_state.c == 1;
+                break;
+            case 0b010:
+                result = state.p_state.n == 1;
+                break;
+            case 0b011:
+                result = state.p_state.v == 1;
+                break;
+            case 0b100:
+                result = state.p_state.c == 1 && state.p_state.z == 0;
+                break;
+            case 0b101:
+                result = state.p_state.n == state.p_state.v;
+                break;
+            case 0b110:
+                result = state.p_state.n == state.p_state.v && state.p_state.z == 0;
+                break;
+            case 0b111:
+                result = true;
+                break;
+        }
+
+        if (cond % 2 == 1 && cond != 0b1111) {
+            result = !result;
+        }
+
+        return result;
+    }
 }

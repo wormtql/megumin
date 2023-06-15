@@ -15,6 +15,8 @@ namespace arm {
         std::ostream& os;
 
         void print_shift_type(int shift_type);
+
+        void print_cond(int cond);
     public:
         explicit InstructionPrinter(std::ostream& os);
 
@@ -39,6 +41,8 @@ namespace arm {
         void visit_dp_reg_logical_shifted_reg(const Instruction &instruction) override;
 
         void visit_dp_reg_add_sub_shifted_reg(const Instruction &instruction) override;
+
+        void visit_dp_reg_cond_select(const Instruction &instruction) override;
 
         void visit_dp_reg_add_sub_with_carry(const Instruction &instruction) override;
 

@@ -108,6 +108,28 @@ namespace megumin {
         explicit MutateDataProcessingRegAddSubWithCarry(Prob prob);
         MutateDataProcessingRegAddSubWithCarry(): MutateDataProcessingRegAddSubWithCarry(Prob{}) {}
     };
+
+    class MutateDataProcessingRegCondSelect: public InstructionMutation {
+    private:
+        static arm::Instruction mutate_op(const arm::Program& program, int index);
+        static arm::Instruction mutate_cond(const arm::Program& program, int index);
+    public:
+        struct Prob {
+#ifdef MEGUMIN_INST_64_ONLY
+            int w_sf = 0;
+#else
+            int w_sf = 1;
+#endif
+            int w_op = 3;
+            int w_rm = 5;
+            int w_cond = 4;
+            int w_rn = 5;
+            int w_rd = 5;
+        };
+
+        explicit MutateDataProcessingRegCondSelect(Prob prob);
+        MutateDataProcessingRegCondSelect(): MutateDataProcessingRegCondSelect(Prob{}) {}
+    };
 }
 
 

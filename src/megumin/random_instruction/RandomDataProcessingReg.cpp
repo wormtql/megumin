@@ -156,3 +156,32 @@ megumin::RandomDataProcessingRegAddSubWithCarry::random_instruction(const arm::P
 
     return arm::Instruction{inst};
 }
+
+arm::Instruction
+megumin::RandomDataProcessingRegCondSelect::random_instruction(const arm::Program &program, int index) {
+    arm::bits inst{32, 0};
+    inst.set_range(21, 30, 0b011010100);
+
+    bool sf;
+#ifdef MEGUMIN_INST_64_ONLY
+    sf = true;
+#else
+    sf = r() % 2;
+#endif
+    inst.set_bit(31, sf);
+    // op
+    inst.set_bit(30, r() % 2);
+    // rm
+    const auto& def_ins = program.get_def_in(index);
+    inst.set_range(16, 21, def_ins.random_gp(generator));
+    // cond
+    inst.set_range(12, 16, r() % 0b1110);
+    // op2
+    inst.set_range(10, 12, r() % 2);
+    // rn
+    inst.set_range(5, 10, def_ins.random_gp(generator));
+    // rd
+    inst.set_range(0, 5, r() % (1 << 5));
+
+    return arm::Instruction{inst};
+}

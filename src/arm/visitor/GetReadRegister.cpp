@@ -89,3 +89,8 @@ void arm::GetReadRegister::visit_dp_reg_add_sub_with_carry(const arm::Instructio
     add_rn(instruction);
     add_rm(instruction);
 }
+
+void arm::GetReadRegister::visit_dp_reg_cond_select(const arm::Instruction &instruction) {
+    add_rn(instruction);
+    add_rm(instruction);
+}

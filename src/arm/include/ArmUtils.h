@@ -9,6 +9,7 @@
 #include <cassert>
 
 #include "Bitvec.h"
+#include "MachineState.h"
 
 namespace arm {
     class ArmUtils {
@@ -47,6 +48,8 @@ namespace arm {
         static int count_leading_zero_bits(const bits& x);
 
         static int count_leading_sign_bits(const bits& x);
+
+        static bool condition_holds(int cond, const MachineState& state);
     };
 }
 
