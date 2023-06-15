@@ -1,6 +1,7 @@
 add_executable(playground main.cpp)
 add_executable(main2 main2.cpp)
 add_executable(main main.cpp)
+add_executable(main3 main3.cpp)
 
 target_link_libraries(playground
         arm_asm
@@ -13,7 +14,10 @@ target_link_libraries(main2
         megumin
         )
 
-add_executable(main3 main3.cpp)
+target_link_libraries(main3
+        arm_asm
+        megumin
+        )
 #include_directories(${LLVM_INCLUDE_DIRS})
 #message(STATUS "Using LLVM include dirs ${LLVM_INCLUDE_DIRS}")
 
@@ -30,4 +34,8 @@ add_executable(main4 main4.cpp)
 if (NOT WIN32)
     target_link_libraries(main2 keystone)
     target_link_libraries(main4 keystone)
+endif()
+
+if (WIN32)
+    file(COPY ${PROJECT_SOURCE_DIR}/keystone_install/keystone.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 endif()

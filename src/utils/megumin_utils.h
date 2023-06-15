@@ -8,12 +8,16 @@
 #include <string>
 #include <optional>
 
+#include "Program.h"
+
 using std::string;
 
 namespace megumin {
     void megumin_assert(bool expression, std::optional<string> message = {});
 
     void megumin_todo();
+
+    arm::Program aarch64_asm(const std::string& code);
 
     string trim(const string& s);
 }

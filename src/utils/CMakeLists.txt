@@ -1,16 +1,24 @@
 add_library(megumin_utils STATIC "")
 
-file(GLOB megumin_utils_headers "**/*.h" "*.h")
-file(GLOB megumin_utils_sources "**/*.cpp" "*.cpp")
-
-message(STATUS ${megumin_utils_sources})
-
 target_sources(megumin_utils
         PUBLIC
-        ${megumin_utils_headers}
+        megumin_utils.h
         PRIVATE
-        ${megumin_utils_sources}
+        megumin_utils.cpp
 )
+
+if (WIN32)
+    target_sources(megumin_utils
+            PRIVATE
+            megumin_utils_windows.cpp
+            )
+else()
+    target_sources(megumin_utils
+            PRIVATE
+            megumin_utils_linux.cpp)
+endif()
+
+target_link_libraries(megumin_utils arm_asm)
 target_include_directories(megumin_utils
         PUBLIC
         .

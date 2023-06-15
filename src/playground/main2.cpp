@@ -15,8 +15,8 @@
 #include <search/Search.h>
 #include <program_mutation/WeightedProgramMutation.h>
 #include <random_instruction/RandomDataProcessingImm.h>
-#include <utils/utils.h>
 #include <blackbox_program/blackbox_program.h>
+#include <megumin_utils.h>
 
 using namespace arm;
 using std::cout;
@@ -101,7 +101,7 @@ int main() {
     // csel x9, x9, x10, ne
     Instruction instruction21{(void*)"\x29\x11\x8a\x9a"};
 
-     Program program;
+//     Program program;
 //    program.add_instruction(instruction);
 //    program.add_instruction(instruction1);
 //    program.add_instruction(instruction3);
@@ -121,12 +121,11 @@ int main() {
 //    program.add_instruction(instruction17);
 //    program.add_instruction(instruction18);
 //    program.add_instruction(instruction19);
-    program.add_instruction(instruction20);
-    program.add_instruction(instruction21);
+//    program.add_instruction(instruction20);
+//    program.add_instruction(instruction21);
 
-#ifdef USE_KEYSTONE
     // auto program = megumin::aarch64_asm("fmov d1, d2; fmov d3, d2");
-    // auto program = megumin::aarch64_asm("add x1, x1, #10");
+     auto program = megumin::aarch64_asm("add x1, x1, #10");
     // auto program = megumin::aarch64_asm("clz w1, w2; cls x3, x1");
     // auto program = megumin::aarch64_asm("sub sp, sp, #1, lsl #12; sub sp, sp, #1744");
     // auto program = megumin::aarch64_asm("sub sp, sp, #1, lsl #12");
@@ -143,10 +142,9 @@ int main() {
     // auto program = megumin::aarch64_asm("movz x1, #100");
     // auto program = megumin::aarch64_asm("movn x1, #100");
     // auto program = megumin::aarch64_asm("add x8, x23, x8, lsl #5");
-    auto program = megumin::aarch64_asm("add x8, x8, x2; lsl x18, x8, #1; lsl x3, x12, #5; add x23, x5, x3; mov w30, #96");
+//    auto program = megumin::aarch64_asm("add x8, x8, x2; lsl x18, x8, #1; lsl x3, x12, #5; add x23, x5, x3; mov w30, #96");
     // auto program = megumin::aarch64_asm("add x11, x9, x11; add x10, x9, x10");
     // auto program = megumin::aarch64_asm("add	x11, x4, #8;add	x12, x11, x9");
-#endif
 
     cout << "size: " << program.get_size() << endl;
     program.print();

@@ -1,23 +1,16 @@
 //
-// Created by 58413 on 2023/5/15.
+// Created by 58413 on 2023/6/15.
 //
 
-#include <string>
-#include <optional>
+#include "megumin_utils.h"
 #include <iostream>
 
-#include "Instruction.h"
-#include "utils.h"
-#include "Program.h"
-
-#ifdef USE_KEYSTONE
-#include "keystone/keystone.h"
+#ifndef MEGUMIN_IS_WINDOWS
+#include <keystone/keystone.h>
 #endif
 
-using std::string;
-
 namespace megumin {
-#ifdef USE_KEYSTONE
+#ifndef MEGUMIN_IS_WINDOWS
     arm::Program aarch64_asm(const string& code) {
         ks_engine *ks;
         ks_err err;
