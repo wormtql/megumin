@@ -17,7 +17,7 @@ namespace megumin {
 
     void megumin_todo();
 
-    arm::Program aarch64_asm(const std::string& code);
+    std::optional<arm::Program> aarch64_asm(const std::string& code);
 
     string trim(const string& s);
 }

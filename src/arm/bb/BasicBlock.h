@@ -30,7 +30,7 @@ namespace arm {
             instructions.push_back(instruction);
         }
 
-        inline std::vector<Instruction>::size_type size() {
+        [[nodiscard]] inline std::vector<Instruction>::size_type size() const {
             return instructions.size();
         }
 

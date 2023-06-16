@@ -380,9 +380,16 @@ namespace arm {
         bits rn = instruction.get_rn();
         bits rd = instruction.get_rd();
 
+        auto reg = sf ? "x" : "w";
+
         if (opc == 0b00) {
             os << (N ? "bic" : "and");
         } else if (opc == 0b01) {
+            if (N == 0 && shift == 0b00 && imm6 == 0b000000 && rn == 0b11111) {
+                // alias to mov
+                os << "mov " << reg << rd.as_i32() << ", " << reg << rm.as_i32();
+                return;
+            }
             os << (N ? "orn" : "orr");
         } else if (opc == 0b10) {
             os << (N ? "eon" : "eor");
@@ -390,7 +397,7 @@ namespace arm {
             os << (N ? "bics" : "ands");
         }
         os << " ";
-        auto reg = sf ? "x" : "w";
+
         os << reg << rd.as_i32() << ", ";
         os << reg << rn.as_i32() << ", ";
         os << reg << rm.as_i32();

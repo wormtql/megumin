@@ -11,7 +11,7 @@
 
 namespace megumin {
 #ifndef MEGUMIN_IS_WINDOWS
-    arm::Program aarch64_asm(const string& code) {
+    std::optional<arm::Program> aarch64_asm(const string& code) {
         ks_engine *ks;
         ks_err err;
         size_t count;

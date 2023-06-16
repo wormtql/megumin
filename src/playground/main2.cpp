@@ -145,7 +145,19 @@ int main() {
 //    auto program = megumin::aarch64_asm("add x8, x8, x2; lsl x18, x8, #1; lsl x3, x12, #5; add x23, x5, x3; mov w30, #96");
     // auto program = megumin::aarch64_asm("add x11, x9, x11; add x10, x9, x10");
     // auto program = megumin::aarch64_asm("add	x11, x4, #8;add	x12, x11, x9");
-    auto program = megumin::aarch64_asm("mov x0, x20; cmp x0, x20");
+//    auto program = megumin::aarch64_asm("mov x0, x20; cmp x0, x20");
+    auto program = megumin::aarch64_asm(R"(
+subs x31, x20, x8
+mov x8, x11
+add x8, x8, x11
+subs x31, x8, x10
+csel x9, x10, x31, hi
+sub x8, x8, x9
+add x9, x8, x11
+subs x31, x9, x10
+csel x10, x10, x31, hi
+sub x9, x9, x10
+)").value();
 
     cout << "size: " << program.get_size() << endl;
     program.print();

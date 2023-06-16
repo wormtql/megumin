@@ -4,6 +4,7 @@
 
 #include "megumin_utils.h"
 #include <iostream>
+#include <optional>
 
 #ifdef MEGUMIN_IS_WINDOWS
 #include <Windows.h>
@@ -14,7 +15,7 @@ using namespace std;
 
 namespace megumin {
 #ifdef MEGUMIN_IS_WINDOWS
-    arm::Program aarch64_asm(const std::string& code) {
+    std::optional<arm::Program> aarch64_asm(const std::string& code) {
         HMODULE hDll = LoadLibrary(TEXT("keystone"));
         if (!hDll || hDll == INVALID_HANDLE_VALUE) {
             cout << "cannot load dll\n";
@@ -43,6 +44,7 @@ namespace megumin {
         err = megumin_ks_open(KS_ARCH_ARM64, KS_MODE_LITTLE_ENDIAN, &ks);
         if (err != KS_ERR_OK) {
             assert(false);
+            return {};
         }
 
         if (megumin_ks_asm(ks, code.c_str(), 0, &encode, &size, &count) != KS_ERR_OK) {
@@ -50,7 +52,8 @@ namespace megumin {
                    count, megumin_ks_errno(ks));
             megumin_ks_free(encode);
             megumin_ks_close(ks);
-            assert(false);
+//            assert(false);
+            return {};
         }
 
         arm::Program program;

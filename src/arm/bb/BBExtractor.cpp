@@ -37,26 +37,36 @@ namespace arm {
 
             line2 = remove_comment(line2);
 
-            if (is_load_store(line2) || is_branch(line2) || is_other_bb_break(line2)) {
+            auto finish_bb = [&] () {
                 if (bb.size() > 4) {
                     result.push_back(bb);
-                    cout << bb;
+//                    cout << bb << endl;
                     bb.clear_instructions();
-                    cout << endl;
+                }
+            };
 
+            if (is_load_store(line2) || is_branch(line2) || is_other_bb_break(line2)) {
+                finish_bb();
+                if (result.size() == max_bb) {
+                    break;
+                }
+            } else {
+                auto prog = megumin::aarch64_asm(line2);
+                if (prog.has_value()) {
+                    const auto& inst = prog.value().get_instruction_const(0);
+                    if (bb.size() == 0) {
+                        bb.set_start(i);
+                    } else {
+                        bb.set_end(i + 1);
+                    }
+                    bb.add_instruction(inst);
+                } else {
+                    finish_bb();
                     if (result.size() == max_bb) {
                         break;
                     }
                 }
-            } else {
-                auto prog = megumin::aarch64_asm(line2);
-                const auto& inst = prog.get_instruction_const(0);
-                if (bb.size() == 0) {
-                    bb.set_start(i);
-                } else {
-                    bb.set_end(i + 1);
-                }
-                bb.add_instruction(inst);
+
 //                cout << "123  " <<  line2 << endl;
             }
 
