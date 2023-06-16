@@ -70,7 +70,7 @@ namespace arm {
             visit_fp_simd_dp_2source(instruction);
         } else {
             // todo
-            assert(false);
+//            assert(false);
         }
     }
 }

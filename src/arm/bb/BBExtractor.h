@@ -22,6 +22,7 @@ namespace arm {
         static bool is_load_store(const string& s);
         static bool is_branch(const string& s);
         static bool is_other_bb_break(const string& s);
+        static string remove_comment(const string& s);
     public:
         explicit BBExtractor(const string& filename) {
             this->filename = filename;

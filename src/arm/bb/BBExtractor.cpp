@@ -26,15 +26,21 @@ namespace arm {
         while (std::getline(f, line)) {
             string line2 = megumin::trim(line);
 
-            if (line2.starts_with(".") || line2.starts_with("//")) {
+            if (line2.starts_with(".") || line2.starts_with("//") || line2.starts_with("main")) {
+                i++;
+                continue;
+            }
+            if (line2.empty()) {
                 i++;
                 continue;
             }
 
+            line2 = remove_comment(line2);
+
             if (is_load_store(line2) || is_branch(line2) || is_other_bb_break(line2)) {
                 if (bb.size() > 4) {
                     result.push_back(bb);
-                    bb.set_start(i + 1);
+                    cout << bb;
                     bb.clear_instructions();
                     cout << endl;
 
@@ -43,8 +49,15 @@ namespace arm {
                     }
                 }
             } else {
-                bb.add_instruction(Instruction::nop());
-                cout << line2 << endl;
+                auto prog = megumin::aarch64_asm(line2);
+                const auto& inst = prog.get_instruction_const(0);
+                if (bb.size() == 0) {
+                    bb.set_start(i);
+                } else {
+                    bb.set_end(i + 1);
+                }
+                bb.add_instruction(inst);
+//                cout << "123  " <<  line2 << endl;
             }
 
             i++;
@@ -241,6 +254,15 @@ namespace arm {
 
         string opcode = extract_opcode(s);
         return opcodes.contains(opcode);
+    }
+
+    string BBExtractor::remove_comment(const string &s) {
+        auto pos = s.find("//");
+        if (pos == string::npos) {
+            return s;
+        } else {
+            return s.substr(0, pos);
+        }
     }
 }
 

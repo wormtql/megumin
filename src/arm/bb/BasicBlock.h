@@ -7,6 +7,7 @@
 
 #include "Instruction.h"
 #include <vector>
+#include <iostream>
 
 namespace arm {
     class BasicBlock {
@@ -18,6 +19,10 @@ namespace arm {
         BasicBlock() = default;
         explicit BasicBlock(std::vector<Instruction>&& instructions, int start, int end);
         std::vector<Instruction>& get_instructions_mut() {
+            return instructions;
+        }
+
+        [[nodiscard]] const std::vector<Instruction>& get_instructions() const {
             return instructions;
         }
 
@@ -40,9 +45,13 @@ namespace arm {
         inline void clear_instructions() {
             instructions.clear();
         }
+
+        [[nodiscard]] inline int get_start() const { return start; }
+        [[nodiscard]] inline int get_end() const { return end; }
     };
 }
 
+std::ostream& operator<<(std::ostream& os, const arm::BasicBlock& bb);
 
 
 #endif //MEGUMIN_BASICBLOCK_H

@@ -61,10 +61,10 @@ namespace megumin {
             program.add_instruction(instr);
         }
         for (int i = 0; i < size; i++) {
-            printf("%02x ", encode[i]);
+//            printf("%02x ", encode[i]);
         }
-        printf("\n");
-        printf("Compiled: %lu bytes, statements: %lu\n", size, count);
+//        printf("\n");
+//        printf("Compiled: %lu bytes, statements: %lu\n", size, count);
 
         megumin_ks_free(encode);
         megumin_ks_close(ks);
