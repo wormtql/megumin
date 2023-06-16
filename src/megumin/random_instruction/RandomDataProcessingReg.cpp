@@ -23,7 +23,7 @@ arm::Instruction megumin::RandomDataProcessing2Source::random_instruction(const 
     // rn
     inst.set_range(5, 10, def_ins.random_gp(generator));
     // rd
-    inst.set_range(0, 5, uniform_int(generator) % (1 << 5));
+    inst.set_range(0, 5, uniform_int(generator) % 31);
 
     return arm::Instruction{inst};
 }
@@ -51,7 +51,7 @@ arm::Instruction megumin::RandomDataProcessing1Source::random_instruction(const 
     const auto& def_ins = program.get_def_in(index);
     inst.set_range(5, 10, def_ins.random_gp(generator));
     // rd
-    inst.set_range(0, 5, uniform_int(generator) % (1 << 5));
+    inst.set_range(0, 5, uniform_int(generator) % 31);
 
     return arm::Instruction{inst};
 }
@@ -91,7 +91,7 @@ arm::Instruction megumin::RandomDataProcessingRegLogical::random_instruction(con
     // rn
     inst.set_range(5, 10, def_ins.random_gp(generator));
     // rd
-    inst.set_range(0, 5, f() % (1 << 5));
+    inst.set_range(0, 5, f() % 31);
 
     return arm::Instruction{inst};
 }
@@ -125,7 +125,7 @@ arm::Instruction megumin::RandomDataProcessingRegAddSubShiftedReg::random_instru
     // rn
     inst.set_range(5, 10, def_ins.random_gp(generator));
     // rd
-    inst.set_range(0, 5, r() % (1 << 5));
+    inst.set_range(0, 5, r() % 31);
 
     return arm::Instruction{inst};
 }
@@ -152,7 +152,7 @@ megumin::RandomDataProcessingRegAddSubWithCarry::random_instruction(const arm::P
     // rn
     inst.set_range(5, 10, def_ins.random_gp(generator));
     // rd
-    inst.set_range(0, 5, r() % (1 << 5));
+    inst.set_range(0, 5, r() % 31);
 
     return arm::Instruction{inst};
 }
@@ -181,7 +181,7 @@ megumin::RandomDataProcessingRegCondSelect::random_instruction(const arm::Progra
     // rn
     inst.set_range(5, 10, def_ins.random_gp(generator));
     // rd
-    inst.set_range(0, 5, r() % (1 << 5));
+    inst.set_range(0, 5, r() % 31);
 
     return arm::Instruction{inst};
 }

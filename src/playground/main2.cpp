@@ -125,7 +125,7 @@ int main() {
 //    program.add_instruction(instruction21);
 
     // auto program = megumin::aarch64_asm("fmov d1, d2; fmov d3, d2");
-     auto program = megumin::aarch64_asm("add x1, x1, #10");
+//     auto program = megumin::aarch64_asm("add x1, x1, #10");
     // auto program = megumin::aarch64_asm("clz w1, w2; cls x3, x1");
     // auto program = megumin::aarch64_asm("sub sp, sp, #1, lsl #12; sub sp, sp, #1744");
     // auto program = megumin::aarch64_asm("sub sp, sp, #1, lsl #12");
@@ -145,6 +145,7 @@ int main() {
 //    auto program = megumin::aarch64_asm("add x8, x8, x2; lsl x18, x8, #1; lsl x3, x12, #5; add x23, x5, x3; mov w30, #96");
     // auto program = megumin::aarch64_asm("add x11, x9, x11; add x10, x9, x10");
     // auto program = megumin::aarch64_asm("add	x11, x4, #8;add	x12, x11, x9");
+    auto program = megumin::aarch64_asm("mov x0, x20; cmp x0, x20");
 
     cout << "size: " << program.get_size() << endl;
     program.print();

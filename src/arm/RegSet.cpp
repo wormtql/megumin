@@ -63,6 +63,8 @@ namespace arm {
             it++;
             temp >>= 1;
         }
+        // add xzr/wzr
+        arr[size++] = 31;
         megumin::megumin_assert(size > 0, "gp reg set size is 0");
 
         std::uniform_int_distribution<> uniform_int;

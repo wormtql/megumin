@@ -34,9 +34,10 @@ namespace arm {
     }
 
     void MachineState::fill_gp_random() {
-        for (int i = 0; i < 32; i++) {
-            auto r = (int64_t) rand();
-            r = (r << 32) | rand();
+        // don't set x31, which is xzr, which is always zero
+        for (int i = 0; i < 31; i++) {
+            auto r = (int64_t) uniform_int(generator);
+            r = (r << 32) | uniform_int(generator);
             gp.get_mut_ref(i).set_value(r);
             // cout << gp.get_ref(i).as_u64() << endl;
         }
@@ -45,11 +46,8 @@ namespace arm {
     void MachineState::fill_fp_random() {
         for (int i = 0; i < 32; i++) {
             for (int j = 0; j < 2; j++) {
-                int64_t temp = (int64_t) rand();
-                // int64_t temp = 0;
-                int64_t r = (temp << 32) | (int64_t) rand();
-                // cout << r << endl;
-//                double d = *reinterpret_cast<double*>(&r);
+                auto temp = (int64_t) uniform_int(generator);
+                int64_t r = (temp << 32) | (int64_t) uniform_int(generator);
                 fp.get_mut_ref(i, j).set_value(r);
             }
         }

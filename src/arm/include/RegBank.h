@@ -126,9 +126,15 @@ namespace arm {
 
         // will zero high 32 bits
         void set32(int index, bits data) {
+            if (index == 31) {
+                return;
+            }
             bank[index].set_value(data.resize(32).zero_extend(64));
         };
         void set64(int index, bits data) {
+            if (index == 31) {
+                return;
+            }
             bank[index].set_value(data.resize(64));
         }
 

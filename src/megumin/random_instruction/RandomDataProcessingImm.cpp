@@ -48,7 +48,7 @@ namespace megumin {
         const auto& def_ins = program.get_def_in(index);
         result.set_range(5, 10, def_ins.random_gp(generator));
         // rd
-        result.set_range(0, 5, uniform_int_distribution(generator) % (1 << 5));
+        result.set_range(0, 5, uniform_int_distribution(generator) % 31);
         if (result.data0 < 0) {
             printf("123");
         }
@@ -80,7 +80,7 @@ namespace megumin {
         // imm16
         result.set_range(5, 21, uniform_int(generator) % (1 << 16));
         // rd
-        result.set_range(0, 5, uniform_int(generator) % (1 << 5));
+        result.set_range(0, 5, uniform_int(generator) % 31);
         return arm::Instruction{result};
     }
 
@@ -107,7 +107,7 @@ namespace megumin {
         const auto& def_ins = program.get_def_in(index);
         instruction.set_range(5, 10, def_ins.random_gp(generator));
         // rd
-        instruction.set_range(0, 5, uniform_int_dist(generator) % (1 << 5));
+        instruction.set_range(0, 5, uniform_int_dist(generator) % 31);
 
         return arm::Instruction{instruction};
     }
@@ -133,7 +133,7 @@ namespace megumin {
         const auto& def_ins = program.get_def_in(index);
         instruction.set_range(5, 10, def_ins.random_gp(generator));
         // rd
-        instruction.set_range(0, 5, uniform_int(generator) % (1 << 5));
+        instruction.set_range(0, 5, uniform_int(generator) % 31);
 
         return arm::Instruction{instruction};
     }
@@ -148,12 +148,12 @@ namespace megumin {
         instruction.set_bit(22, sf);
 
         // rm
-        instruction.set_range(16, 21, uniform_int(generator) % (1 << 5));
-        // rn
         const auto& def_ins = program.get_def_in(index);
+        instruction.set_range(16, 21, def_ins.random_gp(generator));
+        // rn
         instruction.set_range(5, 10, def_ins.random_gp(generator));
         // rd
-        instruction.set_range(0, 5, uniform_int(generator) % (1 << 5));
+        instruction.set_range(0, 5, uniform_int(generator) % 31);
         // imms
         int x = sf ? (1 << 6) : (1 << 5);
         instruction.set_range(10, 16, uniform_int(generator) % x);

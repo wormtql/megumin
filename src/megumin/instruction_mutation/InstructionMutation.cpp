@@ -44,7 +44,7 @@ namespace megumin {
 
     arm::Instruction InstructionMutation::mutate_rd(const arm::Program& program, int index) {
         auto result = program.get_instruction_const(index);
-        result.set_range(0, 5, uniform_int(generator) % (1 << 5));
+        result.set_range(0, 5, uniform_int(generator) % 31);
         return result;
     }
 
@@ -74,7 +74,7 @@ namespace megumin {
 
     arm::Instruction InstructionMutation::mutate_rd_fp(const arm::Program &program, int index) {
         auto result = program.get_instruction_const(index);
-        result.set_range(0, 5, uniform_int(generator) % (1 << 5));
+        result.set_range(0, 5, uniform_int(generator) % 31);
         return result;
     }
 
