@@ -37,13 +37,21 @@ namespace arm {
         FPRegBank fp;
         PState p_state;
         bits fpcr{64, 0};
+        bits sp{64, 0};
 
         MachineState();
-        MachineState(const MachineState& other);
+//        MachineState(const MachineState& other);
 
         void fill_gp_random();
         void fill_fp_random();
         void fill_nzcv_random();
+        void fill_sp_random();
+
+        [[nodiscard]] bits get_sp(int size) const;
+        void set_sp(int size, const bits& value);
+
+        [[nodiscard]] bits get_gp(int size, int index, bool is_sp_31, bool is_zr_31) const;
+        void set_gp(int size, int index, const bits& value, bool is_sp_31);
 
         [[nodiscard]] bool is_merging() const {
             return fpcr.is_set(2);

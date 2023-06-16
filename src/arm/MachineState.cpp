@@ -7,6 +7,7 @@
 #include <iostream>
 
 #include "MachineState.h"
+#include "megumin_utils.h"
 
 using namespace std;
 
@@ -26,12 +27,13 @@ namespace arm {
     std::mt19937 MachineState::generator{100};
     std::uniform_int_distribution<> MachineState::uniform_int;
 
-    MachineState::MachineState(const MachineState &other) {
-        this->gp = other.gp;
-        this->fp = other.fp;
-        this->p_state = other.p_state;
-        this->fpcr = other.fpcr;
-    }
+//    MachineState::MachineState(const MachineState &other) {
+//        this->gp = other.gp;
+//        this->fp = other.fp;
+//        this->p_state = other.p_state;
+//        this->fpcr = other.fpcr;
+//        this->
+//    }
 
     void MachineState::fill_gp_random() {
         // don't set x31, which is xzr, which is always zero
@@ -58,5 +60,49 @@ namespace arm {
         p_state.z = r() % 2;
         p_state.c = r() % 2;
         p_state.v = r() % 2;
+    }
+
+    void MachineState::fill_sp_random() {
+        auto r = (int64_t) uniform_int(generator);
+        r = (r << 32) | uniform_int(generator);
+        sp.set_value(r);
+    }
+
+    bits MachineState::get_sp(int size) const {
+        return sp.resize(size);
+    }
+
+    void MachineState::set_sp(int size, const bits& value) {
+        if (size == 32) {
+            sp.set_value(value.resize(32).zero_extend(64));
+        } else if (size == 64) {
+            sp.set_value(value.resize(64));
+        }
+    }
+
+    bits MachineState::get_gp(int size, int index, bool is_sp_31, bool is_zr_31) const {
+        if (index == 31) {
+            if (is_sp_31) {
+                return get_sp(size);
+            } else if (is_zr_31) {
+                return gp.get(size, index);
+            } else {
+                megumin::megumin_assert(false);
+            }
+        } else {
+            return gp.get(size, index);
+        }
+
+        return {};
+    }
+
+    void MachineState::set_gp(int size, int index, const bits& value, bool is_sp_31) {
+        if (index == 31) {
+            if (is_sp_31) {
+                set_sp(size, value);
+            }
+        } else {
+            gp.set(size, index, value);
+        }
     }
 }

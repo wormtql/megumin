@@ -63,7 +63,7 @@ namespace arm {
             it++;
             temp >>= 1;
         }
-        // add xzr/wzr
+        // add xzr/wzr/sp
         arr[size++] = 31;
         megumin::megumin_assert(size > 0, "gp reg set size is 0");
 

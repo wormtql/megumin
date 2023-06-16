@@ -24,69 +24,29 @@ namespace arm {
         bits rn = instruction.get_range(5, 10);
         bits rd = instruction.get_range(0, 5);
 
-        if (!op && !S) {
+        int datasize = sf ? 64 : 32;
+        int d = rd.as_i32();
+        int n = rn.as_i32();
+
+        if (!op) {
             // add
-            if (!sf) {
-                // 32
-                bits operand1 = state.gp.get32(rn.as_i32());
-                bits imm = sh ? (imm12.zero_extend(32) << 12) : imm12.zero_extend(32);
-                auto result = ArmUtils::add_with_carry(operand1, imm, false);
-                state.gp.set32(rd.as_i32(), result.first);
-            } else {
-                // 64
-                bits operand1 = state.gp.get64(rn.as_i32());
-                bits imm = sh ? (imm12.zero_extend(64) << 12) : imm12.zero_extend(64);
-                auto result = ArmUtils::add_with_carry(operand1, imm, false);
-                state.gp.set64(rd.as_i32(), result.first);
-            }
-        } else if (!op && S) {
-            // adds
-            if (!sf) {
-                // 32
-                bits operand1 = state.gp.get32(rn.as_i32());
-                bits imm = sh ? (imm12.zero_extend(32) << 12) : imm12.zero_extend(32);
-                auto result = ArmUtils::add_with_carry(operand1, imm, false);
-                state.gp.set32(rd.as_i32(), result.first);
-                state.p_state.set_nzcv(result.second);
-            } else {
-                // 64
-                bits operand1 = state.gp.get64(rn.as_i32());
-                bits imm = sh ? (imm12.zero_extend(64) << 12) : imm12.zero_extend(64);
-                auto result = ArmUtils::add_with_carry(operand1, imm, false);
-                state.gp.set64(rd.as_i32(), result.first);
+            bits operand1 = state.get_gp(datasize, rn.as_i32(), true, false);
+            bits imm = sh ? (imm12.zero_extend(datasize) << 12) : imm12.zero_extend(datasize);
+            auto result = ArmUtils::add_with_carry(operand1, imm, false);
+            state.set_gp(datasize, rd.as_i32(), result.first, true);
+
+            if (S) {
                 state.p_state.set_nzcv(result.second);
             }
-        } else if (op && !S) {
-            if (!sf) {
-                // 32
-                bits operand1 = state.gp.get32(rn.as_i32());
-                bits imm = sh ? (imm12.zero_extend(32) << 12) : imm12.zero_extend(32);
-                bits operand2 = ~imm;
-                auto result = ArmUtils::add_with_carry(operand1, operand2, true);
-                state.gp.set32(rd.as_i32(), result.first);
-            } else {
-                // 64
-                bits operand1 = state.gp.get64(rn.as_i32());
-                bits imm = sh ? (imm12.zero_extend(64) << 12) : imm12.zero_extend(64);
-                bits operand2 = ~imm;
-                auto result = ArmUtils::add_with_carry(operand1, operand2, true);
-                state.gp.set64(rd.as_i32(), result.first);
-            }
-        } else if (op && S) {
-            // subs
-            if (!sf) {
-                bits operand1 = state.gp.get32(rn.as_i32());
-                bits imm = sh ? (imm12.zero_extend(32) << 12) : imm12.zero_extend(32);
-                bits operand2 = ~imm;
-                auto result = ArmUtils::add_with_carry(operand1, operand2, true);
-                state.gp.set32(rd.as_i32(), result.first);
-                state.p_state.set_nzcv(result.second);
-            } else {
-                bits operand1 = state.gp.get64(rn.as_i32());
-                bits imm = sh ? (imm12.zero_extend(64) << 12) : imm12.zero_extend(64);
-                bits operand2 = ~imm;
-                auto result = ArmUtils::add_with_carry(operand1, operand2, true);
-                state.gp.set64(rd.as_i32(), result.first);
+        } else if (op) {
+            // sub
+            bits operand1 = state.get_gp(datasize, n, true, false);
+            bits imm = sh ? (imm12.zero_extend(datasize) << 12) : imm12.zero_extend(datasize);
+            bits operand2 = ~imm;
+            auto result = ArmUtils::add_with_carry(operand1, operand2, true);
+            state.set_gp(datasize, d, result.first, true);
+
+            if (S) {
                 state.p_state.set_nzcv(result.second);
             }
         }
@@ -101,92 +61,56 @@ namespace arm {
         bool sf = instruction.is_set(31);
         bool N = instruction.is_set(22);
 
+        bits immr = instruction.get_range(16, 22);
+        bits imms = instruction.get_range(10, 16);
+        bits rn = instruction.get_range(5, 10);
+        bits rd = instruction.get_range(0, 5);
+
+        int d = rd.as_i32();
+        int n = rn.as_i32();
+        int datasize = sf ? 64 : 32;
+        bits imm = ArmUtils::decode_bit_mask(datasize, N, imms, immr, true).first;
+
         if (opc == 0b00) {
             // and
-            bits immr = instruction.get_range(16, 22);
-            bits imms = instruction.get_range(10, 16);
-            bits rn = instruction.get_range(5, 10);
-            bits rd = instruction.get_range(0, 5);
-
-            auto d = rd.as_u32();
-            auto n = rn.as_u32();
-            int datasize = sf == 1 ? 64 : 32;
-
             if (!sf && N) {
-                // undefined
+                megumin::megumin_assert(false);
             }
 
-            bits imm = ArmUtils::decode_bit_mask(datasize, N, imms, immr, true).first;
-
-            bits operand1 = state.gp.get(datasize, n);
+            bits operand1 = state.get_gp(datasize, n, false, true);
             megumin_assert(operand1.size == datasize);
             bits result = operand1 & imm;
-            state.gp.set(datasize, d, result);
+            state.set_gp(datasize, d, result, true);
         } else if (opc == 0b01) {
             // orr
-            bits immr = instruction.get_range(16, 22);
-            bits imms = instruction.get_range(10, 16);
-            bits rn = instruction.get_range(5, 10);
-            bits rd = instruction.get_range(0, 5);
-
-            auto d = rd.as_u32();
-            auto n = rn.as_u32();
-            int datasize = sf == 1 ? 64 : 32;
-
             if (!sf && N) {
-                // undefined
                 megumin_assert(false);
             }
-
-            bits imm = ArmUtils::decode_bit_mask(datasize, N, imms, immr, true).first;
 
             bits operand1 = state.gp.get(datasize, n);
             megumin_assert(operand1.size == datasize);
             bits result = operand1 | imm;
-            state.gp.set(datasize, d, result);
+            state.set_gp(datasize, d, result, true);
         } else if (opc == 0b10) {
             // eor
-            bits immr = instruction.get_range(16, 22);
-            bits imms = instruction.get_range(10, 16);
-            bits rn = instruction.get_range(5, 10);
-            bits rd = instruction.get_range(0, 5);
-
-            auto d = rd.as_u32();
-            auto n = rn.as_u32();
-            int datasize = sf == 1 ? 64 : 32;
-
             if (!sf && N) {
-                // undefined
+                megumin::megumin_assert(false);
             }
-
-            bits imm = ArmUtils::decode_bit_mask(datasize, N, imms, immr, true).first;
 
             bits operand1 = state.gp.get(datasize, n);
             megumin_assert(operand1.size == datasize);
             bits result = operand1 ^ imm;
-            state.gp.set(datasize, d, result);
+            state.set_gp(datasize, d, result, true);
         } else if (opc == 0b11) {
             // ands
-            bits immr = instruction.get_range(16, 22);
-            bits imms = instruction.get_range(10, 16);
-            bits rn = instruction.get_range(5, 10);
-            bits rd = instruction.get_range(0, 5);
-
-            auto d = rd.as_u32();
-            auto n = rn.as_u32();
-            int datasize = sf == 1 ? 64 : 32;
-
             if (!sf && N) {
                 megumin_assert(false);
-                // undefined
             }
-
-            bits imm = ArmUtils::decode_bit_mask(datasize, N, imms, immr, true).first;
 
             bits operand1 = state.gp.get(datasize, n);
             megumin_assert(operand1.size == datasize);
             bits result = operand1 & imm;
-            state.gp.set(datasize, d, result);
+            state.set_gp(datasize, d, result, true);
 
             bits nzcv = bits::from_bools({result.is_set(datasize - 1), result == 0, 0, 0});
             state.p_state.set_nzcv(nzcv);

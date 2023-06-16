@@ -106,16 +106,16 @@ namespace arm {
             return bank[index];
         }
 
-        bits get32(int index) {
+        [[nodiscard]] bits get32(int index) const {
 //            return bank[index] & ((1ll << 32) - 1);
             return bank[index].resize(32);
         }
 
-        bits get64(int index) {
+        [[nodiscard]] bits get64(int index) const {
             return bank[index];
         }
 
-        bits get(int size, int index) {
+        [[nodiscard]] bits get(int size, int index) const {
             if (size == 32) {
                 return get32(index);
             } else if (size == 64) {

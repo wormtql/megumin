@@ -10,12 +10,6 @@ using arm::bits;
 using namespace std;
 
 namespace megumin {
-    arm::Instruction RandomDataProcessingImm::random_instruction(const arm::Program& program, int index) {
-        int cat = cat_prob(generator);
-        const auto& dispatch = dispatches[cat];
-        return dispatch->random_instruction(program, index);
-    }
-
     arm::Instruction RandomDataProcessingImmLogical::random_instruction(const arm::Program& program, int index) {
         bits result{32, 0};
 
@@ -48,7 +42,7 @@ namespace megumin {
         const auto& def_ins = program.get_def_in(index);
         result.set_range(5, 10, def_ins.random_gp(generator));
         // rd
-        result.set_range(0, 5, uniform_int_distribution(generator) % 31);
+        result.set_range(0, 5, uniform_int_distribution(generator) % 32);
         if (result.data0 < 0) {
             printf("123");
         }
@@ -107,7 +101,7 @@ namespace megumin {
         const auto& def_ins = program.get_def_in(index);
         instruction.set_range(5, 10, def_ins.random_gp(generator));
         // rd
-        instruction.set_range(0, 5, uniform_int_dist(generator) % 31);
+        instruction.set_range(0, 5, uniform_int_dist(generator) % 32);
 
         return arm::Instruction{instruction};
     }

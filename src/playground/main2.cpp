@@ -49,6 +49,7 @@ void f(const arm::Program& target, vector<MachineState> test_cases) {
 
     state.current = empty_program;
     state.current_cost = simple_cost.cost(empty_program, std::numeric_limits<double>::max()).second;
+    cout << state.current_cost << endl;
     state.current_correct_best = target;
     state.current_correct_best_cost = state.current_cost;
     state.current_best = empty_program;
@@ -125,7 +126,8 @@ int main() {
 //    program.add_instruction(instruction21);
 
     // auto program = megumin::aarch64_asm("fmov d1, d2; fmov d3, d2");
-//     auto program = megumin::aarch64_asm("add x1, x1, #10");
+//     auto program = megumin::aarch64_asm("add sp, x1, #10").value();
+     auto program = megumin::aarch64_asm("and sp, x1, #16").value();
     // auto program = megumin::aarch64_asm("clz w1, w2; cls x3, x1");
     // auto program = megumin::aarch64_asm("sub sp, sp, #1, lsl #12; sub sp, sp, #1744");
     // auto program = megumin::aarch64_asm("sub sp, sp, #1, lsl #12");
@@ -146,18 +148,18 @@ int main() {
     // auto program = megumin::aarch64_asm("add x11, x9, x11; add x10, x9, x10");
     // auto program = megumin::aarch64_asm("add	x11, x4, #8;add	x12, x11, x9");
 //    auto program = megumin::aarch64_asm("mov x0, x20; cmp x0, x20");
-    auto program = megumin::aarch64_asm(R"(
-subs x31, x20, x8
-mov x8, x11
-add x8, x8, x11
-subs x31, x8, x10
-csel x9, x10, x31, hi
-sub x8, x8, x9
-add x9, x8, x11
-subs x31, x9, x10
-csel x10, x10, x31, hi
-sub x9, x9, x10
-)").value();
+//    auto program = megumin::aarch64_asm(R"(
+//subs x31, x20, x8
+//mov x8, x11
+//add x8, x8, x11
+//subs x31, x8, x10
+//csel x9, x10, x31, hi
+//sub x8, x8, x9
+//add x9, x8, x11
+//subs x31, x9, x10
+//csel x10, x10, x31, hi
+//sub x9, x9, x10
+//)").value();
 
     cout << "size: " << program.get_size() << endl;
     program.print();
@@ -169,6 +171,7 @@ sub x9, x9, x10
         test_cases[i].fill_gp_random();
         test_cases[i].fill_fp_random();
         test_cases[i].fill_nzcv_random();
+        test_cases[i].fill_sp_random();
     }
 
 //    program.print();

@@ -99,6 +99,9 @@ namespace megumin {
             result++;
         }
 
+        // sp cost
+        result += eval_distance(target_state.sp, rewrite_state.sp);
+
         // cout << "result: " << result << endl;
         return result;
     }
