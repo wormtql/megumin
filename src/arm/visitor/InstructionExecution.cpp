@@ -236,7 +236,7 @@ namespace arm {
                 state.gp.set(datasize, d, result);
             }
         } else {
-            megumin_todo();
+            megumin::megumin_assert(false);
         }
     }
 

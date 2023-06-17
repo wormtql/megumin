@@ -74,7 +74,7 @@ namespace megumin {
         // imm16
         result.set_range(5, 21, uniform_int(generator) % (1 << 16));
         // rd
-        result.set_range(0, 5, uniform_int(generator) % 31);
+        result.set_range(0, 5, uniform_int(generator) % 32);
         return arm::Instruction{result};
     }
 
@@ -127,7 +127,7 @@ namespace megumin {
         const auto& def_ins = program.get_def_in(index);
         instruction.set_range(5, 10, def_ins.random_gp(generator));
         // rd
-        instruction.set_range(0, 5, uniform_int(generator) % 31);
+        instruction.set_range(0, 5, uniform_int(generator) % 32);
 
         return arm::Instruction{instruction};
     }
@@ -147,7 +147,7 @@ namespace megumin {
         // rn
         instruction.set_range(5, 10, def_ins.random_gp(generator));
         // rd
-        instruction.set_range(0, 5, uniform_int(generator) % 31);
+        instruction.set_range(0, 5, uniform_int(generator) % 32);
         // imms
         int x = sf ? (1 << 6) : (1 << 5);
         instruction.set_range(10, 16, uniform_int(generator) % x);

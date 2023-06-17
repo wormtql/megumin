@@ -23,8 +23,8 @@ using std::cout;
 using std::endl;
 using std::vector;
 
-void f(const arm::Program& target, vector<MachineState> test_cases) {
-    std::mt19937 generator{100};
+void f(const arm::Program& target, vector<MachineState> test_cases, int init_mode = 1) {
+    std::mt19937 generator{10000};
 
     megumin::SimpleCost simple_cost{target, std::move(test_cases)};
 
@@ -33,26 +33,33 @@ void f(const arm::Program& target, vector<MachineState> test_cases) {
     megumin::Search search{&weighted_program_mutation, &simple_cost, generator};
     megumin::SearchState state;
 
+    arm::Program init_program{};
 
-    arm::Program empty_program{};
-    for (int i = 0; i < target.get_size(); i++) {
-        empty_program.add_instruction(Instruction::nop());
+    if (init_mode == 0) {
+        arm::Program empty_program{};
+        for (int i = 0; i < target.get_size(); i++) {
+            empty_program.add_instruction(Instruction::nop());
+        }
+        init_program = empty_program;
+    } else if (init_mode == 1) {
+        init_program = target;
     }
+
 
     RegSet min_def_ins = target.get_minimum_def_ins();
     min_def_ins.set_fp(1, true);
     min_def_ins.set_gp(1, true);
     cout << min_def_ins << endl;
 
-    empty_program.set_entry_def_ins(min_def_ins);
-    empty_program.calculate_def_ins();
+    init_program.set_entry_def_ins(min_def_ins);
+    init_program.calculate_def_ins();
 
-    state.current = empty_program;
-    state.current_cost = simple_cost.cost(empty_program, std::numeric_limits<double>::max()).second;
+    state.current = init_program;
+    state.current_cost = simple_cost.cost(init_program, std::numeric_limits<double>::max()).second;
     cout << state.current_cost << endl;
     state.current_correct_best = target;
     state.current_correct_best_cost = state.current_cost;
-    state.current_best = empty_program;
+    state.current_best = init_program;
     state.current_best_cost = state.current_cost;
 
     search.do_search(state);
@@ -148,8 +155,7 @@ int main() {
     // auto program = megumin::aarch64_asm("add x11, x9, x11; add x10, x9, x10");
     // auto program = megumin::aarch64_asm("add	x11, x4, #8;add	x12, x11, x9");
 //    auto program = megumin::aarch64_asm("mov x0, x20; cmp x0, x20");
-    auto program = megumin::aarch64_asm(R"(
-subs x31, x20, x8
+    auto program = megumin::aarch64_asm(R"(subs x31, x20, x8
 mov x8, x11
 add x8, x8, x11
 subs x31, x8, x10
@@ -158,15 +164,14 @@ sub x8, x8, x9
 add x9, x8, x11
 subs x31, x9, x10
 csel x10, x10, x31, hi
-sub x9, x9, x10
-)").value();
+sub x9, x9, x10)").value();
 
     cout << "size: " << program.get_size() << endl;
     program.print();
     cout << endl;
 
     std::vector<MachineState> test_cases;
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < 100; i++) {
         test_cases.emplace_back(MachineState{});
         test_cases[i].fill_gp_random();
         test_cases[i].fill_fp_random();

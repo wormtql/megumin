@@ -87,16 +87,16 @@ namespace megumin {
 
         // nzcv cost
         if (target_state.p_state.n != rewrite_state.p_state.n) {
-            result++;
+            result += 1;
         }
         if (target_state.p_state.z != rewrite_state.p_state.z) {
-            result++;
+            result += 2;
         }
         if (target_state.p_state.c != rewrite_state.p_state.c) {
-            result++;
+            result += 3;
         }
         if (target_state.p_state.v != rewrite_state.p_state.v) {
-            result++;
+            result += 4;
         }
 
         // sp cost
@@ -108,6 +108,27 @@ namespace megumin {
 
     std::pair<CostFunction::CorrectState, double> CorrectnessCost::cost(const arm::Program &program, double max_cost) const {
         double cost = 0.0;
+//        int it = 0;
+//        while ((1 << it) <= test_cases.size()) {
+//            double temp_cost = 0.0;
+//            for (int i = 0; i < (1 << it); i++) {
+//                arm::MachineState state{test_cases[i]};
+//                program.execute(state);
+//
+//                temp_cost += calc_single_cost(target_states[i], state);
+//            }
+//            temp_cost /= (1 << it);
+//            cost = temp_cost;
+//            if (temp_cost >= max_cost) {
+//                return { CorrectState::Wrong, max_cost };
+//            }
+//            if (temp_cost > 0.0) {
+//                return { CorrectState::Wrong, temp_cost };
+//            } else {
+////                cout << "correct " << (1 << it) << endl;
+//                it++;
+//            }
+//        }
         for (int i = 0; i < test_cases.size(); i++) {
             arm::MachineState state{test_cases[i]};
             program.execute(state);
@@ -118,10 +139,13 @@ namespace megumin {
             }
         }
 
+
+
         if (cost > 0) {
             return { CorrectState::Wrong, cost };
         } else {
-            return { CorrectState::Unknown, cost };
+//            cout << "correct" << cost << endl;
+            return { CorrectState::Correct, cost };
         }
     }
 }

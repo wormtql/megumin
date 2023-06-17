@@ -24,7 +24,7 @@ namespace arm {
 
     }
 
-    std::mt19937 MachineState::generator{100};
+    std::mt19937 MachineState::generator{999};
     std::uniform_int_distribution<> MachineState::uniform_int;
 
 //    MachineState::MachineState(const MachineState &other) {

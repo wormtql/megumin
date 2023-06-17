@@ -18,6 +18,9 @@ namespace megumin {
     void Search::do_search(SearchState &state) {
         auto start = std::chrono::steady_clock::now();
         for (unsigned long long i = 0; i < max_iteration; i++) {
+//            if (i == 393058) {
+//                cout << "123";
+//            }
 //            arm::Program new_program = program_mutation->mutate(state.current);
             arm::Program& program = state.current;
             auto mutation_result = program_mutation->mutate(program);
@@ -59,6 +62,16 @@ namespace megumin {
             if (new_cost < state.current_correct_best_cost && is_correct) {
                 state.current_correct_best = state.current;
                 state.current_correct_best_cost = new_cost;
+
+                auto now = std::chrono::steady_clock::now();
+                auto duration = now - start;
+                cout << "[correct]\n";
+                cout << "time: " << std::chrono::duration_cast<std::chrono::seconds>(duration).count() << endl;
+                std::cout << "iteration: " << i << "\n";
+                state.current_correct_best.print();
+                std::cout << "\n";
+                std::cout << new_cost << "\n\n";
+                std::flush(std::cout);
             }
         }
     }
