@@ -1,39 +1,30 @@
-#include <keystone/keystone.h>
+#include <iostream>
 
-#define CODE "INC ecx; DEC edx"
+#include "verify/BruteForceVerifier.h"
+#include "megumin_utils.h"
+
+using namespace std;
 
 int main() {
-    ks_engine *ks;
-    ks_err err;
-    size_t count;
-    unsigned char *encode;
-    size_t size;
+    megumin::BruteForceVerifier verifier{10000};
 
-    err = ks_open(KS_ARCH_X86, KS_MODE_32, &ks);
-    if (err != KS_ERR_OK) {
-        printf("ERROR: failed on ks_open(), quit\n");
-        return -1;
-    }
+    auto p1 = megumin::aarch64_asm(R"(subs x31, x20, x8
+mov x8, x11
+add x8, x8, x11
+subs x31, x8, x10
+csel x9, x10, x31, hi
+sub x8, x8, x9
+add x9, x8, x11
+subs x31, x9, x10
+csel x10, x10, x31, hi
+sub x9, x9, x10)").value();
+    auto p2 = megumin::aarch64_asm(R"(adds x8, x11, x11
+add x9, x8, x11
+subs x10, x9, x10
+csneg x10, x31, x31, vs)").value();
 
-    if (ks_asm(ks, CODE, 0, &encode, &size, &count) != KS_ERR_OK) {
-        printf("ERROR: ks_asm() failed & count = %lu, error = %u\n",
-               count, ks_errno(ks));
-    } else {
-        size_t i;
-
-        printf("%s = ", CODE);
-        for (i = 0; i < size; i++) {
-            printf("%02x ", encode[i]);
-        }
-        printf("\n");
-        printf("Compiled: %lu bytes, statements: %lu\n", size, count);
-    }
-
-    // NOTE: free encode after usage to avoid leaking memory
-    ks_free(encode);
-
-    // close Keystone instance when done
-    ks_close(ks);
+    auto result = verifier.verify(p1, p2);
+    cout << result << endl;
 
     return 0;
 }

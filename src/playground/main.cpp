@@ -13,7 +13,7 @@ using namespace arm;
 
 int main() {
     BBExtractor extractor{R"(E:\CLionProjects\megumin\test_files\pocketfft-aarch64.s)"};
-    extractor.set_max_bb(1000);
+    extractor.set_max_bb(100);
     auto bbs = extractor.extract_basic_blocks();
 
     map<int, int> counts;

@@ -18,6 +18,9 @@ namespace arm {
         FPRegBank();
         FPRegBank(const FPRegBank& other);
 
+        bool operator==(const FPRegBank& other) const;
+        bool operator!=(const FPRegBank& other) const;
+
         bits get16(int index) {
             return bank[index * 2 + 1].resize(16);
         }
@@ -97,6 +100,9 @@ namespace arm {
     public:
         GPRegBank();
         GPRegBank(const GPRegBank& other);
+
+        bool operator==(const GPRegBank& other) const;
+        bool operator!=(const GPRegBank& other) const;
 
         [[nodiscard]] const bits& get_ref(int index) const {
             return bank[index];

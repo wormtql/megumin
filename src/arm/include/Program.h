@@ -6,6 +6,7 @@
 #define MEGUMIN_PROGRAM_H
 
 #include <vector>
+#include <iostream>
 
 #include "Instruction.h"
 #include "MachineState.h"
@@ -34,7 +35,7 @@ namespace arm {
         void set_entry_def_ins(const RegSet& def_ins);
 
         [[nodiscard]] const Instruction& get_instruction_const(int index) const;
-        void print() const;
+        void print(std::ostream& os = std::cout) const;
 
         void calculate_def_ins();
         [[nodiscard]] const RegSet& get_def_in(int index) const;

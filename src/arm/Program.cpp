@@ -60,13 +60,13 @@ namespace arm {
         return instructions[index];
     }
 
-    void Program::print() const {
-        InstructionPrinter printer{std::cout};
+    void Program::print(std::ostream& os) const {
+        InstructionPrinter printer{os};
 
         for (int i = 0; i < instructions.size(); i++) {
             printer.visit_instruction(instructions[i]);
             if (i != instructions.size() - 1)
-                std::cout << "\n";
+                os << "\n";
         }
     }
 

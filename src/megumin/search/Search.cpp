@@ -18,10 +18,14 @@ namespace megumin {
     void Search::do_search(SearchState &state) {
         auto start = std::chrono::steady_clock::now();
         for (unsigned long long i = 0; i < max_iteration; i++) {
-//            if (i == 393058) {
-//                cout << "123";
-//            }
-//            arm::Program new_program = program_mutation->mutate(state.current);
+            auto now = std::chrono::steady_clock::now();
+            auto duration = now - start;
+            auto duration_ms = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
+
+            if (duration_ms > max_time) {
+                break;
+            }
+
             arm::Program& program = state.current;
             auto mutation_result = program_mutation->mutate(program);
 
@@ -32,12 +36,6 @@ namespace megumin {
             const bool is_correct = new_cost_result.first == CostFunction::CorrectState::Correct;
             const double new_cost = new_cost_result.second;
 
-            // if (i % 100000 == 0) {
-            //     printf("%d: new cost: %lf, current best: %lf\n", i, new_cost, state.current_best_cost);
-            //     new_program.print();
-            //     cout << endl;
-            //     fflush(stdout);
-            // }
 
             if (new_cost > max_cost) {
                 program_mutation->undo(program, mutation_result);
@@ -47,8 +45,7 @@ namespace megumin {
 //            state.current = new_program;
 
             if (state.current_best_cost > new_cost) {
-                auto now = std::chrono::steady_clock::now();
-                auto duration = now - start;
+
                 cout << "time: " << std::chrono::duration_cast<std::chrono::seconds>(duration).count() << endl;
                 state.current_best_cost = new_cost;
                 state.current_best = state.current;
@@ -62,9 +59,8 @@ namespace megumin {
             if (new_cost < state.current_correct_best_cost && is_correct) {
                 state.current_correct_best = state.current;
                 state.current_correct_best_cost = new_cost;
+                state.success = true;
 
-                auto now = std::chrono::steady_clock::now();
-                auto duration = now - start;
                 cout << "[correct]\n";
                 cout << "time: " << std::chrono::duration_cast<std::chrono::seconds>(duration).count() << endl;
                 std::cout << "iteration: " << i << "\n";

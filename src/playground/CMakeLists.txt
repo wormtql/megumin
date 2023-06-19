@@ -1,13 +1,24 @@
+
+function(add_megumin_executable name)
+    add_executable(${name} ${name}.cpp)
+    target_link_libraries(${name}
+            arm_asm
+            megumin
+            )
+endfunction()
+
+add_megumin_executable(auto_opt)
+add_megumin_executable(main)
+
 add_executable(playground main.cpp)
 add_executable(main2 main2.cpp)
-add_executable(main main.cpp)
 add_executable(main3 main3.cpp)
+add_executable(main4 main4.cpp)
+
 
 target_link_libraries(playground
         arm_asm
         )
-
-target_link_libraries(main arm_asm megumin)
 
 target_link_libraries(main2
         arm_asm
@@ -15,6 +26,11 @@ target_link_libraries(main2
         )
 
 target_link_libraries(main3
+        arm_asm
+        megumin
+        )
+
+target_link_libraries(main4
         arm_asm
         megumin
         )
@@ -29,7 +45,7 @@ endif()
 #target_include_directories(main3 ${PROJECT_SOURCE_DIR}/3rd/llvm/llvm/include)
 #target_include_directories(main3 PRIVATE ${LLVM_INCLUDE_DIRS})
 
-add_executable(main4 main4.cpp)
+
 
 if (NOT WIN32)
     target_link_libraries(main2 keystone)

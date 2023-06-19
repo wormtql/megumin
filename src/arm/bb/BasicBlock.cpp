@@ -9,6 +9,15 @@ namespace arm {
     BasicBlock::BasicBlock(std::vector<Instruction> &&instructions, int start, int end)
         : instructions(std::move(instructions)), start(start), end(end)
     {}
+
+    Program BasicBlock::to_program() const {
+        Program prog;
+        for (const auto& inst: instructions) {
+            prog.add_instruction(inst);
+        }
+
+        return std::move(prog);
+    }
 }
 
 std::ostream& operator<<(std::ostream& os, const arm::BasicBlock& bb) {

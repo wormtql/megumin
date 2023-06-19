@@ -42,6 +42,8 @@ namespace arm {
                     result.push_back(bb);
 //                    cout << bb << endl;
                     bb.clear_instructions();
+                } else {
+                    bb.clear_instructions();
                 }
             };
 

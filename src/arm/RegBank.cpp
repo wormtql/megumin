@@ -18,6 +18,19 @@ namespace arm {
         memcpy(bank, other.bank, sizeof(bank));
     }
 
+    bool GPRegBank::operator==(const GPRegBank &other) const {
+        for (int i = 0; i < 32; i++) {
+            if (bank[i] != other.bank[i]) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    bool GPRegBank::operator!=(const GPRegBank &other) const {
+        return !(*this == other);
+    }
+
     FPRegBank::FPRegBank() {
         for (int i = 0; i < 64; i++) {
             bank[i] = bits{64, 0};
@@ -26,5 +39,18 @@ namespace arm {
 
     FPRegBank::FPRegBank(const FPRegBank& other) {
         memcpy(bank, other.bank, sizeof(bank));
+    }
+
+    bool FPRegBank::operator==(const FPRegBank &other) const {
+        for (int i = 0; i < 32; i++) {
+            if (bank[i] != other.bank[i]) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    bool FPRegBank::operator!=(const FPRegBank &other) const {
+        return !(*this == other);
     }
 }

@@ -20,8 +20,12 @@ namespace arm {
         v = nzcv.is_set(0);
     }
 
-    MachineState::MachineState() {
+    bool PState::operator==(const PState &other) const {
+        return n == other.n && c == other.c && z == other.z && v == other.v && d == other.d && a == other.a;
+    }
 
+    bool PState::operator!=(const PState &other) const {
+        return !(other == *this);
     }
 
     std::mt19937 MachineState::generator{999};
@@ -104,5 +108,36 @@ namespace arm {
         } else {
             gp.set(size, index, value);
         }
+    }
+
+    void MachineState::fill_random() {
+        fill_fp_random();
+        fill_gp_random();
+        fill_nzcv_random();
+        fill_sp_random();
+    }
+
+    bool MachineState::operator==(const MachineState &other) const {
+        if (p_state != other.p_state) {
+            return false;
+        }
+
+        if (gp != other.gp) {
+            return false;
+        }
+
+        if (fp != other.fp) {
+            return false;
+        }
+
+        if (sp != other.sp) {
+            return false;
+        }
+
+        return true;
+    }
+
+    bool MachineState::operator!=(const MachineState &other) const {
+        return !(*this == other);
     }
 }

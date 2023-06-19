@@ -8,6 +8,7 @@
 #include "Instruction.h"
 #include <vector>
 #include <iostream>
+#include "Program.h"
 
 namespace arm {
     class BasicBlock {
@@ -48,6 +49,8 @@ namespace arm {
 
         [[nodiscard]] inline int get_start() const { return start; }
         [[nodiscard]] inline int get_end() const { return end; }
+
+        [[nodiscard]] Program to_program() const;
     };
 }
 
