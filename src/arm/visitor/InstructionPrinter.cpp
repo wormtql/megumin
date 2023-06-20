@@ -186,18 +186,55 @@ namespace arm {
         bits rn = instruction.get_range(5, 10);
         bits rd = instruction.get_range(0, 5);
 
+        auto reg = sf ? "x" : "w";
+
         if (opc == 00) {
             os << "sbfm";
         } else if (opc == 01) {
             os << "bfm";
         } else if (opc == 10) {
+            if (sf) {
+                if (imms != 0b111111 && imms + 1 == immr) {
+                    os << "lsl";
+                    os << " ";
+                    os << reg << rd.as_i32() << ", ";
+                    os << reg << rn.as_i32() << ", ";
+                    os << "#" << (63 - imms.as_i32());
+                    return;
+                }
+                if (imms == 0b111111) {
+                    os << "lsr";
+                    os << " ";
+                    os << reg << rd.as_i32() << ", ";
+                    os << reg << rn.as_i32() << ", ";
+                    os << "#" << immr.as_i32();
+                    return;
+                }
+            } else {
+                if (imms != 0b011111 && imms + 1 == immr) {
+                    os << "lsl";
+                    os << " ";
+                    os << reg << rd.as_i32() << ", ";
+                    os << reg << rn.as_i32() << ", ";
+                    os << "#" << (31 - imms.as_i32());
+                    return;
+                }
+                if (imms == 0b011111) {
+                    os << "lsr";
+                    os << " ";
+                    os << reg << rd.as_i32() << ", ";
+                    os << reg << rn.as_i32() << ", ";
+                    os << "#" << immr.as_i32();
+                    return;
+                }
+            }
             os << "ubfm";
         } else {
             assert(false);
         }
         os << " ";
 
-        auto reg = sf ? "x" : "w";
+
         os << reg << rd.as_u64() << ", ";
         os << reg << rn.as_u64() << ", ";
         os << "#" << immr.as_u64() << ", ";
