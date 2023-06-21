@@ -7,4 +7,4 @@ keystone_install/
 pocketfft_build/
 .vscode/
 z3_install/
-z3_build
+z3_build/
