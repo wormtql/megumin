@@ -20,6 +20,8 @@ namespace arm {
         void visit_dp_imm_logical(const Instruction &instruction) override;
 
         void visit_dp_imm_move_wide(const Instruction &instruction) override;
+
+        void visit_dp_imm_bitfield(const Instruction &instruction) override;
     };
 }
 

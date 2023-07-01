@@ -8,6 +8,8 @@
 #include "ArmUtils.h"
 #include "megumin_utils.h"
 
+using megumin::megumin_assert;
+
 namespace arm {
     void InstructionExecutionS::visit_dp_imm_add_sub(const arm::Instruction &instruction) {
         bool sf = instruction.is_set(31);
@@ -151,6 +153,59 @@ namespace arm {
             state.set_gp(datasize, d, result, false);
         } else {
             megumin::megumin_assert(false);
+        }
+    }
+
+    void InstructionExecutionS::visit_dp_imm_bitfield(const Instruction &instruction) {
+        bool sf = instruction.is_set(31);
+        bits opc = instruction.get_range(29, 31);
+        bool N = instruction.is_set(22);
+        bits immr = instruction.get_range(16, 22);
+        bits imms = instruction.get_range(10, 16);
+        bits rn = instruction.get_range(5, 10);
+        bits rd = instruction.get_range(0, 5);
+
+        int d = rd.as_i32();
+        int n = rn.as_i32();
+
+        int datasize = sf ? 64 : 32;
+
+        bits wmask{datasize, 0};
+        bits tmask{datasize, 0};
+
+        megumin_assert(!(sf && !N));
+        megumin_assert(!(!sf && (N || immr.is_set(5) || imms.is_set(5))));
+
+        auto R = immr.as_i32();
+        auto S = imms.as_i32();
+        auto temp = ArmUtils::decode_bit_mask(datasize, N, imms, immr, false);
+        wmask = temp.first;
+        tmask = temp.second;
+
+        auto& c = state.sp.ctx();
+
+        expr wmask_val = c.bv_val(wmask.data0, datasize);
+        expr tmask_val = c.bv_val(tmask.data0, datasize);
+
+        if (opc == 0b00) {
+            // sbfm
+            expr src = state.get_gp(datasize, n, false, true);
+            expr bot = ArmUtilSharedFunctionsS::ror(src, R) & wmask_val;
+            expr top = ArmUtilsS::replicate(src.extract(S, S), datasize);
+            expr result = (top & ~tmask_val) | (bot & tmask_val);
+            state.set_gp(datasize, d, result, false);
+        } else if (opc == 0b01) {
+            // bfm
+            expr dst = state.get_gp(datasize, d, false, true);
+            expr src = state.get_gp(datasize, n, false, true);
+            expr bot = (dst & ~wmask_val) | (ArmUtilSharedFunctionsS::ror(src, R) & wmask_val);
+            expr result = (dst & ~tmask_val) | (bot & tmask_val);
+            state.set_gp(datasize, d, result, false);
+        } else if (opc == 0b10) {
+            // ubfm
+            expr src = state.get_gp(datasize, n, false, true);
+            expr bot = ArmUtilSharedFunctionsS::ror(src, R) & wmask_val;
+            state.set_gp(datasize, d, bot & tmask_val, false);
         }
     }
 }

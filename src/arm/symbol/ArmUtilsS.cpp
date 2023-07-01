@@ -64,4 +64,106 @@ namespace arm {
         PStateS p_state{n, z, c, v};
         return { sum, p_state };
     }
+
+    expr ArmUtilsS::replicate(const expr &x, int m) {
+        megumin::megumin_assert(x.get_sort().is_bv());
+        int size = x.get_sort().bv_size();
+        megumin::megumin_assert(size * m <= 64);
+
+        return x.repeat(m);
+    }
+}
+
+namespace arm {
+    expr ArmUtilSharedFunctionsS::lsr(const expr& x, int shift) {
+        megumin::megumin_assert(shift >= 0);
+        if (shift == 0) {
+            return x;
+        } else {
+            auto result = lsr_c(x, shift);
+            return result.first;
+        }
+    }
+
+    std::pair<expr, expr> ArmUtilSharedFunctionsS::lsr_c(const expr &x, int shift) {
+        megumin::megumin_assert(shift > 0);
+        megumin::megumin_assert(x.get_sort().is_bv());
+
+//        int N = x.get_sort().bv_size();
+
+        expr carry_out = x.extract(shift - 1, shift - 1);
+
+        expr result = z3::lshr(x, shift);
+
+        return {result, carry_out};
+    }
+
+    expr ArmUtilSharedFunctionsS::lsl(const expr &x, int shift) {
+        megumin::megumin_assert(shift >= 0);
+        megumin::megumin_assert(x.get_sort().is_bv());
+
+        if (shift == 0) {
+            return x;
+        } else {
+            auto result = lsl_c(x, shift);
+            return result.first;
+        }
+    }
+
+    std::pair<expr, expr> ArmUtilSharedFunctionsS::lsl_c(const expr &x, int shift) {
+        megumin::megumin_assert(shift > 0);
+        megumin::megumin_assert(x.get_sort().is_bv());
+
+        int N = x.get_sort().bv_size();
+
+        expr result = z3::shl(x, shift);
+        expr carry_out = x.extract(N - shift, N - shift);
+
+        return {result, carry_out};
+    }
+
+    expr ArmUtilSharedFunctionsS::ror(const expr& x, int shift) {
+        megumin::megumin_assert(shift >= 0);
+        megumin::megumin_assert(x.get_sort().is_bv());
+        if (shift == 0) {
+            return x;
+        } else {
+            auto result = ror_c(x, shift);
+            return result.first;
+        }
+    }
+
+    std::pair<expr, expr> ArmUtilSharedFunctionsS::ror_c(const expr& x, int shift) {
+        megumin::megumin_assert(shift != 0);
+        megumin::megumin_assert(x.get_sort().is_bv());
+
+        int N = x.get_sort().bv_size();
+        int m = shift % N;
+        auto result = lsr(x, m) | lsl(x, N - m);
+        expr carry_out = result.extract(N - 1, N - 1);
+        return {result, carry_out};
+    }
+
+    expr ArmUtilSharedFunctionsS::asr(const expr& x, int shift) {
+        megumin::megumin_assert(shift >= 0);
+        megumin::megumin_assert(x.get_sort().is_bv());
+
+        if (shift == 0) {
+            return x;
+        } else {
+            return asr_c(x, shift).first;
+        }
+    }
+
+    std::pair<expr, expr> ArmUtilSharedFunctionsS::asr_c(const expr &x, int shift) {
+        megumin::megumin_assert(shift > 0);
+        megumin::megumin_assert(x.get_sort().is_bv());
+        int size = x.get_sort().bv_size();
+        megumin::megumin_assert(shift < size);
+
+        expr carry_out = x.extract(shift - 1, shift - 1);
+        expr result = z3::lshr(x, shift);
+
+        return {result, carry_out};
+    }
 }
