@@ -15,7 +15,7 @@ using std::string;
 namespace megumin {
     void megumin_assert(bool expression, std::optional<string> message = {});
 
-    void megumin_todo();
+    [[noreturn]] void megumin_todo();
 
     std::optional<arm::Program> aarch64_asm(const std::string& code);
 

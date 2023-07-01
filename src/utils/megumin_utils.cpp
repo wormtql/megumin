@@ -14,7 +14,7 @@ namespace megumin {
         }
     }
 
-    void megumin_todo() {
+    [[noreturn]] void megumin_todo() {
         megumin_assert(false, "todo");
     }
 

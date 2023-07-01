@@ -10,6 +10,7 @@
 #include "MachineState.h"
 #include "Bitvec.h"
 #include "RegSet.h"
+#include "symbol/MachineStateS.h"
 
 namespace arm {
     enum class InstructionType {
@@ -51,6 +52,7 @@ namespace arm {
         void set_range(int low, int high, int64_t value);
         [[nodiscard]] bool is_set(int index) const;
         void execute(MachineState& state) const;
+        void execute(MachineStateS& state) const;
         void set_as_nop();
         void inverse_bit(int index) { instruction.inverse_bit(index); }
         [[nodiscard]] bool is_nop() const;

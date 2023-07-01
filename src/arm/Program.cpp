@@ -112,4 +112,11 @@ namespace arm {
         }
         return result;
     }
+
+    void Program::execute(MachineStateS &state) const {
+        for (const auto& instruction: instructions) {
+            instruction.execute(state);
+            // todo control flow
+        }
+    }
 }

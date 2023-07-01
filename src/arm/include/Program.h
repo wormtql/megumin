@@ -10,6 +10,7 @@
 
 #include "Instruction.h"
 #include "MachineState.h"
+#include "symbol/MachineStateS.h"
 #include "RegSet.h"
 
 namespace arm {
@@ -25,6 +26,8 @@ namespace arm {
         Program(int size, const RegSet& def_ins0);
 
         void execute(MachineState& state) const;
+        void execute(MachineStateS& state) const;
+
         [[nodiscard]] int get_size() const {
             return instructions.size();
         }

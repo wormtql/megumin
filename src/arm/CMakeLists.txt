@@ -16,4 +16,5 @@ target_include_directories(arm_asm
         include
         visitor)
 target_link_libraries(arm_asm
-        megumin_utils)
+        megumin_utils
+        ${PROJECT_SOURCE_DIR}/z3_install/bin/libz3.lib)

@@ -11,6 +11,7 @@
 #include "visitor/GetDefRegister.h"
 #include "visitor/InstructionExecution.h"
 #include "visitor/GetReadRegister.h"
+#include "symbol/InstructionExecutionS.h"
 
 namespace arm {
     uint64_t Instruction::ID = 0;
@@ -55,6 +56,16 @@ namespace arm {
 
         InstructionExecution execution{state};
         execution.execute(*this);
+    }
+
+    void Instruction::execute(MachineStateS &state) const {
+        if (instruction.data0 == 0) {
+            // nop
+            return;
+        }
+
+        InstructionExecutionS execution{state};
+        execution.visit_instruction(*this);
     }
 
     void Instruction::set_bit(int index, bool value) {
