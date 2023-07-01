@@ -24,6 +24,8 @@ namespace megumin {
     string trim(const string& s);
 
     expr set_expr_range(expr x, int low, int high, int64_t value);
+
+    expr reverse_expr(const expr& x);
 }
 
 #endif //MEGUMIN_MEGUMIN_UTILS_H

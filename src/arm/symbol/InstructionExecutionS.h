@@ -24,6 +24,8 @@ namespace arm {
         void visit_dp_imm_bitfield(const Instruction &instruction) override;
 
         void visit_dp_imm_extract(const Instruction &instruction) override;
+
+        void visit_dp_reg_1source(const Instruction &instruction) override;
     };
 }
 

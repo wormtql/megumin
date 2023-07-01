@@ -247,5 +247,85 @@ namespace arm {
             megumin::megumin_assert(false);
         }
     }
+
+    void InstructionExecutionS::visit_dp_reg_1source(const Instruction &instruction) {
+        bool sf = instruction.is_set(31);
+        bool S = instruction.is_set(29);
+        bits opcode2 = instruction.get_range(16, 21);
+        bits opcode = instruction.get_range(10, 16);
+        bits rn = instruction.get_rn();
+        bits rd = instruction.get_rd();
+
+        int n = rn.as_i32();
+        int d = rd.as_i32();
+        int datasize = sf ? 64 : 32;
+
+        megumin_assert(S == 0);
+
+        if (opcode2 == 0 && opcode == 0) {
+            // rbit
+            expr operand = state.get_gp(datasize, n, false, true);
+            expr result = megumin::reverse_expr(operand);
+            state.set_gp(datasize, d, result, false);
+        } else if (opcode2 == 0 && (opcode >> 2) == 0) {
+            // rev
+            // todo 比较难实现
+            megumin::megumin_todo();
+//            bits opc = instruction.get_range(10, 12);
+//            int container_size = 0;
+//            if (opc == 0b01) {
+//                container_size = 16;
+//            } else if (opc == 0b10) {
+//                container_size = 32;
+//            } else if (opc == 0b11) {
+//                megumin_assert(sf == 1);
+//                container_size = 64;
+//            } else {
+//                megumin_assert(false);
+//            }
+//
+//            expr operand = state.get_gp(datasize, n, false, true);
+//
+//            int containers = datasize / container_size;
+//            megumin_assert(containers >= 1);
+//            int elements_per_container = container_size / 8;
+//            int index = 0;
+//            int rev_index;
+//
+//            bits result{datasize, 0};
+//
+//            for (int c = 0; c < containers; c++) {
+//                rev_index = index + ((elements_per_container - 1) * 8);
+//                for (int e = 0; e < elements_per_container; e++) {
+//                    megumin_assert(rev_index <= datasize);
+//                    megumin_assert(rev_index + 8 <= datasize);
+//                    megumin_assert(index <= datasize);
+//                    megumin_assert(index + 8 <= datasize);
+//                    result.set_range(rev_index, rev_index + 8, operand.get_range(index, index + 8).as_i64());
+//                    index += 8;
+//                    rev_index -= 8;
+//                }
+//            }
+//
+//            state.gp.set(datasize, d, result);
+        } else if (opcode2 == 0 && opcode == 0b000100) {
+            // clz
+            // todo 比较难实现
+            megumin::megumin_todo();
+//            bits operand1 = state.gp.get(datasize, n);
+//            int result = ArmUtilsSharedFunctions::count_leading_zero_bits(operand1);
+//            state.gp.set(datasize, d, bits{datasize, result});
+        } else if (opcode2 == 0 && opcode == 0b000101) {
+            // cls
+            // todo 比较难实现
+            megumin::megumin_todo();
+//            bits operand1 = state.gp.get(datasize, n);
+//            int result = ArmUtilsSharedFunctions::count_leading_sign_bits(operand1);
+//            state.gp.set(datasize, d, bits{datasize, result});
+        }
+        else {
+            megumin_assert(false);
+        }
+    }
 }
 
