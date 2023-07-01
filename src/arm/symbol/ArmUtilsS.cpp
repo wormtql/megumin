@@ -4,6 +4,7 @@
 
 #include "ArmUtilsS.h"
 #include "megumin_utils.h"
+#include "ArmUtils.h"
 
 namespace arm {
     std::pair<expr, PStateS> ArmUtilsS::add_with_carry(expr x, expr y, expr carry) {

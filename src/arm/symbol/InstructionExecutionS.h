@@ -16,6 +16,10 @@ namespace arm {
         explicit InstructionExecutionS(MachineStateS& state): state(state) {}
 
         void visit_dp_imm_add_sub(const Instruction &instruction) override;
+
+        void visit_dp_imm_logical(const Instruction &instruction) override;
+
+        void visit_dp_imm_move_wide(const Instruction &instruction) override;
     };
 }
 

@@ -15,9 +15,11 @@ using namespace std;
 
 arm::Program get_prog1() {
     return megumin::aarch64_asm("add x1, x2, #10").value();
+//    return megumin::aarch64_asm("movk x1, #10").value();
 }
 
 arm::Program get_prog2() {
+//    return megumin::aarch64_asm("movk w1, #10").value();
     return megumin::aarch64_asm("add x1, x2, #2; add x1, x1, #8").value();
 //    return megumin::aarch64_asm("add x1, x2, #5").value();
 }

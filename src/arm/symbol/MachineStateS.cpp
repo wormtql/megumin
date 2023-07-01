@@ -61,7 +61,7 @@ namespace arm {
             } else if (is_zr_31) {
                 return gp.get(size, 31);
             } else {
-                megumin::megumin_assert(false);
+                return gp.get(size, 31);
             }
         } else {
             return gp.get(size, index);
