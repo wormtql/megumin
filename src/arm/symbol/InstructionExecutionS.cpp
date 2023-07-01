@@ -208,5 +208,44 @@ namespace arm {
             state.set_gp(datasize, d, bot & tmask_val, false);
         }
     }
+
+    void InstructionExecutionS::visit_dp_imm_extract(const Instruction &instruction) {
+        bool sf = instruction.is_set(31);
+        bits op21 = instruction.get_range(29, 31);
+        bool N = instruction.is_set(22);
+        bool o0 = instruction.is_set(21);
+        bits rm = instruction.get_range(16, 21);
+        bits imms = instruction.get_range(10, 16);
+        bits rn = instruction.get_range(5, 10);
+        bits rd = instruction.get_range(0, 5);
+
+        int d = rd.as_i32();
+        int n = rn.as_i32();
+        int m = rm.as_i32();
+        int datasize = sf ? 64 : 32;
+
+        if (op21 == 0b00 && !o0) {
+            // extr
+            megumin_assert(N == sf);
+            if (sf == 0 && imms.is_set(5)) {
+                megumin_assert(false);
+            }
+
+            unsigned int lsb = imms.as_u32();
+            expr operand1 = state.get_gp(datasize, n, false, true);
+            expr operand2 = state.get_gp(datasize, m, false, true);
+
+            if (lsb == 0) {
+                state.set_gp(datasize, d, operand2, false);
+            } else {
+                expr low = operand2.extract(datasize - 1, lsb);
+                expr high = operand1.extract(lsb - 1, 0);
+                expr result = z3::concat(low, high);
+                state.set_gp(datasize, d, result, false);
+            }
+        } else {
+            megumin::megumin_assert(false);
+        }
+    }
 }
 
