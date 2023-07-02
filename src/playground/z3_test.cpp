@@ -14,7 +14,8 @@ using namespace arm;
 using namespace std;
 
 arm::Program get_prog1() {
-    return megumin::aarch64_asm("orr w1, w2, w1").value();
+    return megumin::aarch64_asm("add x1, x2, x2; add x1, x1, x1").value();
+//    return megumin::aarch64_asm("orr w1, w2, w1").value();
 //    return megumin::aarch64_asm("lslv x1, x2, x3").value();
 //    return megumin::aarch64_asm("ror x1, x2, #5").value();
 //    return megumin::aarch64_asm("lsl x1, x1, #1").value();
@@ -24,7 +25,7 @@ arm::Program get_prog1() {
 }
 
 arm::Program get_prog2() {
-    return megumin::aarch64_asm("lsl x1, x2, #0").value();
+    return megumin::aarch64_asm("lsl x1, x2, #2").value();
 //    return megumin::aarch64_asm("ror x1, x2, #5").value();
 //    return megumin::aarch64_asm("add x1, x1, #1").value();
 //    return megumin::aarch64_asm("lsr x1, x2, #1").value();

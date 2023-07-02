@@ -17,6 +17,7 @@ namespace arm {
     public:
         static std::pair<expr, PStateS> add_with_carry(expr x, expr y, expr carry);
         static std::pair<expr, PStateS> add_with_carry(const expr& x, bits y, bool carry);
+        static std::pair<expr, PStateS> add_with_carry(const expr& x, const expr& y, bool carry);
 
         static expr replicate(const expr& x, int m);
 

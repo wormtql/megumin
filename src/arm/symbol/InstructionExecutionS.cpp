@@ -428,4 +428,43 @@ namespace arm {
             state.p_state.set_nzcv(p_state);
         }
     }
+
+    void InstructionExecutionS::visit_dp_reg_add_sub_shifted_reg(const Instruction &instruction) {
+        bool sf = instruction.is_set(31);
+        bool op = instruction.is_set(30);
+        bool S = instruction.is_set(29);
+        bits shift = instruction.get_range(22, 24);
+        bits rm = instruction.get_range(16, 21);
+        bits imm6 = instruction.get_range(10, 16);
+        bits rn = instruction.get_range(5, 10);
+        bits rd = instruction.get_range(0, 5);
+
+        int d = rd.as_i32();
+        int n = rn.as_i32();
+        int m = rm.as_i32();
+        int datasize = sf ? 64 : 32;
+        int shift_amount = imm6.as_i32();
+
+        megumin::megumin_assert(shift != 0b11);
+        megumin::megumin_assert(sf != 0 || imm6[5] != 1);
+
+        expr operand1 = state.get_gp(datasize, n, false, true);
+        expr operand2 = ArmUtilsS::shift_reg(state.get_gp(datasize, m, false, true), shift.as_i32(), shift_amount);
+
+        if (op == 0) {
+            // add adds
+            auto result = ArmUtilsS::add_with_carry(operand1, operand2, false);
+            state.set_gp(datasize, d, result.first, false);
+            if (S) {
+                state.p_state.set_nzcv(result.second);
+            }
+        } else if (op == 1) {
+            operand2 = ~operand2;
+            auto result = ArmUtilsS::add_with_carry(operand1, operand2, true);
+            state.set_gp(datasize, d, result.first, false);
+            if (S) {
+                state.p_state.set_nzcv(result.second);
+            }
+        }
+    }
 }

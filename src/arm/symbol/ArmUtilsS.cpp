@@ -16,16 +16,22 @@ namespace arm {
 
         expr nx = z3::zext(x, 1);
         expr ny = z3::zext(y, 1);
-        expr nsum = nx + ny;
+        expr ncarry = z3::zext(carry, 1);
+        expr nsum = nx + ny + ncarry;
 
         expr sign_x = x.extract(size - 1, size - 1);
         expr sign_y = y.extract(size - 1, size - 1);
         expr sign_sum = sum.extract(size - 1, size - 1);
 
-        expr n = sum.extract(size - 1, size - 1);
+        expr n = sum.extract(size - 1, size - 1) == 1;
         expr z = sum == 0;
-        expr c = nsum.extract(size + 1, size + 1);
+        expr c = nsum.extract(size, size) == 1;
         expr v = (sign_x == sign_y && sign_x != sign_sum);
+
+        megumin::megumin_assert(n.is_bool());
+        megumin::megumin_assert(z.is_bool());
+        megumin::megumin_assert(c.is_bool());
+        megumin::megumin_assert(v.is_bool());
 
         PStateS p_state{n, z, c, v};
         return { sum, p_state };
@@ -99,6 +105,17 @@ namespace arm {
                 return ArmUtilSharedFunctionsS::ror(reg, amount);
         }
         megumin::megumin_unreachable();
+    }
+
+    std::pair<expr, PStateS> ArmUtilsS::add_with_carry(const expr &x, const expr &y, bool carry) {
+        auto& c = x.ctx();
+        int size = x.get_sort().bv_size();
+
+        if (carry) {
+            return add_with_carry(x, y, c.bv_val(1, size));
+        } else {
+            return add_with_carry(x, y, c.bv_val(0, size));
+        }
     }
 }
 
