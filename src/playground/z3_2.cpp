@@ -35,7 +35,10 @@ arm::Program get_prog2() {
 int main() {
     context c;
 
-    expr x = c.bv_val(4, 64);
+    expr x = c.bool_val(true);
+    x = shl(x, 1);
+
+//    expr x = c.bv_val(4, 64);
 //    expr x = c.bv_const("x", 64);
     expr y = c.bv_val(-63, 64);
 //    expr y = c.bv_val(55, 64);

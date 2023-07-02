@@ -91,4 +91,13 @@ namespace megumin {
             megumin_assert(false);
         }
     }
+
+    expr z3_bool_to_bv(const expr& b, int size) {
+        auto& c = b.ctx();
+
+        expr zero = c.bv_val(0, size);
+        expr one = c.bv_val(1, size);
+
+        return z3::ite(b, one, zero);
+    }
 }

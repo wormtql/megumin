@@ -28,6 +28,8 @@ namespace megumin {
     expr set_expr_range(expr x, int low, int high, int64_t value);
 
     expr reverse_expr(const expr& x);
+
+    expr z3_bool_to_bv(const expr& b, int size);
 }
 
 #endif //MEGUMIN_MEGUMIN_UTILS_H

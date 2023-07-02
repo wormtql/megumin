@@ -467,4 +467,40 @@ namespace arm {
             }
         }
     }
+
+    void InstructionExecutionS::visit_dp_reg_add_sub_with_carry(const Instruction &instruction) {
+        bool sf = instruction.is_set(31);
+        bool op = instruction.is_set(30);
+        bool S = instruction.is_set(29);
+        bits rm = instruction.get_rm();
+        bits rn = instruction.get_rn();
+        bits rd = instruction.get_rd();
+
+        int d = rd.as_i32();
+        int m = rm.as_i32();
+        int n = rn.as_i32();
+        int datasize = sf ? 64 : 32;
+
+        expr operand1 = state.get_gp(datasize, n, false, true);
+        expr operand2 = state.get_gp(datasize, m, false, true);
+
+        if (op == 0) {
+            // adc/adcs
+            expr carry = megumin::z3_bool_to_bv(state.p_state.c, datasize);
+            auto result = ArmUtilsS::add_with_carry(operand1, operand2, carry);
+            state.set_gp(datasize, d, result.first, false);
+            if (S) {
+                state.p_state.set_nzcv(result.second);
+            }
+        } else if (op == 1) {
+            // sbc/sbcs
+            operand2 = ~operand2;
+            expr carry = megumin::z3_bool_to_bv(state.p_state.c, datasize);
+            auto result = ArmUtilsS::add_with_carry(operand1, operand2, carry);
+            state.set_gp(datasize, d, result.first, false);
+            if (S) {
+                state.p_state.set_nzcv(result.second);
+            }
+        }
+    }
 }
