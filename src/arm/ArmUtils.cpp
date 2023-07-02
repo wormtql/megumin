@@ -164,7 +164,7 @@ namespace arm {
         unsigned int diff = S - R;
 
         int esize = 1 << len;
-        unsigned int d = bits{len, diff}.as_u32();
+        unsigned int d = bits{len, diff}.get_range(0, len).as_u32();
         bits welem = bits::ones(S + 1).zero_extend(esize);
         bits telem = bits::ones(d + 1).zero_extend(esize);
         bits wmask = replicate(ArmUtilsSharedFunctions::ror(welem, R), 64 / esize);

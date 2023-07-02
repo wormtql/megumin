@@ -72,6 +72,34 @@ namespace arm {
 
         return x.repeat(m);
     }
+
+    expr ArmUtilsS::shift_reg(const expr& reg, int shift_type, int amount) {
+        switch (shift_type) {
+            case 0:
+                return ArmUtilSharedFunctionsS::lsl(reg, amount);
+            case 1:
+                return ArmUtilSharedFunctionsS::lsr(reg, amount);
+            case 2:
+                return ArmUtilSharedFunctionsS::asr(reg, amount);
+            case 3:
+                return ArmUtilSharedFunctionsS::ror(reg, amount);
+        }
+        megumin::megumin_unreachable();
+    }
+
+    expr ArmUtilsS::shift_reg(const expr &reg, int shift_type, const expr &amount) {
+        switch (shift_type) {
+            case 0:
+                return ArmUtilSharedFunctionsS::lsl(reg, amount);
+            case 1:
+                return ArmUtilSharedFunctionsS::lsr(reg, amount);
+            case 2:
+                return ArmUtilSharedFunctionsS::asr(reg, amount);
+            case 3:
+                return ArmUtilSharedFunctionsS::ror(reg, amount);
+        }
+        megumin::megumin_unreachable();
+    }
 }
 
 namespace arm {
@@ -162,8 +190,89 @@ namespace arm {
         megumin::megumin_assert(shift < size);
 
         expr carry_out = x.extract(shift - 1, shift - 1);
-        expr result = z3::lshr(x, shift);
+        expr result = z3::ashr(x, shift);
 
         return {result, carry_out};
     }
+
+    expr ArmUtilSharedFunctionsS::ror(const expr &x, const expr &shift) {
+        megumin::megumin_assert(x.get_sort().is_bv());
+        megumin::megumin_assert(shift.get_sort().is_bv());
+
+        int size = x.get_sort().bv_size();
+
+        auto result = ror_c(x, shift);
+        return result.first;
+    }
+
+    std::pair<expr, expr> ArmUtilSharedFunctionsS::ror_c(const expr &x, const expr &shift) {
+        megumin::megumin_assert(x.get_sort().is_bv());
+        megumin::megumin_assert(shift.get_sort().is_bv());
+
+        int N = x.get_sort().bv_size();
+        expr m = shift % N;
+        expr result = lsr(x, m) | lsl(x, N - m);
+        expr carry_out = result.extract(N - 1, N - 1);
+        return {result, carry_out};
+    }
+
+    expr ArmUtilSharedFunctionsS::lsr(const expr &x, const expr& shift) {
+        megumin::megumin_assert(x.is_bv());
+
+        int size = x.get_sort().bv_size();
+        return z3::lshr(x, shift % size);
+    }
+
+//    std::pair<expr, expr> ArmUtilSharedFunctionsS::lsr_c(const expr &x, const expr &shift) {
+//        megumin::megumin_assert(x.get_sort().is_bv());
+//
+//        auto& c = x.ctx();
+//        expr carry_out = x.extract(shift - 1, c.bv_val(1, x.get_sort().bv_size()));
+//        expr result = z3::lshr(x, shift);
+//
+//        return {result, carry_out};
+//    }
+
+    expr ArmUtilSharedFunctionsS::lsl(const expr &x, const expr &shift) {
+        megumin::megumin_assert(x.is_bv());
+
+        int size = x.get_sort().bv_size();
+        return z3::shl(x, shift % size);
+    }
+
+//    std::pair<expr, expr> ArmUtilSharedFunctionsS::lsl_c(const expr &x, const expr &shift) {
+//        megumin::megumin_assert(x.get_sort().is_bv());
+//
+//        auto& c = x.ctx();
+//        int N = x.get_sort().bv_size();
+//
+//        expr result = z3::shl(x, shift);
+//        expr temp = N - shift;
+//        auto t = Z3_mk_seq_extract(c, x, temp, c.bv_val(1, N));
+//        auto s = Z3_get_error_msg(c, Z3_EXCEPTION);
+//        // check_error(); return expr(ctx(), r);
+//
+//
+//        expr carry_out = x.extract(temp, c.bv_val(1, N));
+//
+//        return {result, carry_out};
+//    }
+
+    expr ArmUtilSharedFunctionsS::asr(const expr &x, const expr &shift) {
+        megumin::megumin_assert(x.is_bv());
+
+        int size = x.get_sort().bv_size();
+        return z3::ashr(x, shift % size);
+    }
+
+//    std::pair<expr, expr> ArmUtilSharedFunctionsS::asr_c(const expr &x, const expr &shift) {
+//        megumin::megumin_assert(x.get_sort().is_bv());
+//
+//        auto& c = x.ctx();
+//
+//        expr carry_out = x.extract(shift - 1, c.bv_val(1, x.get_sort().bv_size()));
+//        expr result = z3::ashr(x, shift);
+//
+//        return {result, carry_out};
+//    }
 }

@@ -14,7 +14,7 @@ using namespace arm;
 using namespace std;
 
 arm::Program get_prog1() {
-    return megumin::aarch64_asm("lslv x1, x2, x3").value();
+    return megumin::aarch64_asm("rorv x1, x2, x4").value();
 //    return megumin::aarch64_asm("ror x1, x2, #5").value();
 //    return megumin::aarch64_asm("lsl x1, x1, #1").value();
 //    return megumin::aarch64_asm("asr x1, x2, #1").value();
@@ -23,7 +23,7 @@ arm::Program get_prog1() {
 }
 
 arm::Program get_prog2() {
-    return megumin::aarch64_asm("lsl x1, x2, #0").value();
+    return megumin::aarch64_asm("rorv x1, x2, x4").value();
 //    return megumin::aarch64_asm("ror x1, x2, #5").value();
 //    return megumin::aarch64_asm("add x1, x1, #1").value();
 //    return megumin::aarch64_asm("lsr x1, x2, #1").value();
@@ -35,27 +35,17 @@ arm::Program get_prog2() {
 int main() {
     context c;
 
-    MachineStateS state1{c, "s"};
-    MachineStateS state2{state1};
+    expr x = c.bv_val(4, 64);
+//    expr x = c.bv_const("x", 64);
+    expr y = c.bv_val(-63, 64);
+//    expr y = c.bv_val(55, 64);
+//    expr z = z3::shl(x, y % 64);
+    expr z = c.bv_const("z", 64);
 
-    auto prog1 = get_prog1();
-    prog1.execute(state1);
-
-    auto prog2 = get_prog2();
-    prog2.execute(state2);
-
-    expr e = state1 != state2;
-
-//    auto x = c.bv_const("bv", 64);
-
-//    expr x = c.bool_const("x");
-//    expr y = c.bool_const("y");
-//    expr conjecture = (!(x && y)) == (!x || !y);
+//    cout << z.as_uint64();
 
     solver s(c);
-//    s.add(!conjecture);
-    s.add(e);
-//    s.add(!((x + 10) == (x + 5)));
+    s.add(z == z3::shl(x, y));
 
     std::cout << s << "\n";
 //    std::cout << s.to_smt2() << "\n";

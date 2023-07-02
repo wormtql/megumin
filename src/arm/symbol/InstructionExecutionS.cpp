@@ -327,5 +327,53 @@ namespace arm {
             megumin_assert(false);
         }
     }
+
+    void InstructionExecutionS::visit_dp_reg_2source(const Instruction &instruction) {
+        bool sf = instruction.is_set(31);
+        bool S = instruction.is_set(29);
+        bits rm = instruction.get_range(16, 21);
+        bits opc = instruction.get_range(10, 16);
+        bits rn = instruction.get_range(5, 10);
+        bits rd = instruction.get_range(0, 5);
+
+        int d = rd.as_i32();
+        int n = rn.as_i32();
+        int m = rm.as_i32();
+        int datasize = sf ? 64 : 32;
+
+        auto& c = state.sp.ctx();
+
+        if (S == 0) {
+            if (opc == 0b000010) {
+                // udiv
+                expr operand1 = state.get_gp(datasize, n, false, true);
+                expr operand2 = state.get_gp(datasize, m, false, true);
+
+                expr result = z3::udiv(operand1, operand2);
+                result = z3::ite(operand2 == 0, c.bv_val(0, datasize), result);
+                state.set_gp(datasize, d, result, false);
+            } else if (opc == 0b000011) {
+                // sdiv
+                expr operand1 = state.get_gp(datasize, n, false, true);
+                expr operand2 = state.get_gp(datasize, m, false, true);
+
+                expr result = operand1 / operand2;
+                result = z3::ite(operand2 == 0, c.bv_val(0, datasize), result);
+                state.set_gp(datasize, d, result, false);
+            } else if ((opc >> 2) == 0b10) {
+                // lslv/lsrv/asrv/rorv
+                int shift_type = instruction.get_range(10, 12).as_i32();
+                expr operand1 = state.get_gp(datasize, n, false, true);
+                expr operand2 = state.get_gp(datasize, m, false, true);
+
+                expr result = ArmUtilsS::shift_reg(operand1, shift_type, operand2);
+                state.set_gp(datasize, d, result, false);
+            } else {
+                megumin::megumin_unreachable();
+            }
+        } else {
+            megumin::megumin_unreachable();
+        }
+    }
 }
 

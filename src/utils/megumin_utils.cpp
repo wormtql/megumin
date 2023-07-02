@@ -26,6 +26,10 @@ namespace megumin {
         megumin_assert(false, "todo");
     }
 
+    [[noreturn]] void megumin_unreachable() {
+        megumin_assert(false, "unreachable");
+    }
+
     string trim(const string& s) {
         const char* WhiteSpace = " \t\v\r\n";
         std::size_t start = s.find_first_not_of(WhiteSpace);

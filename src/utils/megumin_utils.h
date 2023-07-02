@@ -19,6 +19,8 @@ namespace megumin {
 
     [[noreturn]] void megumin_todo();
 
+    [[noreturn]] void megumin_unreachable();
+
     std::optional<arm::Program> aarch64_asm(const std::string& code);
 
     string trim(const string& s);

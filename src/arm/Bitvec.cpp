@@ -28,7 +28,8 @@ namespace arm {
     }
 
     bits bits::ones(int size) {
-        return bits{size, (1 << size) - 1};
+//        return bits{size, (1 << size) - 1};
+        return bits{size, get_mask(size)};
     }
 
     bits bits::concat(const bits& op) {

@@ -4,14 +4,15 @@ function(add_megumin_executable name)
     target_link_libraries(${name}
             arm_asm
             megumin
+            ${PROJECT_SOURCE_DIR}/z3_install/bin/libz3.lib
             )
 endfunction()
 
 add_megumin_executable(auto_opt)
 add_megumin_executable(main)
 add_megumin_executable(z3_test)
+add_megumin_executable(z3_2)
 
-target_link_libraries(z3_test ${PROJECT_SOURCE_DIR}/z3_install/bin/libz3.lib)
 
 add_executable(playground main.cpp)
 add_executable(main2 main2.cpp)
