@@ -282,6 +282,45 @@ namespace arm {
         return z3::ashr(x, shift % size);
     }
 
+    expr ArmUtilSharedFunctionsS::condition_holds(int cond, const MachineStateS &state) {
+        int temp = cond >> 1;
+        auto& ctx = state.sp.ctx();
+        expr result = ctx.bool_val(false);
+
+        switch (temp) {
+            case 0b000:
+                result = state.p_state.z;
+                break;
+            case 0b001:
+                result = state.p_state.c;
+                break;
+            case 0b010:
+                result = state.p_state.n;
+                break;
+            case 0b011:
+                result = state.p_state.v;
+                break;
+            case 0b100:
+                result = state.p_state.c && !state.p_state.z;
+                break;
+            case 0b101:
+                result = state.p_state.n == state.p_state.v;
+                break;
+            case 0b110:
+                result = state.p_state.n == state.p_state.v && !state.p_state.z;
+                break;
+            case 0b111:
+                result = ctx.bool_val(true);
+                break;
+        }
+
+        if (cond % 2 == 1 && cond != 0b1111) {
+            result = !result;
+        }
+
+        return result;
+    }
+
 //    std::pair<expr, expr> ArmUtilSharedFunctionsS::asr_c(const expr &x, const expr &shift) {
 //        megumin::megumin_assert(x.get_sort().is_bv());
 //

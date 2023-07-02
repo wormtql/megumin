@@ -50,6 +50,8 @@ namespace arm {
 
         static std::pair<expr, expr> asr_c(const expr& x, int shift);
 //        static std::pair<expr, expr> asr_c(const expr& x, const expr& shift);
+
+        static expr condition_holds(int cond, const MachineStateS& state);
     };
 }
 

@@ -503,4 +503,62 @@ namespace arm {
             }
         }
     }
+
+    void InstructionExecutionS::visit_dp_reg_cond_select(const Instruction &instruction) {
+        bool sf = instruction.is_set(31);
+        bool op = instruction.is_set(30);
+        bool S = instruction.is_set(29);
+        bits rm = instruction.get_range(16, 21);
+        bits cond = instruction.get_range(12, 16);
+        bits op2 = instruction.get_range(10, 12);
+        bits rn = instruction.get_range(5, 10);
+        bits rd = instruction.get_range(0, 5);
+
+        int d = rd.as_i32();
+        int m = rm.as_i32();
+        int n = rn.as_i32();
+        int datasize = sf ? 64 : 32;
+
+        if (op == 0 && op2 == 0b00) {
+            // csel
+            expr condition_holds = ArmUtilSharedFunctionsS::condition_holds(cond.as_i32(), state);
+
+            expr result = z3::ite(
+                    condition_holds,
+                    state.get_gp(datasize, n, false, true),
+                    state.get_gp(datasize, m, false, true)
+                    );
+            state.set_gp(datasize, d, result, false);
+        } else if (op == 0 && op2 == 0b01) {
+            // csinc
+            expr condition_holds = ArmUtilSharedFunctionsS::condition_holds(cond.as_i32(), state);
+
+            expr result = z3::ite(
+                    condition_holds,
+                    state.get_gp(datasize, n, false, true),
+                    state.get_gp(datasize, m, false, true) + 1
+                    );
+            state.set_gp(datasize, d, result, false);
+        } else if (op == 1 && op2 == 0b00) {
+            // csinv
+            expr condition_holds = ArmUtilSharedFunctionsS::condition_holds(cond.as_i32(), state);
+
+            expr result = z3::ite(
+                    condition_holds,
+                    state.get_gp(datasize, n, false, true),
+                    ~state.get_gp(datasize, m, false, true)
+            );
+            state.set_gp(datasize, d, result, false);
+        } else if (op == 1 && op2 == 0b01) {
+            // csneg
+            expr condition_holds = ArmUtilSharedFunctionsS::condition_holds(cond.as_i32(), state);
+
+            expr result = z3::ite(
+                    condition_holds,
+                    state.get_gp(datasize, n, false, true),
+                    ~state.get_gp(datasize, m, false, true) + 1
+            );
+            state.set_gp(datasize, d, result, false);
+        }
+    }
 }
