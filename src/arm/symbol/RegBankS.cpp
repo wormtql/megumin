@@ -27,6 +27,9 @@ namespace arm {
 
     void GPRegBankS::set(int index, expr value) {
         megumin::megumin_assert(index >= 0 && index < 32);
+        if (index == 31) {
+            return;
+        }
 
         bank[index] = std::move(value);
     }
