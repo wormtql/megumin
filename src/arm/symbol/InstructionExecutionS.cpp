@@ -375,5 +375,57 @@ namespace arm {
             megumin::megumin_unreachable();
         }
     }
-}
 
+    void InstructionExecutionS::visit_dp_reg_logical_shifted_reg(const Instruction &instruction) {
+        bool sf = instruction.is_set(31);
+        bits opc = instruction.get_range(29, 31);
+        bits shift = instruction.get_range(22, 24);
+        bool N = instruction.is_set(21);
+        bits rm = instruction.get_rm();
+        bits imm6 = instruction.get_range(10, 16);
+        bits rn = instruction.get_rn();
+        bits rd = instruction.get_rd();
+
+        int datasize = sf ? 64 : 32;
+        int d = rd.as_i32();
+        int n = rn.as_i32();
+        int m = rm.as_i32();
+
+        megumin::megumin_assert(!(!sf && imm6[5] == 1));
+        int shift_amount = imm6.as_i32();
+
+        expr operand1 = state.get_gp(datasize, n, false, true);
+        expr operand2 = ArmUtilsS::shift_reg(state.get_gp(datasize, m, false, true), shift.as_i32(), shift_amount);
+        if (N) {
+            operand2 = ~operand2;
+        }
+
+        if (opc == 0b00) {
+            // and bic
+            expr result = operand1 & operand2;
+            state.set_gp(datasize, d, result, false);
+        } else if (opc == 0b01) {
+            // orr orn
+            expr result = operand1 | operand2;
+            state.set_gp(datasize, d, result, false);
+        } else if (opc == 0b10) {
+            // eor eon
+            expr result = operand1 ^ operand2;
+            state.set_gp(datasize, d, result, false);
+        } else if (opc == 0b11) {
+            // ands bics
+            expr result = operand1 & operand2;
+            auto& c = result.ctx();
+
+            PStateS p_state{
+                result.extract(datasize - 1, datasize - 1) == 1,
+                result == 0,
+                c.bool_val(false),
+                c.bool_val(false)
+            };
+
+            state.set_gp(datasize, d, result, false);
+            state.p_state.set_nzcv(p_state);
+        }
+    }
+}

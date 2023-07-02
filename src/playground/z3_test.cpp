@@ -14,7 +14,8 @@ using namespace arm;
 using namespace std;
 
 arm::Program get_prog1() {
-    return megumin::aarch64_asm("lslv x1, x2, x3").value();
+    return megumin::aarch64_asm("orr w1, w2, w1").value();
+//    return megumin::aarch64_asm("lslv x1, x2, x3").value();
 //    return megumin::aarch64_asm("ror x1, x2, #5").value();
 //    return megumin::aarch64_asm("lsl x1, x1, #1").value();
 //    return megumin::aarch64_asm("asr x1, x2, #1").value();

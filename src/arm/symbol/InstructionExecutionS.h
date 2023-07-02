@@ -28,6 +28,8 @@ namespace arm {
         void visit_dp_reg_1source(const Instruction &instruction) override;
 
         void visit_dp_reg_2source(const Instruction &instruction) override;
+
+        void visit_dp_reg_logical_shifted_reg(const Instruction &instruction) override;
     };
 }
 
