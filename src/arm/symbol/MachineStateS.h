@@ -11,6 +11,7 @@
 #include <string>
 
 #include "RegBankS.h"
+#include "MachineState.h"
 
 using namespace z3;
 using std::string;
@@ -36,6 +37,8 @@ namespace arm {
 
         expr operator==(const PStateS& other) const;
         expr operator!=(const PStateS& other) const;
+
+        PState to_p_state(const z3::model& m) const;
     };
 
     class MachineStateS {
@@ -56,6 +59,8 @@ namespace arm {
 
         expr operator==(const MachineStateS& other) const;
         expr operator!=(const MachineStateS& other) const;
+
+        MachineState to_machine_state(const z3::model& m) const;
     };
 }
 

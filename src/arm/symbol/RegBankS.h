@@ -9,6 +9,8 @@
 #include <string>
 #include <vector>
 
+#include "RegBank.h"
+
 using std::string;
 using namespace z3;
 
@@ -28,6 +30,8 @@ namespace arm {
 
         expr operator==(const GPRegBankS& other) const;
         expr operator!=(const GPRegBankS&& other) const;
+
+        GPRegBank to_gp_reg_bank(const z3::model& m) const;
     };
 }
 

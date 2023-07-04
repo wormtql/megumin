@@ -3,11 +3,14 @@
 //
 
 #include <megumin_utils.h>
+#include <iostream>
 
 #include <z3++.h>
 #include <utility>
 #include <sstream>
 #include "RegBankS.h"
+
+using namespace std;
 
 namespace arm {
     GPRegBankS::GPRegBankS(z3::context &context, const string &prefix) {
@@ -63,5 +66,18 @@ namespace arm {
 
     z3::expr GPRegBankS::operator!=(const GPRegBankS &&other) const {
         return !(*this == other);
+    }
+
+    GPRegBank GPRegBankS::to_gp_reg_bank(const model &m) const {
+        GPRegBank result;
+
+        for (int i = 0; i < 32; i++) {
+            cout << this->bank[i].get_sort() << endl;
+            int64_t x = (int64_t) m.eval(this->bank[i], true).get_numeral_uint64();
+            bits b{64, x};
+            result.get_mut_ref(i) = b;
+        }
+
+        return result;
     }
 }

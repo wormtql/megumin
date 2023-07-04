@@ -29,7 +29,7 @@ namespace arm {
             expr operand1 = state.get_gp(datasize, rn.as_i32(), true, false);
             bits imm = sh ? (imm12.zero_extend(datasize) << 12) : imm12.zero_extend(datasize);
             auto result = ArmUtilsS::add_with_carry(operand1, imm, false);
-            state.set_gp(datasize, rd.as_i32(), result.first, true);
+            state.set_gp(datasize, rd.as_i32(), result.first, false);
 
             if (S) {
                 state.p_state.set_nzcv(result.second);
@@ -40,7 +40,7 @@ namespace arm {
             bits imm = sh ? (imm12.zero_extend(datasize) << 12) : imm12.zero_extend(datasize);
             bits operand2 = ~imm;
             auto result = ArmUtilsS::add_with_carry(operand1, operand2, true);
-            state.set_gp(datasize, d, result.first, true);
+            state.set_gp(datasize, d, result.first, false);
 
             if (S) {
                 state.p_state.set_nzcv(result.second);
@@ -72,7 +72,7 @@ namespace arm {
             expr operand1 = state.get_gp(datasize, n, false, true);
             auto& c = operand1.ctx();
             expr result = operand1 & c.bv_val(imm.data0, datasize);
-            state.set_gp(datasize, d, result, true);
+            state.set_gp(datasize, d, result, false);
         } else if (opc == 0b01) {
             // orr
             if (!sf && N) {
@@ -82,7 +82,7 @@ namespace arm {
             expr operand1 = state.gp.get(datasize, n);
             auto& c = operand1.ctx();
             expr result = operand1 | c.bv_val(imm.data0, datasize);
-            state.set_gp(datasize, d, result, true);
+            state.set_gp(datasize, d, result, false);
         } else if (opc == 0b10) {
             // eor
             if (!sf && N) {
@@ -92,7 +92,7 @@ namespace arm {
             expr operand1 = state.gp.get(datasize, n);
             auto& c = operand1.ctx();
             expr result = operand1 ^ c.bv_val(imm.data0, datasize);
-            state.set_gp(datasize, d, result, true);
+            state.set_gp(datasize, d, result, false);
         } else if (opc == 0b11) {
             // ands
             if (!sf && N) {
@@ -102,7 +102,7 @@ namespace arm {
             expr operand1 = state.gp.get(datasize, n);
             auto& c = operand1.ctx();
             expr result = operand1 & c.bv_val(imm.data0, datasize);
-            state.set_gp(datasize, d, result, true);
+            state.set_gp(datasize, d, result, false);
 
             PStateS p_state{
                 result.extract(datasize - 1, datasize - 1) == 1,

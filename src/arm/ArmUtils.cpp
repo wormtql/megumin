@@ -123,14 +123,21 @@ namespace arm {
         assert(x.size == y.size);
         auto size = x.size;
         uint64_t unsigned_sum = x.as_u64() + y.as_u64() + static_cast<uint64_t>(carry);
-        int64_t signed_sum = x.as_i64() + y.as_i64() + static_cast<int64_t>(carry);
+//        int64_t signed_sum = x.as_i64() + y.as_i64() + static_cast<int64_t>(carry);
 
-        bits result{size, signed_sum};
+        bool x_sign = x.is_set(size - 1);
+        bool y_sign = y.is_set(size - 1);
+
+        bits result{size, (int64_t) unsigned_sum};
+
+        bool result_sign = result.is_set(size - 1);
 
         bool n = result.is_set(size - 1);
         bool z = result == 0;
-        bool c = result.as_u64() != unsigned_sum;
-        bool v = result.as_i64() != signed_sum;
+//        bool c = result.as_u64() != unsigned_sum;
+        bool c = (unsigned_sum < x.as_u64());
+//        bool v = result.as_i64() != signed_sum;
+        bool v = x_sign == y_sign && x_sign != result_sign;
 
         int temp = (n << 3) | (z << 2) | (c << 1) | v;
         bits nzcv{4, temp};

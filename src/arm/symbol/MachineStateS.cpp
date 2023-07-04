@@ -22,6 +22,20 @@ namespace arm {
     expr PStateS::operator!=(const PStateS &other) const {
         return !(*this == other);
     }
+
+    PState PStateS::to_p_state(const z3::model &m) const {
+        PState result;
+
+        result.n = m.eval(this->n, true).bool_value() == Z3_L_TRUE;
+        result.z = m.eval(this->z, true).bool_value() == Z3_L_TRUE;
+        result.c = m.eval(this->c, true).bool_value() == Z3_L_TRUE;
+        result.v = m.eval(this->v, true).bool_value() == Z3_L_TRUE;
+//        result.n = m.eval(this->n, true).get_numeral_uint64();
+//        result.z = m.eval(this->z, true).get_numeral_uint64();
+//        result.c = m.eval(this->c, true).get_numeral_uint64();
+//        result.v = m.eval(this->v, true).get_numeral_uint64();
+        return result;
+    }
 }
 
 namespace arm {
@@ -90,5 +104,15 @@ namespace arm {
 
     expr MachineStateS::operator!=(const MachineStateS &other) const {
         return !(*this == other);
+    }
+
+    MachineState MachineStateS::to_machine_state(const model &m) const {
+        MachineState result;
+
+        result.p_state = p_state.to_p_state(m);
+        result.gp = gp.to_gp_reg_bank(m);
+        result.sp = bits{64, (int64_t) m.eval(sp, true).get_numeral_uint64()};
+
+        return result;
     }
 }

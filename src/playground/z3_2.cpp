@@ -35,23 +35,14 @@ arm::Program get_prog2() {
 int main() {
     context c;
 
-    expr x = c.bool_val(true);
-    x = shl(x, 1);
-
-//    expr x = c.bv_val(4, 64);
-//    expr x = c.bv_const("x", 64);
-    expr y = c.bv_val(-63, 64);
-//    expr y = c.bv_val(55, 64);
-//    expr z = z3::shl(x, y % 64);
-    expr z = c.bv_const("z", 64);
-
-//    cout << z.as_uint64();
+    // (= (bvadd s_gp_28 #xffffffffffffffff #x0000000000000001) #x0000000000000000)
+    expr x = c.bv_val(1, 64);
+    expr e = x + c.bv_val(0xffffffffffffffff, 64) + c.bv_val(1, 64);
+    cout << x << endl;
 
     solver s(c);
-    s.add(z == z3::shl(x, y));
 
     std::cout << s << "\n";
-//    std::cout << s.to_smt2() << "\n";
 
     switch (s.check()) {
         case unsat: {
@@ -63,7 +54,6 @@ int main() {
             cout << "sat" << endl;
             auto model = s.get_model();
 //            std::cout << s.get_model();
-            cout << model.size() << endl;
 
             for (int i = 0; i < model.size(); i++) {
                 func_decl v = model[i];
@@ -71,6 +61,9 @@ int main() {
                 assert(v.arity() == 0);
                 std::cout << v.name() << " = " << model.get_const_interp(v) << "\n";
             }
+
+            cout << model.eval(e == 0).bool_value() << endl;
+            cout << model.eval(e == 0) << endl;
 
             break;
         }

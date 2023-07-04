@@ -33,7 +33,7 @@ namespace arm {
             bits operand1 = state.get_gp(datasize, rn.as_i32(), true, false);
             bits imm = sh ? (imm12.zero_extend(datasize) << 12) : imm12.zero_extend(datasize);
             auto result = ArmUtils::add_with_carry(operand1, imm, false);
-            state.set_gp(datasize, rd.as_i32(), result.first, true);
+            state.set_gp(datasize, rd.as_i32(), result.first, false);
 
             if (S) {
                 state.p_state.set_nzcv(result.second);
@@ -44,7 +44,7 @@ namespace arm {
             bits imm = sh ? (imm12.zero_extend(datasize) << 12) : imm12.zero_extend(datasize);
             bits operand2 = ~imm;
             auto result = ArmUtils::add_with_carry(operand1, operand2, true);
-            state.set_gp(datasize, d, result.first, true);
+            state.set_gp(datasize, d, result.first, false);
 
             if (S) {
                 state.p_state.set_nzcv(result.second);
@@ -80,7 +80,7 @@ namespace arm {
             bits operand1 = state.get_gp(datasize, n, false, true);
             megumin_assert(operand1.size == datasize);
             bits result = operand1 & imm;
-            state.set_gp(datasize, d, result, true);
+            state.set_gp(datasize, d, result, false);
         } else if (opc == 0b01) {
             // orr
             if (!sf && N) {
@@ -90,7 +90,7 @@ namespace arm {
             bits operand1 = state.gp.get(datasize, n);
             megumin_assert(operand1.size == datasize);
             bits result = operand1 | imm;
-            state.set_gp(datasize, d, result, true);
+            state.set_gp(datasize, d, result, false);
         } else if (opc == 0b10) {
             // eor
             if (!sf && N) {
@@ -100,7 +100,7 @@ namespace arm {
             bits operand1 = state.gp.get(datasize, n);
             megumin_assert(operand1.size == datasize);
             bits result = operand1 ^ imm;
-            state.set_gp(datasize, d, result, true);
+            state.set_gp(datasize, d, result, false);
         } else if (opc == 0b11) {
             // ands
             if (!sf && N) {
@@ -110,7 +110,7 @@ namespace arm {
             bits operand1 = state.gp.get(datasize, n);
             megumin_assert(operand1.size == datasize);
             bits result = operand1 & imm;
-            state.set_gp(datasize, d, result, true);
+            state.set_gp(datasize, d, result, false);
 
             bits nzcv = bits::from_bools({result.is_set(datasize - 1), result == 0, 0, 0});
             state.p_state.set_nzcv(nzcv);

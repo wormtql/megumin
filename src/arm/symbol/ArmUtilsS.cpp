@@ -40,18 +40,20 @@ namespace arm {
     std::pair<expr, PStateS> ArmUtilsS::add_with_carry(const expr& x, bits y, bool carry) {
         megumin::megumin_assert(x.is_bv());
         megumin::megumin_assert(x.get_sort().bv_size() == y.size);
-        megumin::megumin_assert(y.data0 < (1 << 12));
+//        megumin::megumin_assert(y.data0 < (1 << 12));
 
+        auto& ctx = x.ctx();
 
         auto size = x.get_sort().bv_size();
 //        auto t1 = x + (int) carry;
 //        auto t2 = t1 + x.ctx().num_val(y.as_i32(), x.ctx().bv_sort(size));
-        auto sum = x + x.ctx().num_val(y.as_i32() + (int) carry, x.ctx().bv_sort(size));
+        expr yy = ctx.bv_val(y.data0, size);
+        auto sum = x + yy + ctx.bv_val((int) carry, size);
 //        auto sum = t2;
 
         expr nx = z3::zext(x, 1);
-//        expr nsum = nx + x.ctx().int_val(y.as_u64()) + (int) carry;
-        expr nsum = nx + x.ctx().num_val(y.as_i32() + (int) carry, x.ctx().bv_sort(size + 1));
+        expr nyy = z3::zext(yy, 1);
+        expr nsum = nx + nyy + ctx.bv_val((int) carry, size + 1);
 
         expr sign_x = x.extract(size - 1, size - 1);
         bool sign_y = y.is_set(size - 1);
