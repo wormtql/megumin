@@ -57,9 +57,9 @@ void arm::CanHandleThisInst::visit_dp_reg_cond_select(const arm::Instruction &in
 }
 
 void arm::CanHandleThisInst::visit_fp_simd_dp_1source(const arm::Instruction &instruction) {
-    result = true;
+    result = false;
 }
 
 void arm::CanHandleThisInst::visit_fp_simd_dp_2source(const arm::Instruction &instruction) {
-    result = true;
+    result = false;
 }

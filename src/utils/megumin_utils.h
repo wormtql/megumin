@@ -30,6 +30,18 @@ namespace megumin {
     expr reverse_expr(const expr& x);
 
     expr z3_bool_to_bv(const expr& b, int size);
+
+    expr count_leading_zero_64(const expr& x, int size);
+    expr count_leading_zero_32(const expr& x, int size);
+    expr count_leading_zero_16(const expr& x, int size);
+    expr count_leading_zero_8(const expr& x, int size);
+    expr count_leading_zero_4(const expr& x, int size);
+    expr count_leading_zero_2(const expr& x, int size);
+    expr count_leading_zero(int size, const expr& x);
+
+    expr round_up_to_next_power2_64(const expr& x);
+
+    expr round_up_to_next_power2_32(const expr& x);
 }
 
 #endif //MEGUMIN_MEGUMIN_UTILS_H

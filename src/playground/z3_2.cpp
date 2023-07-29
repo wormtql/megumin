@@ -8,6 +8,7 @@
 #include "symbol/InstructionExecutionS.h"
 #include "Program.h"
 #include "megumin_utils.h"
+#include "symbol/ArmUtilsS.h"
 
 using namespace z3;
 using namespace arm;
@@ -35,41 +36,50 @@ arm::Program get_prog2() {
 int main() {
     context c;
 
+    expr a = c.bv_val(-2147483648, 32);
+    cout << a << endl;
+    expr b = c.bv_val(-123123123, 32);
+    cout << b << endl;
+//    z3::bvsdiv_no_overflow()
+    cout << (a / b).as_uint64() << endl;
+
+//    cout << pstate.c.bool_value();
+
     // (= (bvadd s_gp_28 #xffffffffffffffff #x0000000000000001) #x0000000000000000)
-    expr x = c.bv_val(1, 64);
-    expr e = x + c.bv_val(0xffffffffffffffff, 64) + c.bv_val(1, 64);
-    cout << x << endl;
-
-    solver s(c);
-
-    std::cout << s << "\n";
-
-    switch (s.check()) {
-        case unsat: {
-            cout << "unsat" << endl;
-
-            break;
-        }
-        case sat: {
-            cout << "sat" << endl;
-            auto model = s.get_model();
-//            std::cout << s.get_model();
-
-            for (int i = 0; i < model.size(); i++) {
-                func_decl v = model[i];
-                // this problem contains only constants
-                assert(v.arity() == 0);
-                std::cout << v.name() << " = " << model.get_const_interp(v) << "\n";
-            }
-
-            cout << model.eval(e == 0).bool_value() << endl;
-            cout << model.eval(e == 0) << endl;
-
-            break;
-        }
-        case unknown: std::cout << "unknown\n"; break;
-    }
-    cout << std::flush;
+//    expr x = c.bv_val(1, 64);
+//    expr e = x + c.bv_val(0xffffffffffffffff, 64) + c.bv_val(1, 64);
+//    cout << x << endl;
+//
+//    solver s(c);
+//
+//    std::cout << s << "\n";
+//
+//    switch (s.check()) {
+//        case unsat: {
+//            cout << "unsat" << endl;
+//
+//            break;
+//        }
+//        case sat: {
+//            cout << "sat" << endl;
+//            auto model = s.get_model();
+////            std::cout << s.get_model();
+//
+//            for (int i = 0; i < model.size(); i++) {
+//                func_decl v = model[i];
+//                // this problem contains only constants
+//                assert(v.arity() == 0);
+//                std::cout << v.name() << " = " << model.get_const_interp(v) << "\n";
+//            }
+//
+//            cout << model.eval(e == 0).bool_value() << endl;
+//            cout << model.eval(e == 0) << endl;
+//
+//            break;
+//        }
+//        case unknown: std::cout << "unknown\n"; break;
+//    }
+//    cout << std::flush;
 
     return 0;
 }

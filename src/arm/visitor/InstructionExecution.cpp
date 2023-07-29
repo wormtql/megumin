@@ -351,10 +351,24 @@ namespace arm {
                 if (operand2 == 0) {
                     state.gp.set(datasize, d, bits{datasize, 0});
                 } else {
-                    int64_t op1 = operand1.as_i64();
-                    int64_t op2 = operand2.as_i64();
-                    int64_t result = op1 / op2;
-                    state.gp.set(datasize, d, bits{datasize, result});
+                    if (datasize == 64) {
+                        int64_t op1 = operand1.as_i64();
+                        int64_t op2 = operand2.as_i64();
+
+                        if (op1 == std::numeric_limits<int64_t>::min() && op2 == -1) {
+                            // prevent overflow
+                            state.gp.set(datasize, d, bits{datasize, 0});
+                        } else {
+                            int64_t result = op1 / op2;
+                            state.gp.set(datasize, d, bits{datasize, result});
+                        }
+                    } else {
+                        auto op1 = (int64_t) operand1.as_i32();
+                        auto op2 = (int64_t) operand2.as_i32();
+
+                        int64_t result = op1 / op2;
+                        state.gp.set(datasize, d, bits{datasize, result});
+                    }
                 }
             } else if ((opc >> 2) == 0b10) {
                 // lslv/lsrv/asrv/rorv
@@ -564,6 +578,7 @@ namespace arm {
                 state.p_state.set_nzcv(result.second);
             }
         } else if (op == 1) {
+            // sub subs
             operand2 = ~operand2;
             auto result = ArmUtils::add_with_carry(operand1, operand2, true);
             state.gp.set(datasize, d, result.first);

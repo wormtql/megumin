@@ -72,7 +72,7 @@ namespace arm {
         GPRegBank result;
 
         for (int i = 0; i < 32; i++) {
-            cout << this->bank[i].get_sort() << endl;
+//            cout << this->bank[i].get_sort() << endl;
             int64_t x = (int64_t) m.eval(this->bank[i], true).get_numeral_uint64();
             bits b{64, x};
             result.get_mut_ref(i) = b;

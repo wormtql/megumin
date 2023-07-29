@@ -1,0 +1,239 @@
+[optimization success]
+add x27, x5, x26
+add x26, x6, x26
+add x27, x21, x27
+add x26, x21, x26
+subs x31, x27, x26
+>>>
+add x26, x21, x26
+nop
+adds x27, x5, x26
+adds x26, x6, x26
+subs x31, x27, x26
+
+[optimization success]
+add x26, x6, x25
+add x25, x7, x25
+add x26, x0, x26
+add x25, x0, x25
+subs x31, x26, x25
+>>>
+add x25, x0, x25
+nop
+add x26, x6, x25
+add x25, x7, x25
+subs x31, x26, x25
+
+[optimization success]
+add x26, x6, x25
+add x25, x7, x25
+add x26, x0, x26
+add x25, x0, x25
+subs x31, x26, x25
+>>>
+add x25, x0, x25
+nop
+add x26, x6, x25
+add x25, x7, x25
+subs x31, x26, x25
+
+[optimization success]
+mov x24, x31
+add x25, x24, x3
+add x26, x24, x22
+sub x24, x12, x24
+add x25, x21, x25, lsl #2
+add x26, x21, x26, lsl #2
+>>>
+add x26, x21, x22, lsl #2
+nop
+add x24, x12, x31, lsl #13
+add x25, x21, x3, lsl #2
+nop
+nop
+
+[optimization success]
+add x23, x6, x14
+add x14, x7, x14
+add x23, x20, x23
+add x14, x20, x14
+subs x31, x23, x14
+>>>
+add x14, x20, x14
+nop
+add x23, x6, x14
+add x14, x7, x14
+subs x31, x23, x14
+
+[optimization success]
+sub x31, x31, #1, lsl #12
+mov w20, w2
+mov x21, x0
+sbfm x0, x20, #0, #31
+mov x19, x3
+mov w22, w1
+>>>
+mov x21, x0
+nop
+mov w20, w2
+sbfm x0, x20, #0, #31
+orr x19, x31, x3
+mov w22, w1
+
+[optimization success]
+sub x31, x31, #1, lsl #12
+mov x20, x0
+movz w0, #16384
+mov x19, x2
+mov w21, w1
+>>>
+nop
+mov x20, x0
+mov w21, w1
+movz w0, #16384
+mov x19, x2
+
+[optimization success]
+sub x31, x31, #1, lsl #12
+mov w21, w2
+mov x22, x0
+sbfm x0, x21, #0, #31
+mov w20, w4
+mov x19, x3
+mov w23, w1
+>>>
+nop
+mov w21, w2
+mov x22, x0
+mov w20, w4
+sbfm x0, x21, #0, #31
+mov x19, x3
+mov w23, w1
+
+[optimization success]
+sub x31, x31, #1, lsl #12
+mov x20, x0
+movz w0, #16384
+mov x19, x2
+mov w21, w1
+>>>
+nop
+mov x20, x0
+mov w21, w1
+movz w0, #16384
+mov x19, x2
+
+[optimization success]
+sbfm x19, x27, #4, #63
+subs x31, x27, #0
+csinc x8, x19, x31, ne
+adds x8, x8, x19
+lsr x9, x8, #59
+csinc w10, w31, w31, cc
+subs x31, x9, #0
+csinc w9, w31, w31, eq
+orr w9, w10, w9
+subs w31, w9, #0
+movn x9, #63488, LSL #48
+csel x26, x9, x8, ne
+lsl x0, x26, #4
+>>>
+subs x31, x27, #0
+sbfm x19, x27, #4, #63
+csinc x8, x19, x31, ne
+adds x8, x8, x19
+lsr x9, x8, #59
+csinc w10, w31, w31, cc
+subs x31, x9, #0
+nop
+nop
+nop
+movn x9, #63488, LSL #48
+csel x26, x9, x8, ne
+lsl x0, x26, #4
+
+[optimization success]
+sbfm x25, x28, #4, #63
+subs x31, x28, #0
+csinc x8, x25, x31, ne
+adds x8, x8, x25
+lsr x9, x8, #59
+csinc w10, w31, w31, cc
+subs x31, x9, #0
+csinc w9, w31, w31, eq
+orr w9, w10, w9
+subs w31, w9, #0
+movn x9, #63488, LSL #48
+csel x21, x9, x8, ne
+lsl x0, x21, #4
+>>>
+subs x31, x28, #0, lsl #12
+sbfm x25, x28, #4, #63
+csinc x8, x25, x31, ne
+adds x8, x8, x25
+lsr x9, x8, #59
+csinc w10, w31, w31, cc
+subs x31, x9, #0
+nop
+nop
+nop
+movn x9, #63488, LSL #48
+csel x21, x9, x8, ne
+lsl x0, x21, #4
+
+[optimization success]
+sbfm x9, x8, #4, #63
+subs x31, x8, #0
+csinc x8, x9, x31, ne
+mov x19, x0
+adds x8, x8, x9
+mov x23, x2
+lsr x9, x8, #59
+csinc w10, w31, w31, cc
+subs x31, x9, #0
+mov x22, x1
+csinc w9, w31, w31, eq
+sub x26, x1, x20
+orr w9, w10, w9
+subs w31, w9, #0
+movn x9, #63488, LSL #48
+csel x25, x9, x8, ne
+lsl x0, x25, #4
+>>>
+sbfm x9, x8, #4, #63
+subs x31, x8, #0
+mov x19, x0
+csinc x8, x9, x31, ne
+adds x8, x8, x9
+mov x23, x2
+lsr x9, x8, #59
+csinc w10, w31, w31, cc
+subs x31, x9, #0
+nop
+mov x22, x1
+sub x26, x1, x20
+nop
+nop
+movn x9, #63488, LSL #48
+csel x25, x9, x8, ne
+lsl x0, x25, #4
+
+[optimization success]
+sub x31, x31, #4, lsl #12
+sub x31, x31, #2800
+mov x28, x0
+mov w26, w4
+mov x27, x3
+mov x23, x0
+mov x21, x2
+mov x22, x1
+>>>
+mov x21, x2
+mov x27, x3
+mov x28, x0
+nop
+mov x22, x1
+nop
+mov w26, w4
+orr x23, x31, x0
+

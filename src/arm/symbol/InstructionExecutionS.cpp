@@ -269,52 +269,52 @@ namespace arm {
             state.set_gp(datasize, d, result, false);
         } else if (opcode2 == 0 && (opcode >> 2) == 0) {
             // rev
-            // todo 比较难实现
-            megumin::megumin_todo();
-//            bits opc = instruction.get_range(10, 12);
-//            int container_size = 0;
-//            if (opc == 0b01) {
-//                container_size = 16;
-//            } else if (opc == 0b10) {
-//                container_size = 32;
-//            } else if (opc == 0b11) {
-//                megumin_assert(sf == 1);
-//                container_size = 64;
-//            } else {
-//                megumin_assert(false);
-//            }
-//
-//            expr operand = state.get_gp(datasize, n, false, true);
-//
-//            int containers = datasize / container_size;
-//            megumin_assert(containers >= 1);
-//            int elements_per_container = container_size / 8;
-//            int index = 0;
-//            int rev_index;
-//
-//            bits result{datasize, 0};
-//
-//            for (int c = 0; c < containers; c++) {
-//                rev_index = index + ((elements_per_container - 1) * 8);
-//                for (int e = 0; e < elements_per_container; e++) {
-//                    megumin_assert(rev_index <= datasize);
-//                    megumin_assert(rev_index + 8 <= datasize);
-//                    megumin_assert(index <= datasize);
-//                    megumin_assert(index + 8 <= datasize);
-//                    result.set_range(rev_index, rev_index + 8, operand.get_range(index, index + 8).as_i64());
-//                    index += 8;
-//                    rev_index -= 8;
-//                }
-//            }
-//
-//            state.gp.set(datasize, d, result);
+//            megumin::megumin_todo();
+            bits opc = instruction.get_range(10, 12);
+            int container_size = 0;
+            if (opc == 0b01) {
+                container_size = 16;
+            } else if (opc == 0b10) {
+                container_size = 32;
+            } else if (opc == 0b11) {
+                megumin_assert(sf == 1);
+                container_size = 64;
+            } else {
+                megumin_assert(false);
+            }
+
+            expr operand = state.get_gp(datasize, n, false, true);
+
+            int containers = datasize / container_size;
+            megumin_assert(containers >= 1);
+            int elements_per_container = container_size / 8;
+            int index = 0;
+            int rev_index;
+
+            expr result = operand;
+
+            for (int c = 0; c < containers; c++) {
+                rev_index = index + ((elements_per_container - 1) * 8);
+                for (int e = 0; e < elements_per_container; e++) {
+                    megumin_assert(rev_index <= datasize);
+                    megumin_assert(rev_index + 8 <= datasize);
+                    megumin_assert(index <= datasize);
+                    megumin_assert(index + 8 <= datasize);
+
+                    expr ext = operand.extract(index + 7, index);
+                    result = megumin::set_expr_range(result, rev_index, rev_index + 8, ext);
+                    index += 8;
+                    rev_index -= 8;
+                }
+            }
+
+            state.set_gp(datasize, d, result, false);
         } else if (opcode2 == 0 && opcode == 0b000100) {
             // clz
-            // todo 比较难实现
-            megumin::megumin_todo();
-//            bits operand1 = state.gp.get(datasize, n);
-//            int result = ArmUtilsSharedFunctions::count_leading_zero_bits(operand1);
-//            state.gp.set(datasize, d, bits{datasize, result});
+
+            expr operand1 = state.gp.get(datasize, n);
+            expr result = megumin::count_leading_zero(datasize, operand1);
+            state.set_gp(datasize, d, result, false);
         } else if (opcode2 == 0 && opcode == 0b000101) {
             // cls
             // todo 比较难实现
@@ -358,7 +358,11 @@ namespace arm {
                 expr operand2 = state.get_gp(datasize, m, false, true);
 
                 expr result = operand1 / operand2;
-                result = z3::ite(operand2 == 0, c.bv_val(0, datasize), result);
+                result = z3::ite(
+                        operand2 == 0,
+                        c.bv_val(0, datasize),
+                        result
+                        );
                 state.set_gp(datasize, d, result, false);
             } else if ((opc >> 2) == 0b10) {
                 // lslv/lsrv/asrv/rorv
@@ -459,6 +463,7 @@ namespace arm {
                 state.p_state.set_nzcv(result.second);
             }
         } else if (op == 1) {
+            // sub subs
             operand2 = ~operand2;
             auto result = ArmUtilsS::add_with_carry(operand1, operand2, true);
             state.set_gp(datasize, d, result.first, false);

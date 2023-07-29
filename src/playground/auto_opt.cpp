@@ -38,7 +38,8 @@ bool can_process(const BasicBlock& bb) {
     return true;
 }
 
-ofstream correct_file{"correct.txt"};
+//ofstream correct_file{"correct.txt"};
+ofstream correct_file{R"(E:\CLionProjects\megumin\correct.txt)"};
 
 std::optional<arm::Program> f(const arm::Program& target, vector<MachineState> test_cases, int init_mode = 1) {
     std::mt19937 generator{10000};
@@ -111,9 +112,11 @@ std::optional<arm::Program> f(const arm::Program& target, vector<MachineState> t
 }
 
 int main() {
-    BBExtractor extractor{R"(E:\CLionProjects\megumin\test_files\pocketfft-aarch64.s)"};
+//    BBExtractor extractor{R"(E:\CLionProjects\megumin\test_files\pocketfft-aarch64.s)"};
+//    BBExtractor extractor{R"(E:\CLionProjects\megumin\test_files\raytracinginoneweekend.s)"};
+    BBExtractor extractor{R"(E:\CLionProjects\megumin\test_files\rt2.s)"};
 //    extractor.set_max_bb(-1);
-    extractor.set_max_bb(100);
+    extractor.set_max_bb(-1);
     auto bbs = extractor.extract_basic_blocks();
 
     vector<BasicBlock> viable_bbs;
@@ -129,6 +132,10 @@ int main() {
         bool success = false;
         auto prog = viable_bbs[i].to_program();
         cout << viable_bbs[i];
+
+        if (viable_bbs[i].get_start() <10000) {
+            continue;
+        }
 
         std::vector<MachineState> test_cases;
         for (int ii = 0; ii < 1; ii++) {
@@ -150,6 +157,7 @@ int main() {
                     success = true;
 
                     correct_file << "[optimization success]" << endl;
+                    correct_file << viable_bbs[i].get_start() << ", " << viable_bbs[i].get_end() << endl;
                     prog.print(correct_file);
                     correct_file << endl << ">>>" << endl;
                     rewrite.print(correct_file);

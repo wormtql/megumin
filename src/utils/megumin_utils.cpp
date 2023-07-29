@@ -100,4 +100,97 @@ namespace megumin {
 
         return z3::ite(b, one, zero);
     }
+
+    expr round_up_to_next_power2_64(const expr& x) {
+        auto o1 = x - 1;
+        auto o2 = z3::lshr(o1, 1);
+        auto o3 = o2 | o1;
+        auto o4 = z3::lshr(o3, 2);
+        auto o5 = o3 | o4;
+        auto o6 = z3::lshr(o5, 4);
+        auto o7 = o5 | o6;
+        auto o8 = z3::lshr(o7, 8);
+        auto o9 = o7 | o8;
+        auto o10 = z3::lshr(o9, 16);
+        auto o11 = o9 | o10;
+        auto o12 = z3::lshr(o11, 32);
+        auto o13 = o11 | o12;
+        return o13 + 1;
+    }
+
+    expr round_up_to_next_power2_32(const expr& x) {
+        auto o1 = x - 1;
+        auto o2 = z3::lshr(o1, 1);
+        auto o3 = o2 | o1;
+        auto o4 = z3::lshr(o3, 2);
+        auto o5 = o3 | o4;
+        auto o6 = z3::lshr(o5, 4);
+        auto o7 = o5 | o6;
+        auto o8 = z3::lshr(o7, 8);
+        auto o9 = o7 | o8;
+        auto o10 = z3::lshr(o9, 16);
+        auto o11 = o9 | o10;
+        return o11 + 1;
+    }
+
+    expr count_leading_zero_64(const expr& x, int size) {
+        expr low = x.extract(31, 0);
+        expr high = x.extract(63, 32);
+
+        return z3::ite(high == 0, 32 + count_leading_zero_32(low, size), count_leading_zero_32(high, size));
+    }
+
+    expr count_leading_zero_32(const expr& x, int size) {
+        expr low = x.extract(15, 0);
+        expr high = x.extract(31, 16);
+
+        return z3::ite(high == 0, 16 + count_leading_zero_16(low, size), count_leading_zero_16(high, size));
+    }
+
+    expr count_leading_zero_16(const expr& x, int size) {
+        expr low = x.extract(7, 0);
+        expr high = x.extract(15, 8);
+
+        return z3::ite(high == 0, 8 + count_leading_zero_8(low, size), count_leading_zero_8(high, size));
+    }
+
+    expr count_leading_zero_8(const expr& x, int size) {
+        expr low = x.extract(3, 0);
+        expr high = x.extract(7, 4);
+
+        return z3::ite(high == 0, 4 + count_leading_zero_4(low, size), count_leading_zero_4(high, size));
+    }
+
+    expr count_leading_zero_4(const expr& x, int size) {
+        expr low = x.extract(1, 0);
+        expr high = x.extract(3, 2);
+
+        return z3::ite(high == 0, 2 + count_leading_zero_2(low, size), count_leading_zero_2(high, size));
+    }
+
+    expr count_leading_zero_2(const expr& x, int size) {
+        expr low = x.extract(0, 0);
+        expr high = x.extract(1, 1);
+        auto& c = x.ctx();
+
+        return z3::ite(
+                high == 0,
+                z3::ite(
+                        low == 0,
+                        c.bv_val(2, size),
+                        c.bv_val(1, size)
+                ),
+                c.bv_val(0, size)
+        );
+    }
+
+    expr count_leading_zero(int size, const expr& x) {
+        if (size == 64) {
+            return count_leading_zero_64(x, size);
+        } else if (size == 32) {
+            return count_leading_zero_32(x, size);
+        } else {
+            megumin_assert(false);
+        }
+    }
 }

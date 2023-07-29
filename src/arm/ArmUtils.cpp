@@ -122,26 +122,54 @@ namespace arm {
     std::pair<bits, bits> ArmUtils::add_with_carry(bits x, bits y, bool carry) {
         assert(x.size == y.size);
         auto size = x.size;
-        uint64_t unsigned_sum = x.as_u64() + y.as_u64() + static_cast<uint64_t>(carry);
+
+        if (size == 64) {
+            uint64_t unsigned_x = x.as_u64();
+            uint64_t unsigned_y = y.as_u64();
+            uint64_t unsigned_xy = unsigned_x + unsigned_y;
+            uint64_t unsigned_sum = unsigned_xy + static_cast<uint64_t>(carry);
 //        int64_t signed_sum = x.as_i64() + y.as_i64() + static_cast<int64_t>(carry);
 
-        bool x_sign = x.is_set(size - 1);
-        bool y_sign = y.is_set(size - 1);
+            bool x_sign = x.is_set(size - 1);
+            bool y_sign = y.is_set(size - 1);
 
-        bits result{size, (int64_t) unsigned_sum};
+            bits result{size, (int64_t) unsigned_sum};
 
-        bool result_sign = result.is_set(size - 1);
+            bool result_sign = result.is_set(size - 1);
 
-        bool n = result.is_set(size - 1);
-        bool z = result == 0;
+            bool n = result.is_set(size - 1);
+            bool z = result == 0;
 //        bool c = result.as_u64() != unsigned_sum;
-        bool c = (unsigned_sum < x.as_u64());
+            bool c = (unsigned_xy < unsigned_x) || (unsigned_sum < unsigned_xy);
 //        bool v = result.as_i64() != signed_sum;
-        bool v = x_sign == y_sign && x_sign != result_sign;
+            bool v = x_sign == y_sign && x_sign != result_sign;
 
-        int temp = (n << 3) | (z << 2) | (c << 1) | v;
-        bits nzcv{4, temp};
-        return { result, nzcv };
+            int temp = (n << 3) | (z << 2) | (c << 1) | v;
+            bits nzcv{4, temp};
+            return { result, nzcv };
+        } else if (size == 32) {
+            uint32_t unsigned_x = x.as_u32();
+            uint32_t unsigned_y = y.as_u32();
+            uint32_t unsigned_xy = unsigned_x + unsigned_y;
+            uint32_t unsigned_sum = unsigned_xy + static_cast<uint32_t>(carry);
+
+            bool x_sign = x.is_set(size - 1);
+            bool y_sign = y.is_set(size - 1);
+
+            bits result{size, (int64_t) unsigned_sum};
+
+            bool result_sign = result.is_set(size - 1);
+
+            bool n = result.is_set(size - 1);
+            bool z = result == 0;
+            bool c = (unsigned_xy < unsigned_x) || (unsigned_sum < unsigned_xy);
+            bool v = x_sign == y_sign && x_sign != result_sign;
+
+            int temp = (n << 3) | (z << 2) | (c << 1) | v;
+            bits nzcv{4, temp};
+            return { result, nzcv };
+        }
+
     }
 
     int ArmUtils::highest_set_bit(bits x) {

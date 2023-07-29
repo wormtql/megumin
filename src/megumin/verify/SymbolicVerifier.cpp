@@ -23,6 +23,8 @@ namespace megumin {
         target.execute(state1);
         rewrite.execute(state2);
 
+//        cout << state2.p_state.c << endl;
+
         expr e = state1 != state2;
 
         solver s(c);
@@ -57,8 +59,20 @@ namespace megumin {
                 arm::MachineState symbolic_state1 = state1.to_machine_state(model);
                 arm::MachineState symbolic_state2 = state2.to_machine_state(model);
 
+//                auto temp1 = state2.get_gp(64, 26, false, true);
+//                cout << model.eval(temp1) << endl;
+//                cout << model.eval(z3::shl(temp1, 52)) << endl;
+//                cout << model.eval(~z3::shl(temp1, 52)) << endl;
+//                auto temp3 = ~z3::shl(temp1, 52);
+//                auto g27 = state2.get_gp(64, 27, false, true);
+//                cout << model.eval(g27) << endl;
+//                cout << model.eval()
+
                 bool x = false;
+                assert(test_state1 == symbolic_state1);
+                assert(test_state2 == symbolic_state2);
                 if (test_state1 == test_state2) {
+                    assert(false);
                     cout << "impossible" << endl;
                     x = symbolic_state1 == symbolic_state2;
                     bool y = model.eval(e);
