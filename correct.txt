@@ -1,4 +1,138 @@
 [optimization success]
+5365, 5370
+add x27, x5, x26
+add x26, x6, x26
+add x27, x21, x27
+add x26, x21, x26
+subs x31, x27, x26
+>>>
+add x26, x21, x26
+nop
+add x27, x5, x26
+add x26, x6, x26
+subs x31, x27, x26
+
+[optimization success]
+5586, 5591
+add x26, x6, x25
+add x25, x7, x25
+add x26, x0, x26
+add x25, x0, x25
+subs x31, x26, x25
+>>>
+add x25, x0, x25
+nop
+add x26, x6, x25
+add x25, x7, x25
+subs x31, x26, x25
+
+[optimization success]
+5823, 5828
+add x26, x6, x25
+add x25, x7, x25
+add x26, x0, x26
+add x25, x0, x25
+subs x31, x26, x25
+>>>
+adds x25, x0, x25
+nop
+add x26, x6, x25
+add x25, x7, x25
+subs x31, x26, x25
+
+[optimization success]
+6110, 6117
+mov x24, x31
+add x25, x24, x3
+add x26, x24, x22
+sub x24, x12, x24
+add x25, x21, x25, lsl #2
+add x26, x21, x26, lsl #2
+>>>
+add x24, x12, x31, asr #41
+add x26, x21, x22, lsl #2
+nop
+nop
+add x25, x21, x3, lsl #2
+nop
+
+[optimization success]
+6250, 6255
+add x23, x6, x14
+add x14, x7, x14
+add x23, x20, x23
+add x14, x20, x14
+subs x31, x23, x14
+>>>
+add x14, x20, x14
+nop
+add x23, x6, x14
+add x14, x7, x14
+subs x31, x23, x14
+
+[optimization success]
+7373, 7387
+sub x31, x31, #1, lsl #12
+mov w20, w2
+mov x21, x0
+sbfm x0, x20, #0, #31
+mov x19, x3
+mov w22, w1
+>>>
+mov x21, x0
+nop
+mov w20, w2
+sbfm x0, x20, #0, #31
+mov x19, x3
+mov w22, w1
+
+[optimization success]
+8499, 8511
+sub x31, x31, #1, lsl #12
+mov x20, x0
+movz w0, #16384
+mov x19, x2
+mov w21, w1
+>>>
+nop
+mov x20, x0
+mov w21, w1
+movz w0, #16384
+mov x19, x2
+
+[optimization success]
+8567, 8583
+sub x31, x31, #1, lsl #12
+mov w21, w2
+mov x22, x0
+sbfm x0, x21, #0, #31
+mov w20, w4
+mov x19, x3
+mov w23, w1
+>>>
+nop
+mov w21, w2
+mov x22, x0
+mov w20, w4
+sbfm x0, x21, #0, #31
+mov x19, x3
+mov w23, w1
+
+[optimization success]
+8677, 8689
+sub x31, x31, #1, lsl #12
+mov x20, x0
+movz w0, #16384
+mov x19, x2
+mov w21, w1
+>>>
+nop
+mov x20, x0
+mov w21, w1
+movz w0, #16384
+mov x19, x2
+
+[optimization success]
 11548, 11561
 sbfm x19, x27, #4, #63
 subs x31, x27, #0
@@ -14,14 +148,14 @@ movn x9, #63488, LSL #48
 csel x26, x9, x8, ne
 lsl x0, x26, #4
 >>>
-subs x31, x27, #0
 sbfm x19, x27, #4, #63
+subs x31, x27, #0
 csinc x8, x19, x31, ne
 adds x8, x8, x19
 lsr x9, x8, #59
 csinc w10, w31, w31, cc
 subs x31, x9, #0
-nop
+csinc w9, w31, w31, eq
 nop
 nop
 movn x9, #63488, LSL #48
@@ -44,19 +178,19 @@ movn x9, #63488, LSL #48
 csel x21, x9, x8, ne
 lsl x0, x21, #4
 >>>
-adds x31, x28, #0
+subs x31, x28, #0
 sbfm x25, x28, #4, #63
-csinc x8, x25, x25, ne
+csinc x8, x25, x31, ne
 adds x8, x8, x25
 lsr x9, x8, #59
-csinc w10, w31, w31, cc
+csinc x10, x31, x31, cc
 subs x31, x9, #0
 nop
 nop
 nop
 movn x9, #63488, LSL #48
-csel x21, x9, x8, ne
-sbfm x0, x21, #60, #59
+csel x21, x9, x8, gt
+lsl x0, x21, #4
 
 [optimization success]
 29281, 29298
@@ -80,17 +214,17 @@ lsl x0, x25, #4
 >>>
 sbfm x9, x8, #4, #63
 subs x31, x8, #0
-mov x19, x0
 csinc x8, x9, x31, ne
+mov x19, x0
 adds x8, x8, x9
 mov x23, x2
 lsr x9, x8, #59
-csinc x10, x31, x31, cc
+csinc w10, w31, w31, cc
 subs x31, x9, #0
-nop
+csinc w9, w31, w31, eq
 mov x22, x1
 sub x26, x1, x20
-nop
+orr w9, w10, w9
 nop
 movn x9, #63488, LSL #48
 csel x25, x9, x8, ne
@@ -108,13 +242,13 @@ mov x21, x2
 mov x22, x1
 >>>
 mov x21, x2
-mov x27, x3
+orr x27, x31, x3
 mov x28, x0
 nop
 mov x22, x1
 nop
 mov w26, w4
-orr x23, x31, x0
+orr x23, x0, x0
 
 [optimization success]
 32666, 32673
@@ -167,7 +301,7 @@ mov x1, x22
 nop
 mov x3, x27
 mov w4, w26
-mov x2, x21
+orr x2, x31, x21
 nop
 
 [optimization success]
@@ -185,7 +319,7 @@ mov x1, x22
 nop
 mov x3, x27
 mov w4, w26
-mov x2, x21
+orr x2, x31, x21
 nop
 
 [optimization success]
@@ -197,92 +331,10 @@ sub x1, x8, x2
 add x2, x24, x3
 add x3, x24, x5
 >>>
-nop
-add x3, x24, x0
-nop
-sub x1, x8, x31, lsl #23
 add x5, x31, x0
+nop
+add x1, x8, x31, asr #60
+add x3, x24, x5
 add x2, x24, x18
-
-[optimization success]
-38882, 38903
-sub x31, x31, #1120
-mov x25, x1
-add x1, x31, #88
-mov w21, w4
-mov x23, x3
-mov x24, x2
-mov x19, x0
->>>
-nop
-mov x25, x1
-mov x24, x2
-mov x23, x3
-mov w21, w4
-add x1, x31, #88
-mov x19, x0
-
-[optimization success]
-41764, 41771
-add x5, x14, x2
-add x4, x14, x3
-mov w6, w15
-add x4, x26, x4
-add x5, x26, x5
-add w6, w6, #1
->>>
-add x5, x14, x2
-nop
-add x4, x14, x3
-add x4, x26, x4
-add x5, x26, x5
-add w6, w15, #1
-
-[optimization success]
-49453, 49460
-mov x11, x31
-add x10, x11, x10
-sub x8, x31, x8
-add x9, x9, x10
-add x10, x24, x11
-sub x11, x25, x11
->>>
-sub x8, x31, x8
-nop
-add x9, x9, x10
-nop
-add x10, x24, x31, lsl #33
-add x11, x25, x31
-
-[optimization success]
-49580, 49587
-mov x11, x31
-add x10, x11, x10
-sub x8, x31, x8
-add x9, x9, x10
-add x10, x24, x11
-sub x11, x25, x11
->>>
-add x9, x9, x10
-nop
-add x11, x25, x31, lsr #58
-sub x10, x24, x31, lsr #54
-sub x8, x31, x8
-nop
-
-[optimization success]
-49604, 49611
-mov x11, x31
-add x10, x11, x10
-sub x8, x31, x8
-add x9, x9, x10
-add x10, x24, x11
-sub x11, x25, x11
->>>
-add x11, x25, x31, asr #27
-add x9, x9, x10
-sub x8, x31, x8
-sub x10, x24, x31, lsl #58
-nop
 nop
 

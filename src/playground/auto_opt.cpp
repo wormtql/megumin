@@ -133,9 +133,9 @@ int main() {
         auto prog = viable_bbs[i].to_program();
         cout << viable_bbs[i];
 
-        if (viable_bbs[i].get_start() <10000) {
-            continue;
-        }
+//        if (viable_bbs[i].get_start() <10000) {
+//            continue;
+//        }
 
         std::vector<MachineState> test_cases;
         for (int ii = 0; ii < 1; ii++) {

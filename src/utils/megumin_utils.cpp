@@ -4,6 +4,7 @@
 
 #include "megumin_utils.h"
 #include <iostream>
+#include "symbol/ArmUtilsS.h"
 
 inline int64_t get_mask(int size) {
     if (size == 64) {
@@ -52,6 +53,26 @@ namespace megumin {
         value &= mask;
 
         result = result | c.bv_val(value, size);
+
+        return result;
+    }
+
+    expr set_expr_range(expr x, int low, int high, expr value) {
+        megumin_assert(x.is_bv());
+
+        int64_t mask = get_mask(high) - get_mask(low);
+        int64_t maskr = ~mask;
+
+        auto& c = x.ctx();
+        auto result = x;
+        int size = x.get_sort().bv_size();
+        result = result & c.bv_val(maskr, size);
+
+        value = z3::zext(value, size - value.get_sort().bv_size());
+        value = z3::shl(value, low);
+        value = value & c.bv_val(mask, size);
+
+        result = result | value;
 
         return result;
     }
@@ -192,5 +213,25 @@ namespace megumin {
         } else {
             megumin_assert(false);
         }
+    }
+
+    expr count_leading_signed(const expr& x, int size) {
+        auto& c = x.ctx();
+        int bv_size = x.get_sort().bv_size();
+        int s = bv_size / 2;
+
+        if (bv_size == 1) {
+            return z3::ite(x == 1, c.bv_val(1, size), c.bv_val(0, size));
+        }
+
+        expr low = x.extract(s - 1, 0);
+        expr high = x.extract(s * 2 - 1, s);
+
+
+        return z3::ite(
+                high == c.bv_val((uint64_t)(((uint64_t) 1 << s) - 1), s),
+                s + count_leading_signed(low, size),
+                count_leading_signed(high, size)
+        );
     }
 }

@@ -317,8 +317,10 @@ namespace arm {
             state.set_gp(datasize, d, result, false);
         } else if (opcode2 == 0 && opcode == 0b000101) {
             // cls
-            // todo 比较难实现
-            megumin::megumin_todo();
+            expr operand1 = state.get_gp(datasize, n, false, true);
+            expr result = megumin::count_leading_signed(operand1, datasize);
+            megumin::megumin_assert(result.is_bv());
+            state.set_gp(datasize, d, result, false);
 //            bits operand1 = state.gp.get(datasize, n);
 //            int result = ArmUtilsSharedFunctions::count_leading_sign_bits(operand1);
 //            state.gp.set(datasize, d, bits{datasize, result});

@@ -5,6 +5,8 @@
 #include "MachineStateS.h"
 #include <megumin_utils.h>
 
+using namespace std;
+
 // pstate
 namespace arm {
     PStateS::PStateS(z3::context &context, const string& prefix)
@@ -45,7 +47,7 @@ namespace arm {
           gp(context, prefix + "_gp"),
           sp(context.bv_const((prefix + "_sp").c_str(), 64))
     {
-
+//        cout << sp.get_sort() << endl;
     }
 
     expr MachineStateS::get_sp(int size) const {

@@ -208,14 +208,27 @@ namespace arm {
     }
 
     int ArmUtilsSharedFunctions::count_leading_zero_bits(const bits &x) {
-        int N = x.size;
-        return N - ArmUtils::highest_set_bit(x) + 1;
+        int result = 0;
+        for (int i = x.size - 1; i >= 0; i--) {
+            if (!x.is_set(i)) {
+                result++;
+            } else {
+                return result;
+            }
+        }
+        return result;
     }
 
     int ArmUtilsSharedFunctions::count_leading_sign_bits(const bits &x) {
-        int N = x.size;
-        bits temp = x.get_range(1, N) ^ x.get_range(0, N - 1);
-        return count_leading_zero_bits(temp);
+        int result = 0;
+        for (int i = x.size - 1; i >= 0; i--) {
+            if (x.is_set(i)) {
+                result++;
+            } else {
+                return result;
+            }
+        }
+        return result;
     }
 
     bool ArmUtilsSharedFunctions::condition_holds(int cond, const MachineState& state) {
