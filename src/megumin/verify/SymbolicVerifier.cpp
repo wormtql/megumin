@@ -71,7 +71,7 @@ namespace megumin {
                 bool x = false;
                 assert(test_state1 == symbolic_state1);
                 assert(test_state2 == symbolic_state2);
-                if (test_state1 == test_state2) {
+                if (test_state1 == test_state2 || test_state1 != symbolic_state1 || test_state2 != symbolic_state2) {
                     assert(false);
                     cout << "impossible" << endl;
                     x = symbolic_state1 == symbolic_state2;

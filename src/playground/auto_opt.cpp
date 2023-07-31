@@ -112,9 +112,9 @@ std::optional<arm::Program> f(const arm::Program& target, vector<MachineState> t
 }
 
 int main() {
-//    BBExtractor extractor{R"(E:\CLionProjects\megumin\test_files\pocketfft-aarch64.s)"};
+    BBExtractor extractor{R"(E:\CLionProjects\megumin\test_files\pocketfft-aarch64.s)"};
 //    BBExtractor extractor{R"(E:\CLionProjects\megumin\test_files\raytracinginoneweekend.s)"};
-    BBExtractor extractor{R"(E:\CLionProjects\megumin\test_files\rt2.s)"};
+//    BBExtractor extractor{R"(E:\CLionProjects\megumin\test_files\rt2.s)"};
 //    extractor.set_max_bb(-1);
     extractor.set_max_bb(-1);
     auto bbs = extractor.extract_basic_blocks();
@@ -133,7 +133,7 @@ int main() {
         auto prog = viable_bbs[i].to_program();
         cout << viable_bbs[i];
 
-//        if (viable_bbs[i].get_start() <10000) {
+//        if (viable_bbs[i].get_start() <54112) {
 //            continue;
 //        }
 

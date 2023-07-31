@@ -79,38 +79,56 @@ namespace megumin {
 
     // https://yurichev.com/blog/bitrev/
     expr reverse_expr(const expr& x) {
-        megumin_assert(x.get_sort().is_bv());
-        int size = x.get_sort().bv_size();
-
-        expr a = x;
-        auto& c = x.ctx();
-
-        if (size == 64) {
-            a = z3::lshr(a, 32) ^ z3::shl(a, 32);
-            auto m = c.bv_val(0x0000ffff0000ffff, 64);
-            a = (z3::lshr(a, 16) & m) ^ ((z3::shl(a, 16) & ~m));
-            m = c.bv_val(0x00ff00ff00ff00ff, 64);
-            a = (z3::lshr(a, 8) & m) ^ ((z3::shl(a, 8) & ~m));
-            m = c.bv_val(0x0f0f0f0f0f0f0f0f, 64);
-            a = (z3::lshr(a, 4) & m) ^ (z3::shl(a, 4) & ~m);
-            m = c.bv_val(0x3333333333333333, 64);
-            a = (z3::lshr(a, 2) & m) ^ (z3::shl(a, 2) & ~m);
-            m = c.bv_val(0x5555555555555555, 64);
-            a = (z3::lshr(a, 1) & m) ^ (z3::shl(a, 1) & ~m);
-            return a;
-        } else if (size == 32) {
-            auto bv = [&] (uint64_t v) {
-                return c.bv_val(v, 32);
-            };
-            a = z3::lshr(a, 16) | z3::shl(a, 16);
-            a = z3::lshr(a & bv(0xFF00FF00), 8) | z3::shl(a & bv(0x00FF00FF), 8);
-            a = z3::lshr(a & bv(0xF0F0F0F0), 4) | z3::shl(a & bv(0x0F0F0F0F), 4);
-            a = z3::lshr(a & bv(0xCCCCCCCC), 2) | z3::shl(a & bv(0x33333333), 2);
-            a = z3::lshr(a & bv(0xAAAAAAAA), 1) | z3::shl(x & bv(0x55555555), 1);
-            return a;
-        } else {
-            megumin_assert(false);
+        int bv_size = x.get_sort().bv_size();
+        if (bv_size == 1) {
+            return x;
         }
+
+        int s = bv_size / 2;
+        expr low = x.extract(s - 1, 0);
+        expr high = x.extract(s * 2 - 1, s);
+
+        expr reverse_low = reverse_expr(low);
+        expr reverse_high = reverse_expr(high);
+
+        expr high_e = z3::zext(reverse_low, s);
+        expr low_e = z3::zext(reverse_high, s);
+
+        high_e = z3::shl(high_e, s);
+        return high_e | low_e;
+
+//        megumin_assert(x.get_sort().is_bv());
+//        int size = x.get_sort().bv_size();
+//
+//        expr a = x;
+//        auto& c = x.ctx();
+//
+//        if (size == 64) {
+//            a = z3::lshr(a, 32) ^ z3::shl(a, 32);
+//            auto m = c.bv_val(0x0000ffff0000ffff, 64);
+//            a = (z3::lshr(a, 16) & m) ^ ((z3::shl(a, 16) & ~m));
+//            m = c.bv_val(0x00ff00ff00ff00ff, 64);
+//            a = (z3::lshr(a, 8) & m) ^ ((z3::shl(a, 8) & ~m));
+//            m = c.bv_val(0x0f0f0f0f0f0f0f0f, 64);
+//            a = (z3::lshr(a, 4) & m) ^ (z3::shl(a, 4) & ~m);
+//            m = c.bv_val(0x3333333333333333, 64);
+//            a = (z3::lshr(a, 2) & m) ^ (z3::shl(a, 2) & ~m);
+//            m = c.bv_val(0x5555555555555555, 64);
+//            a = (z3::lshr(a, 1) & m) ^ (z3::shl(a, 1) & ~m);
+//            return a;
+//        } else if (size == 32) {
+//            auto bv = [&] (uint64_t v) {
+//                return c.bv_val(v, 32);
+//            };
+//            a = z3::lshr(a, 16) | z3::shl(a, 16);
+//            a = z3::lshr(a & bv(0xFF00FF00), 8) | z3::shl(a & bv(0x00FF00FF), 8);
+//            a = z3::lshr(a & bv(0xF0F0F0F0), 4) | z3::shl(a & bv(0x0F0F0F0F), 4);
+//            a = z3::lshr(a & bv(0xCCCCCCCC), 2) | z3::shl(a & bv(0x33333333), 2);
+//            a = z3::lshr(a & bv(0xAAAAAAAA), 1) | z3::shl(x & bv(0x55555555), 1);
+//            return a;
+//        } else {
+//            megumin_assert(false);
+//        }
     }
 
     expr z3_bool_to_bv(const expr& b, int size) {

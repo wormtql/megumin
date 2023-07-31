@@ -10,20 +10,30 @@ int main() {
 //    megumin::BruteForceVerifier verifier{10000};
     megumin::SymbolicVerifier verifier;
 
-    auto p1 = megumin::aarch64_asm(R"(add x8, sp, #656
-add x19, x8, #1060
-movz w8, #2
-ands w31, w9, #1
-lslv w2, w8, w10
-csinv w3, w11, w31, ne
-mov x0, x23
-mov x1, x19)").value();
-    auto p2 = megumin::aarch64_asm(R"(csneg x0, x23, x31, mi
-add x19, sp, #1716
-cls x2, x19
-csel x1, x19, x31, mi
-adcs w3, w11, w31
-cls x8, x10)").value();
+    auto p1 = megumin::aarch64_asm(R"(add x12, x10, x25
+add x13, x24, x25
+add x14, x9, x12
+subs x31, x0, x13
+csinc w13, w31, w31, cs
+subs x31, x24, x14
+csinc w15, w31, w31, cs
+sub x12, x12, x8
+and w15, w13, w15
+sub x13, x10, x8
+add x12, x9, x12
+add x13, x9, x13
+subs x31, x0, x12
+mov x11, x31
+csinc w12, w31, w31, cs
+subs x31, x13, x14
+csinc w13, w31, w31, cs)").value();
+    auto p2 = megumin::aarch64_asm(R"(sdiv x11, x0, x10
+add x12, x10, x25
+adds x14, x9, x12
+csinc w13, w31, w25, hi
+csinc w15, w10, w31, cc
+clz x12, x9)").value();
+//    auto p2 = megumin::aarch64_asm(R"(sdiv x11, x0, x10)").value();
 
     auto result = verifier.verify(p1, p2);
     cout << result << endl;
