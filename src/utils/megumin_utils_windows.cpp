@@ -48,8 +48,8 @@ namespace megumin {
         }
 
         if (megumin_ks_asm(ks, code.c_str(), 0, &encode, &size, &count) != KS_ERR_OK) {
-            printf("ERROR: ks_asm() failed & count = %lu, error = %u\n",
-                   count, megumin_ks_errno(ks));
+//            printf("ERROR: ks_asm() failed & count = %lu, error = %u\n",
+//                   count, megumin_ks_errno(ks));
             megumin_ks_free(encode);
             megumin_ks_close(ks);
 //            assert(false);

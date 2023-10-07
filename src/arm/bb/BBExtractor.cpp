@@ -12,6 +12,17 @@
 using namespace std;
 
 namespace arm {
+//    vector<BasicBlock> arm::BBExtractor::extract_basic_blocks() {
+//        ifstream f(filename);
+//        if (!f.is_open()) {
+//            return {};
+//        }
+//        string line;
+//
+//        vector<BasicBlock> result;
+//        int[] valid = new int[100000];
+//    }
+
     vector<BasicBlock> arm::BBExtractor::extract_basic_blocks() {
         ifstream f{filename};
         if (!f.is_open()) {
@@ -26,17 +37,6 @@ namespace arm {
         while (std::getline(f, line)) {
             string line2 = megumin::trim(line);
 
-            if (line2.starts_with(".") || line2.starts_with("//") || line2.starts_with("main")) {
-                i++;
-                continue;
-            }
-            if (line2.empty()) {
-                i++;
-                continue;
-            }
-
-            line2 = remove_comment(line2);
-
             auto finish_bb = [&] () {
                 if (bb.size() > 4) {
                     result.push_back(bb);
@@ -46,6 +46,21 @@ namespace arm {
                     bb.clear_instructions();
                 }
             };
+
+            if (line2.starts_with(".") || line2.starts_with("//") || line2.starts_with("main")) {
+                finish_bb();
+                if (result.size() == max_bb) {
+                    break;
+                }
+                i++;
+                continue;
+            }
+            if (line2.empty()) {
+                i++;
+                continue;
+            }
+
+            line2 = remove_comment(line2);
 
             if (is_load_store(line2) || is_branch(line2) || is_other_bb_break(line2)) {
                 finish_bb();
@@ -63,6 +78,7 @@ namespace arm {
                     }
                     bb.add_instruction(inst);
                 } else {
+//                    cout << "failed instruction: " << line2 << endl;
                     finish_bb();
                     if (result.size() == max_bb) {
                         break;

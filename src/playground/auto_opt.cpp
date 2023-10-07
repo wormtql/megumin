@@ -42,7 +42,7 @@ bool can_process(const BasicBlock& bb) {
 ofstream correct_file{R"(E:\CLionProjects\megumin\correct.txt)"};
 
 std::optional<arm::Program> f(const arm::Program& target, vector<MachineState> test_cases, int init_mode = 1) {
-    std::mt19937 generator{10000};
+    std::mt19937 generator{60000};
     cout << "[optimization target]" << endl;
     target.print();
     cout << endl;
@@ -112,9 +112,12 @@ std::optional<arm::Program> f(const arm::Program& target, vector<MachineState> t
 }
 
 int main() {
-    BBExtractor extractor{R"(E:\CLionProjects\megumin\test_files\pocketfft-aarch64.s)"};
+//    BBExtractor extractor{R"(E:\CLionProjects\megumin\test_files\pocketfft-aarch64.s)"};
 //    BBExtractor extractor{R"(E:\CLionProjects\megumin\test_files\raytracinginoneweekend.s)"};
 //    BBExtractor extractor{R"(E:\CLionProjects\megumin\test_files\rt2.s)"};
+//    BBExtractor extractor{R"(E:\CLionProjects\megumin\test_files\rt3.s)"};
+    BBExtractor extractor{R"(E:\CLionProjects\megumin\test_files\crypto.s)"};
+//    BBExtractor extractor{R"(E:\CLionProjects\megumin\test_files\a.s)"};
 //    extractor.set_max_bb(-1);
     extractor.set_max_bb(-1);
     auto bbs = extractor.extract_basic_blocks();

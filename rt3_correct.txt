@@ -1,0 +1,76 @@
+[optimization success]
+11519, 11526
+mov w8, w0
+movz w9, #1
+lslv x8, x9, x8
+movz x9, #4096
+movk x9, #256, LSL #32
+movk x9, #256, LSL #48
+ands x31, x8, x9
+>>>
+nop
+movz w9, #1
+lslv x8, x9, x0
+movz x9, #4096
+movk x9, #256, LSL #32
+movk x9, #256, LSL #48
+ands x31, x8, x9
+
+[optimization success]
+17440, 17446
+add x11, x31, #672
+add x11, x11, #2084
+mov w24, w31
+add w8, w8, #1
+sub w10, w10, #1
+add w12, w21, #2
+>>>
+add x11, x31, #2756
+add w8, w8, #1
+nop
+sub w10, w10, #1
+add w12, w21, #2
+and x24, x1, x31, lsl #12
+
+[optimization success]
+22695, 22700
+movz w8, #63488, LSL #16
+add w8, w8, w27, lsl #24
+extr w8, w27, w8, #27
+and w8, w8, #255
+subs w31, w8, #3
+>>>
+nop
+nop
+nop
+and w8, w27, #255
+subs x31, x8, #3
+
+[optimization success]
+31251, 31256
+mov w11, w13
+mov x12, x31
+sbfm x14, x11, #0, #31
+mov w11, w3
+subs w31, w3, #8
+>>>
+bic x12, x31, x11
+nop
+sbfm x14, x13, #0, #31
+orr w11, w3, w3
+subs w31, w11, #8
+
+[optimization success]
+37448, 37453
+movz w9, #63488, LSL #16
+add w9, w9, w8, lsl #24
+extr w9, w8, w9, #27
+and w9, w9, #255
+subs w31, w9, #4
+>>>
+extr w9, w8, w31, #8
+nop
+nop
+nop
+subs x31, x9, #4
+

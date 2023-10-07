@@ -8,3 +8,4 @@ pocketfft_build/
 .vscode/
 z3_install/
 z3_build/
+test_files/
