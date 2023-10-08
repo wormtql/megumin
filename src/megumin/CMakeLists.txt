@@ -12,6 +12,7 @@ target_sources(megumin
 
 target_link_libraries(megumin
         arm_asm
+        ${Z3_LIBRARIES}
         )
 
 target_include_directories(megumin

@@ -68,6 +68,32 @@ namespace megumin {
 //                cout << model.eval(g27) << endl;
 //                cout << model.eval()
 
+                auto print_error_message = [&] () {
+                    cout << "==== impossible" << endl;
+                    if (test_state1 == test_state2) {
+                        cout << "reason: The SMT found a counter example, but the symbolic state are the same" << endl;
+                    } else if (test_state1 != symbolic_state1) {
+                        cout << "reason: Machine state1 does not match symbolic state1" << endl;
+                    } else if (test_state2 != symbolic_state2) {
+                        cout << "reason: Machine state2 does not match symbolic state2" << endl;
+                    }
+
+                    cout << "initial state:" << endl: 
+                    cout << original_state << endl;
+                    cout << "test state 1:" << endl;
+                    cout << test_state1 << endl;
+                    cout << "test state 2:" << endl;
+                    cout << test_state2 << endl;
+                    cout << "symbolic state 1:" << endl;
+                    cout << symbolic_state1 << endl;
+                    cout << "symbolic state 2:" << endl;
+                    cout << symbolic_state2 << endl;
+                    cout << "target program:" << endl;
+                    cout << target << endl;
+                    cout << "rewrite program:" << endl;
+                    cout << rewrite << endl;
+                };
+
                 bool x = false;
                 assert(test_state1 == symbolic_state1);
                 assert(test_state2 == symbolic_state2);

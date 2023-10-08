@@ -39,7 +39,7 @@ bool can_process(const BasicBlock& bb) {
 }
 
 //ofstream correct_file{"correct.txt"};
-ofstream correct_file{R"(E:\CLionProjects\megumin\correct.txt)"};
+ofstream correct_file{R"(/root/megumin/correct.txt)"};
 
 std::optional<arm::Program> f(const arm::Program& target, vector<MachineState> test_cases, int init_mode = 1) {
     std::mt19937 generator{60000};
@@ -47,14 +47,14 @@ std::optional<arm::Program> f(const arm::Program& target, vector<MachineState> t
     target.print();
     cout << endl;
 
-//    megumin::BruteForceVerifier verifier{100000};
+//    megumin::BruteForceVerifier verifier{100000   };
 
     megumin::SimpleCost simple_cost{target, std::move(test_cases)};
 
     megumin::WeightedProgramMutation weighted_program_mutation{generator};
 
     megumin::Search search{&weighted_program_mutation, &simple_cost, generator};
-    search.set_max_time(10000);
+    search.set_max_time(120000);
     megumin::SearchState state;
 
     arm::Program init_program{};
@@ -116,7 +116,8 @@ int main() {
 //    BBExtractor extractor{R"(E:\CLionProjects\megumin\test_files\raytracinginoneweekend.s)"};
 //    BBExtractor extractor{R"(E:\CLionProjects\megumin\test_files\rt2.s)"};
 //    BBExtractor extractor{R"(E:\CLionProjects\megumin\test_files\rt3.s)"};
-    BBExtractor extractor{R"(E:\CLionProjects\megumin\test_files\crypto.s)"};
+    // BBExtractor extractor{R"(E:\CLionProjects\megumin\test_files\crypto.s)"};
+    BBExtractor extractor{R"(/root/super/rt2.s)"};
 //    BBExtractor extractor{R"(E:\CLionProjects\megumin\test_files\a.s)"};
 //    extractor.set_max_bb(-1);
     extractor.set_max_bb(-1);
