@@ -1,16 +1,14 @@
 [optimization success]
-205, 211
-mov x19, x4
-mov x20, x2
-mov x21, x3
-mov x22, x1
-mov x23, x0
-mov x24, x31
+2559, 2564
+add x9, x31, #0
+movz w22, #35
+movz w20, #1
+add x21, x9, #57
+mov x9, x19
 >>>
-lsrv x23, x0, x31
-sub x22, x1, x31, lsr #10
-csel x24, x31, x31, cs
-csel x19, x4, x4, vc
-extr x20, x2, x2, #48
-extr x21, x3, x3, #7
+movz x22, #35
+add x21, x31, #57
+nop
+orr x9, x19, x31, lsl #20
+movz w20, #1
 

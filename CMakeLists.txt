@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 project(megumin)
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 #SET(CMAKE_BUILD_TYPE "Release")
 
 message(STATUS "CMAKE_BINARY_DIR: ${CMAKE_BINARY_DIR}")
@@ -18,18 +18,30 @@ if (WIN32)
     link_directories(z3_install/bin)
     file(COPY ${PROJECT_SOURCE_DIR}/z3_install/bin/libz3.dll DESTINATION ${CMAKE_BINARY_DIR}/bin)
 else()
-    find_package(LLVM REQUIRED CONFIG PATHS /mnt/disk2/yaoxilai/llvm/16.0.4/llvm_install NO_DEFAULT_PATH)
-    message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION}")
-    message(STATUS "Using LLVMConfig.cmake in: ${LLVM_DIR}")
-    message(STATUS "LLVM include dir: ${LLVM_INCLUDE_DIRS}")
-    include_directories(${LLVM_INCLUDE_DIRS})
-    separate_arguments(LLVM_DEFINITIONS_LIST NATIVE_COMMAND ${LLVM_DEFINITIONS})
-    add_definitions(${LLVM_DEFINITIONS_LIST})
+    set(CMAKE_C_COMPILER clang)
+    set(CMAKE_CXX_COMPILER clang++)
+    set(CMAKE_CXX_STANDARD 23)
+
+    # find_package(LLVM REQUIRED CONFIG PATHS /mnt/disk2/yaoxilai/llvm/16.0.4/llvm_install NO_DEFAULT_PATH)
+    # message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION}")
+    # message(STATUS "Using LLVMConfig.cmake in: ${LLVM_DIR}")
+    # message(STATUS "LLVM include dir: ${LLVM_INCLUDE_DIRS}")
+    # include_directories(${LLVM_INCLUDE_DIRS})
+    # separate_arguments(LLVM_DEFINITIONS_LIST NATIVE_COMMAND ${LLVM_DEFINITIONS})
+    # add_definitions(${LLVM_DEFINITIONS_LIST})
 
     message(STATUS "using static keystone")
     # keystone
     include_directories(keystone_install/include)
     link_directories(keystone_install/lib)
+
+    # z3
+    find_package(Z3 REQUIRED PATHS z3_install/lib/cmake/z3)
+    message(STATUS "Z3 include: ${Z3_CXX_INCLUDE_DIRS}")
+    message(STATUS "Z3 lib: ${Z3_LIBRARIES}")
+    include_directories(${Z3_INCLUDE_DIR})
+    link_libraries(${Z3_LIBRARIES})
+    link_directories(z3_install/lib)
 endif()
 
 add_subdirectory(src/arm)

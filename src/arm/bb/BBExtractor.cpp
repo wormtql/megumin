@@ -12,6 +12,21 @@
 using namespace std;
 
 namespace arm {
+    bool starts_with(const string& a, const string& b) {
+        if (a.length() < b.length()) {
+            return false;
+        }
+
+        int len = b.length();
+        for (int i = 0; i < len; i++) {
+            if (a[i] != b[i]) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
 //    vector<BasicBlock> arm::BBExtractor::extract_basic_blocks() {
 //        ifstream f(filename);
 //        if (!f.is_open()) {
@@ -47,7 +62,7 @@ namespace arm {
                 }
             };
 
-            if (line2.starts_with(".") || line2.starts_with("//") || line2.starts_with("main")) {
+            if (starts_with(line2, ".") || starts_with(line2, "//") || starts_with(line2, "main")) {
                 finish_bb();
                 if (result.size() == max_bb) {
                     break;
@@ -199,7 +214,7 @@ namespace arm {
         };
 
         string opcode = extract_opcode(s);
-        if (opcodes.contains(opcode)) {
+        if (opcodes.find(opcode) != opcodes.end()) {
             return true;
         } else {
             return false;
@@ -260,7 +275,7 @@ namespace arm {
 
         string opcode = extract_opcode(s);
 
-        return opcodes.contains(opcode);
+        return opcodes.find(opcode) != opcodes.end();
     }
 
     string BBExtractor::extract_opcode(const string &s) {
@@ -281,7 +296,7 @@ namespace arm {
         };
 
         string opcode = extract_opcode(s);
-        return opcodes.contains(opcode);
+        return opcodes.find(opcode) != opcodes.end();
     }
 
     string BBExtractor::remove_comment(const string &s) {
