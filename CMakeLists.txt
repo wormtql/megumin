@@ -9,6 +9,9 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
+# argpase
+include_directories(3rd/argparse/include)
+
 if (WIN32)
     add_definitions(-DMEGUMIN_IS_WINDOWS)
     include_directories(keystone_install/include)

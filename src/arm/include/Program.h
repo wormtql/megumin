@@ -47,6 +47,9 @@ namespace arm {
     };
 }
 
+namespace std {
+    std::ostream& operator<<(std::ostream& os, const arm::Program& prog);
+}
 
 
 #endif //MEGUMIN_PROGRAM_H

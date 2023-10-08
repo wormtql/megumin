@@ -13,6 +13,12 @@
 
 using megumin::megumin_assert;
 
+namespace std {
+    std::ostream& operator<<(std::ostream& os, const arm::Program& prog) {
+        prog.print(os);
+    }
+}
+
 namespace arm {
     void Program::execute(MachineState &state) const {
         for (const auto& instruction: instructions) {

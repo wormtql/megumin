@@ -54,3 +54,11 @@ namespace arm {
         return !(*this == other);
     }
 }
+
+namespace std {
+    // ostream& operator<<(ostream& os, arm::FPRegBank reg) {
+    //     for (int i = 0; i < 32; i++) {
+    //         os << reg.get_ref(i, true)
+    //     }
+    // }
+}

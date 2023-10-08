@@ -65,4 +65,8 @@ namespace arm {
     };
 }
 
+namespace std {
+    ostream& operator<<(ostream& os, const arm::MachineState& ms);
+}
+
 #endif //MEGUMIN_MACHINESTATE_H
