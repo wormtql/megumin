@@ -13,9 +13,11 @@
 
 using megumin::megumin_assert;
 
-namespace std {
+namespace arm {
     std::ostream& operator<<(std::ostream& os, const arm::Program& prog) {
         prog.print(os);
+
+        return os;
     }
 }
 

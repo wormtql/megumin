@@ -152,12 +152,12 @@ namespace arm {
             }
         }
     };
+
+    std::ostream& operator<<(std::ostream& os, const arm::FPRegBank& reg);
+
+    std::ostream& operator<<(std::ostream& os, const arm::GPRegBank& reg);
 }
 
-namespace std {
-    ostream& operator<<(ostream& os, const arm::FPRegBank& reg);
 
-    ostream& operator<<(ostream& os, const arm::GPRegBank& reg);
-}
 
 #endif //MEGUMIN_REGBANK_H

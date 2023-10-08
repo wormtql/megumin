@@ -45,9 +45,7 @@ namespace arm {
 
         [[nodiscard]] RegSet get_minimum_def_ins() const;
     };
-}
 
-namespace std {
     std::ostream& operator<<(std::ostream& os, const arm::Program& prog);
 }
 

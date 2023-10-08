@@ -21,6 +21,7 @@
 #include <search/Search.h>
 #include <verify/BruteForceVerifier.h>
 #include <verify/SymbolicVerifier.h>
+#include <argparse/argparse.hpp>
 
 using namespace std;
 using namespace arm;
@@ -39,9 +40,9 @@ bool can_process(const BasicBlock& bb) {
 }
 
 //ofstream correct_file{"correct.txt"};
-ofstream correct_file{R"(/root/megumin/correct.txt)"};
+//ofstream correct_file{R"(/root/megumin/correct.txt)"};
 
-std::optional<arm::Program> f(const arm::Program& target, vector<MachineState> test_cases, int init_mode = 1) {
+std::optional<arm::Program> f(const arm::Program& target, vector<MachineState> test_cases, int max_time, int init_mode = 1) {
     std::mt19937 generator{60000};
     cout << "[optimization target]" << endl;
     target.print();
@@ -54,7 +55,7 @@ std::optional<arm::Program> f(const arm::Program& target, vector<MachineState> t
     megumin::WeightedProgramMutation weighted_program_mutation{generator};
 
     megumin::Search search{&weighted_program_mutation, &simple_cost, generator};
-    search.set_max_time(120000);
+    search.set_max_time(max_time);
     megumin::SearchState state;
 
     arm::Program init_program{};
@@ -111,13 +112,32 @@ std::optional<arm::Program> f(const arm::Program& target, vector<MachineState> t
     return {};
 }
 
-int main() {
+int main(int argc, char* argv[]) {
+    argparse::ArgumentParser program("megumin auto opt");
+    program.add_argument("--correct-file").default_value("correct.txt");
+    program.add_argument("--input-file");
+    program.add_argument("--error-file").default_value("error.txt");
+    program.add_argument("--time-per-opt").default_value(10000);
+
+    program.parse_args(argc, argv);
+
+    ofstream correct_file{program.get<std::string>("--correct-file")};
+    BBExtractor extractor{program.get<string>("--input-file")};
+    ofstream error_file{program.get<string>("--error-file")};
+
+    if (!correct_file.is_open()) {
+        cout << "cannot open " << program.get<string>("--correct-file") << endl;
+    }
+    if (!error_file.is_open()) {
+        cout << "cannot open " << program.get<string>("--error-file") << endl;
+    }
+
 //    BBExtractor extractor{R"(E:\CLionProjects\megumin\test_files\pocketfft-aarch64.s)"};
 //    BBExtractor extractor{R"(E:\CLionProjects\megumin\test_files\raytracinginoneweekend.s)"};
 //    BBExtractor extractor{R"(E:\CLionProjects\megumin\test_files\rt2.s)"};
 //    BBExtractor extractor{R"(E:\CLionProjects\megumin\test_files\rt3.s)"};
     // BBExtractor extractor{R"(E:\CLionProjects\megumin\test_files\crypto.s)"};
-    BBExtractor extractor{R"(/root/super/rt2.s)"};
+//    BBExtractor extractor{R"(/root/super/rt2.s)"};
 //    BBExtractor extractor{R"(E:\CLionProjects\megumin\test_files\a.s)"};
 //    extractor.set_max_bb(-1);
     extractor.set_max_bb(-1);
@@ -151,11 +171,11 @@ int main() {
         }
 
         while (!success && test_cases.size() <= 200) {
-            auto result = f(prog, test_cases, 1);
+            auto result = f(prog, test_cases, program.get<int>("--time-per-opt"),1);
             if (result.has_value()) {
                 // find a solution
                 auto rewrite = result.value();
-                auto verifier = megumin::SymbolicVerifier();
+                auto verifier = megumin::SymbolicVerifier(error_file);
                 auto verify_result = verifier.verify(prog, rewrite);
                 if (verify_result.success) {
                     success = true;

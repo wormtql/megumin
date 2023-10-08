@@ -10,7 +10,11 @@
 
 namespace megumin {
     class SymbolicVerifier: Verifier {
+    private:
+        std::ostream& error_output_stream;
     public:
+        explicit SymbolicVerifier(std::ostream& os);
+
         VerifyResult verify(const arm::Program &target, const arm::Program &rewrite) override;
     };
 }

@@ -12,6 +12,8 @@ using std::cout;
 using std::endl;
 
 namespace megumin {
+    SymbolicVerifier::SymbolicVerifier(std::ostream &os): error_output_stream(os) {}
+
     VerifyResult megumin::SymbolicVerifier::verify(const arm::Program &target, const arm::Program &rewrite) {
         context c;
 
@@ -78,26 +80,27 @@ namespace megumin {
                         cout << "reason: Machine state2 does not match symbolic state2" << endl;
                     }
 
-                    cout << "initial state:" << endl: 
-                    cout << original_state << endl;
-                    cout << "test state 1:" << endl;
-                    cout << test_state1 << endl;
-                    cout << "test state 2:" << endl;
-                    cout << test_state2 << endl;
-                    cout << "symbolic state 1:" << endl;
-                    cout << symbolic_state1 << endl;
-                    cout << "symbolic state 2:" << endl;
-                    cout << symbolic_state2 << endl;
-                    cout << "target program:" << endl;
-                    cout << target << endl;
-                    cout << "rewrite program:" << endl;
-                    cout << rewrite << endl;
+                    error_output_stream << "counter example:" << endl;
+                    error_output_stream << counter_example << endl;
+                    error_output_stream << "test state 1:" << endl;
+                    error_output_stream << test_state1 << endl;
+                    error_output_stream << "test state 2:" << endl;
+                    error_output_stream << test_state2 << endl;
+                    error_output_stream << "symbolic state 1:" << endl;
+                    error_output_stream << symbolic_state1 << endl;
+                    error_output_stream << "symbolic state 2:" << endl;
+                    error_output_stream << symbolic_state2 << endl;
+                    error_output_stream << "target program:" << endl;
+                    error_output_stream << target << endl;
+                    error_output_stream << "rewrite program:" << endl;
+                    error_output_stream << rewrite << endl;
                 };
 
                 bool x = false;
                 assert(test_state1 == symbolic_state1);
                 assert(test_state2 == symbolic_state2);
                 if (test_state1 == test_state2 || test_state1 != symbolic_state1 || test_state2 != symbolic_state2) {
+                    print_error_message();
                     assert(false);
                     cout << "impossible" << endl;
                     x = symbolic_state1 == symbolic_state2;

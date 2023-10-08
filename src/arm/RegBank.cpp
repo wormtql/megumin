@@ -7,6 +7,8 @@
 #include <cstring>
 #include "RegBank.h"
 
+using std::endl;
+
 namespace arm {
     GPRegBank::GPRegBank() {
         for (int i = 0; i < 32; i++) {
@@ -55,10 +57,20 @@ namespace arm {
     }
 }
 
-namespace std {
-    // ostream& operator<<(ostream& os, arm::FPRegBank reg) {
-    //     for (int i = 0; i < 32; i++) {
-    //         os << reg.get_ref(i, true)
-    //     }
-    // }
+namespace arm {
+     std::ostream& operator<<(std::ostream& os, const arm::FPRegBank& reg) {
+         for (int i = 0; i < 32; i++) {
+             os << reg.get_ref(i, false).data0 << " " << reg.get_ref(i, true).data0 << endl;
+         }
+
+         return os;
+     }
+
+     std::ostream& operator<<(std::ostream& os, const arm::GPRegBank& reg) {
+         for (int i = 0; i < 32; i++) {
+             os << i << " " << reg.get_ref(i).data0 << endl;
+         }
+
+         return os;
+     }
 }

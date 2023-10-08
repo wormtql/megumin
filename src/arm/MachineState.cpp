@@ -141,3 +141,24 @@ namespace arm {
         return !(*this == other);
     }
 }
+
+namespace arm {
+    std::ostream& operator<<(std::ostream& os, const arm::PState& p_state) {
+        os << "n = " << p_state.n;
+        os << "z = " << p_state.z;
+        os << "c = " << p_state.c;
+        os << "v = " << p_state.v;
+
+        return os;
+    }
+
+    std::ostream& operator<<(std::ostream& os, const MachineState& ms) {
+        os << "fp =" << endl << ms.fp << endl;
+        os << "gp =" << endl << ms.gp << endl;
+        os << "p_state = " << endl << ms.p_state << endl;
+        os << "fpcr = " << ms.fpcr.data0 << endl;
+        os << "sp = " << ms.sp.data0;
+
+        return os;
+    }
+}

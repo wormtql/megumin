@@ -41,6 +41,7 @@ namespace arm {
     vector<BasicBlock> arm::BBExtractor::extract_basic_blocks() {
         ifstream f{filename};
         if (!f.is_open()) {
+            cout << "cannot open " << filename << endl;
             return {};
         }
         string line;

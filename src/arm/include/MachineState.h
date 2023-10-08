@@ -63,10 +63,9 @@ namespace arm {
         bool operator==(const MachineState& other) const;
         bool operator!=(const MachineState& other) const;
     };
-}
 
-namespace std {
-    ostream& operator<<(ostream& os, const arm::MachineState& ms);
+    std::ostream& operator<<(std::ostream& os, const arm::PState& p_state);
+    std::ostream& operator<<(std::ostream& os, const arm::MachineState& ms);
 }
 
 #endif //MEGUMIN_MACHINESTATE_H
