@@ -12,8 +12,6 @@ using std::cout;
 using std::endl;
 
 namespace megumin {
-    SymbolicVerifier::SymbolicVerifier(std::ostream &os): error_output_stream(os) {}
-
     VerifyResult megumin::SymbolicVerifier::verify(const arm::Program &target, const arm::Program &rewrite) {
         context c;
 
@@ -71,29 +69,24 @@ namespace megumin {
 //                cout << model.eval()
 
                 auto print_error_message = [&] () {
+                    SymbolicVerifyDebugInfo debug_info;
+
                     cout << "==== impossible" << endl;
                     if (test_state1 == test_state2) {
-                        cout << "reason: The SMT found a counter example, but the symbolic state are the same" << endl;
+                        debug_info.reason = "The SMT found a counter example, but the symbolic state are the same";
                     } else if (test_state1 != symbolic_state1) {
-                        cout << "reason: Machine state1 does not match symbolic state1" << endl;
+                        debug_info.reason = "Machine state1 does not match symbolic state1";
                     } else if (test_state2 != symbolic_state2) {
-                        cout << "reason: Machine state2 does not match symbolic state2" << endl;
+                        debug_info.reason = "Machine state2 does not match symbolic state2";
                     }
 
-                    error_output_stream << "counter example:" << endl;
-                    error_output_stream << counter_example << endl;
-                    error_output_stream << "test state 1:" << endl;
-                    error_output_stream << test_state1 << endl;
-                    error_output_stream << "test state 2:" << endl;
-                    error_output_stream << test_state2 << endl;
-                    error_output_stream << "symbolic state 1:" << endl;
-                    error_output_stream << symbolic_state1 << endl;
-                    error_output_stream << "symbolic state 2:" << endl;
-                    error_output_stream << symbolic_state2 << endl;
-                    error_output_stream << "target program:" << endl;
-                    error_output_stream << target << endl;
-                    error_output_stream << "rewrite program:" << endl;
-                    error_output_stream << rewrite << endl;
+                    debug_info.counter_example = counter_example;
+                    debug_info.test_state1 = test_state1;
+                    debug_info.test_state2 = test_state2;
+                    debug_info.symbolic_state1 = symbolic_state1;
+                    debug_info.symbolic_state2 = symbolic_state2;
+                    debug_info.target = target;
+                    debug_info.rewrite = rewrite;
                 };
 
                 bool x = false;
@@ -135,6 +128,25 @@ namespace megumin {
                 return VerifyResult{false, {}};
             }
         }
+    }
+
+    ostream& operator<<(ostream& os, const SymbolicVerifier::SymbolicVerifyDebugInfo& debug_info) {
+        os << "counter example:" << endl;
+        os << debug_info.counter_example << endl;
+        os << "test state 1:" << endl;
+        os << debug_info.test_state1 << endl;
+        os << "test state 2:" << endl;
+        os << debug_info.test_state2 << endl;
+        os << "symbolic state 1:" << endl;
+        os << debug_info.symbolic_state1 << endl;
+        os << "symbolic state 2:" << endl;
+        os << debug_info.symbolic_state2 << endl;
+        os << "target program:" << endl;
+        os << debug_info.target << endl;
+        os << "rewrite program:" << endl;
+        os << debug_info.rewrite << endl;
+
+        return os;
     }
 }
 
