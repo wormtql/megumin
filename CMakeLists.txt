@@ -1,13 +1,15 @@
 cmake_minimum_required(VERSION 3.16)
 project(megumin)
 
-set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD 20)
 #SET(CMAKE_BUILD_TYPE "Release")
 
 message(STATUS "CMAKE_BINARY_DIR: ${CMAKE_BINARY_DIR}")
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+
+set(CMAKE_BUILD_TYPE Release)
 
 # argpase
 include_directories(3rd/argparse/include)
@@ -21,9 +23,8 @@ if (WIN32)
     link_directories(z3_install/bin)
     file(COPY ${PROJECT_SOURCE_DIR}/z3_install/bin/libz3.dll DESTINATION ${CMAKE_BINARY_DIR}/bin)
 else()
-    set(CMAKE_C_COMPILER clang)
-    set(CMAKE_CXX_COMPILER clang++)
-    set(CMAKE_CXX_STANDARD 23)
+    set(CMAKE_C_COMPILER gcc)
+    set(CMAKE_CXX_COMPILER g++)
 
     # find_package(LLVM REQUIRED CONFIG PATHS /mnt/disk2/yaoxilai/llvm/16.0.4/llvm_install NO_DEFAULT_PATH)
     # message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION}")
