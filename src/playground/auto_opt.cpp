@@ -183,7 +183,7 @@ int main(int argc, char* argv[]) {
     program.add_argument("--correct-file").default_value("correct.txt");
     program.add_argument("--input-file");
     program.add_argument("--error-file").default_value("error.txt");
-    program.add_argument("--time-per-opt").default_value(10000);
+    program.add_argument("--time-per-opt").default_value(10000).scan<'i', int>();
 
     program.parse_args(argc, argv);
 
