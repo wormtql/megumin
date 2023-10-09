@@ -10,6 +10,7 @@
 #include <optional>
 #include <thread>
 #include <future>
+#include <mutex>
 
 #include <MachineState.h>
 #include <Bitvec.h>
@@ -42,9 +43,6 @@ bool can_process(const BasicBlock& bb) {
     }
     return true;
 }
-
-//ofstream correct_file{"correct.txt"};
-//ofstream correct_file{R"(/root/megumin/correct.txt)"};
 
 std::optional<arm::Program> opt_once(const arm::Program& target, vector<MachineState> test_cases, int max_time, int init_mode = 1) {
     std::mt19937 generator{60000};
@@ -116,7 +114,10 @@ std::optional<arm::Program> opt_once(const arm::Program& target, vector<MachineS
     return {};
 }
 
-void worker(promise<vector<SearchResult>> && p, const BasicBlock* bb_ptr, int bb_size, int time_per_opt, ostream& error_stream) {
+mutex g_error_stream;
+mutex g_correct_stream;
+
+void worker(promise<vector<SearchResult>> && p, const BasicBlock* bb_ptr, int bb_size, int time_per_opt, ostream* error_stream, ostream* correct_stream) {
     vector<SearchResult> results;
 
     for (int i = 0; i < bb_size; i++) {
@@ -142,13 +143,13 @@ void worker(promise<vector<SearchResult>> && p, const BasicBlock* bb_ptr, int bb
             if (result.has_value()) {
                 // find a solution
                 auto rewrite = result.value();
-                // it's better to include a mutex
                 auto verifier = megumin::SymbolicVerifier();
                 auto verify_result = verifier.verify(prog, rewrite);
 
                 // there is an error which is not expected
                 if (verifier.error_debug_info.has_value()) {
-                    error_stream << verifier.error_debug_info.value() << endl;
+                    lock_guard<mutex> guard(g_error_stream);
+                    (*error_stream) << verifier.error_debug_info.value() << endl;
                 }
 
                 if (verify_result.success) {
@@ -156,6 +157,21 @@ void worker(promise<vector<SearchResult>> && p, const BasicBlock* bb_ptr, int bb
 
                     SearchResult search_result{ prog, rewrite, bb_ptr[i].get_start(), bb_ptr[i].get_end() };
                     results.push_back(search_result);
+
+                    // write correct stream
+                    {
+                        lock_guard<mutex> guard(g_correct_stream);
+
+                        ostream& cs = *correct_stream;
+
+                        cs << "[optimization success]" << endl;
+                        cs << bb_ptr[i].get_start() << ", " << bb_ptr[i].get_end() << endl;
+                        prog.print(cs);
+                        cs << endl << ">>>" << endl;
+                        rewrite.print(cs);
+                        cs << "\n\n";
+                        cs.flush();
+                    }
 
                     cout << "[optimization success]" << endl;
                     prog.print(cout);
@@ -184,6 +200,7 @@ int main(int argc, char* argv[]) {
     program.add_argument("--input-file");
     program.add_argument("--error-file").default_value("error.txt");
     program.add_argument("--time-per-opt").default_value(10000).scan<'i', int>();
+    program.add_argument("--thread-count").default_value(1).scan<'i', int>();
 
     program.parse_args(argc, argv);
 
@@ -216,62 +233,87 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    cout << "viable basic block count: " << viable_bbs.size() << endl;
+    int viable_bb_size = viable_bbs.size();
+    cout << "viable basic block count: " << viable_bb_size << endl;
 
-    for (int i = 0; i < viable_bbs.size(); i++) {
-        bool success = false;
-        auto prog = viable_bbs[i].to_program();
-        cout << viable_bbs[i];
+    int thread_count = program.get<int>("--thread-count");
+    int blocks_per_thread = viable_bb_size / thread_count;
+    int last_block_count = viable_bb_size - blocks_per_thread * (thread_count - 1);
 
-//        if (viable_bbs[i].get_start() <54112) {
-//            continue;
-//        }
+    int offset = 0;
+    int time_per_opt = program.get<int>("--time-per-opt");
 
-        std::vector<MachineState> test_cases;
-        for (int ii = 0; ii < 1; ii++) {
-            test_cases.emplace_back(MachineState{});
-            test_cases[ii].fill_gp_random();
-            test_cases[ii].fill_fp_random();
-            test_cases[ii].fill_nzcv_random();
-            test_cases[ii].fill_sp_random();
+    vector<thread> threads;
+    vector<future<vector<SearchResult>>> futures;
+
+    for (int i = 0; i < thread_count; i++) {
+        promise<vector<SearchResult>> prom;
+        auto f = prom.get_future();
+
+        int size = blocks_per_thread;
+        if (i == thread_count - 1) {
+            size = last_block_count;
         }
 
-        while (!success && test_cases.size() <= 200) {
-            auto result = opt_once(prog, test_cases, program.get<int>("--time-per-opt"),1);
-            if (result.has_value()) {
-                // find a solution
-                auto rewrite = result.value();
-                auto verifier = megumin::SymbolicVerifier(error_file);
-                auto verify_result = verifier.verify(prog, rewrite);
-                if (verify_result.success) {
-                    success = true;
+        thread t(&worker, move(prom), viable_bbs.data() + offset, size, time_per_opt, &error_file, &correct_file);
 
-                    correct_file << "[optimization success]" << endl;
-                    correct_file << viable_bbs[i].get_start() << ", " << viable_bbs[i].get_end() << endl;
-                    prog.print(correct_file);
-                    correct_file << endl << ">>>" << endl;
-                    rewrite.print(correct_file);
-                    correct_file << "\n\n";
-                    correct_file.flush();
-
-                    cout << "[optimization success]" << endl;
-                    prog.print(cout);
-                    cout << endl << ">>>" << endl;
-                    rewrite.print(cout);
-                    cout << "\n\n";
-                } else {
-                    if (verify_result.counter_example.has_value()) {
-                        cout << "found counter example:" << endl;
-//                        cout << verify_result.counter_example.value()
-                        test_cases.push_back(verify_result.counter_example.value());
-                    }
-                }
-            } else {
-                // did not find a solution
-                break;
-            }
-        }
+        futures.push_back(move(f));
+        threads.push_back(move(t));
     }
+
+    for (thread& t: threads) {
+        t.join();
+    }
+
+//    for (int i = 0; i < viable_bbs.size(); i++) {
+//        bool success = false;
+//        auto prog = viable_bbs[i].to_program();
+//        cout << viable_bbs[i];
+//
+//        std::vector<MachineState> test_cases;
+//        for (int ii = 0; ii < 1; ii++) {
+//            test_cases.emplace_back(MachineState{});
+//            test_cases[ii].fill_gp_random();
+//            test_cases[ii].fill_fp_random();
+//            test_cases[ii].fill_nzcv_random();
+//            test_cases[ii].fill_sp_random();
+//        }
+//
+//        while (!success && test_cases.size() <= 200) {
+//            auto result = opt_once(prog, test_cases, program.get<int>("--time-per-opt"),1);
+//            if (result.has_value()) {
+//                // find a solution
+//                auto rewrite = result.value();
+//                auto verifier = megumin::SymbolicVerifier(error_file);
+//                auto verify_result = verifier.verify(prog, rewrite);
+//                if (verify_result.success) {
+//                    success = true;
+//
+//                    correct_file << "[optimization success]" << endl;
+//                    correct_file << viable_bbs[i].get_start() << ", " << viable_bbs[i].get_end() << endl;
+//                    prog.print(correct_file);
+//                    correct_file << endl << ">>>" << endl;
+//                    rewrite.print(correct_file);
+//                    correct_file << "\n\n";
+//                    correct_file.flush();
+//
+//                    cout << "[optimization success]" << endl;
+//                    prog.print(cout);
+//                    cout << endl << ">>>" << endl;
+//                    rewrite.print(cout);
+//                    cout << "\n\n";
+//                } else {
+//                    if (verify_result.counter_example.has_value()) {
+//                        cout << "found counter example:" << endl;
+//                        test_cases.push_back(verify_result.counter_example.value());
+//                    }
+//                }
+//            } else {
+//                // did not find a solution
+//                break;
+//            }
+//        }
+//    }
 
 //    std::vector<MachineState> test_cases;
 //    for (int i = 0; i < 100; i++) {
