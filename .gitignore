@@ -9,3 +9,4 @@ pocketfft_build/
 z3_install/
 z3_build/
 test_files/
+*.s

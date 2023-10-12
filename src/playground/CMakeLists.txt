@@ -14,6 +14,7 @@ function(add_megumin_executable name)
     endif()
 endfunction()
 
+add_megumin_executable(apply_opt)
 add_megumin_executable(auto_opt)
 add_megumin_executable(main)
 add_megumin_executable(z3_test)
