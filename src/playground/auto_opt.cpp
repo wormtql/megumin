@@ -259,6 +259,8 @@ int main(int argc, char* argv[]) {
 
         futures.push_back(move(f));
         threads.push_back(move(t));
+
+        offset += size;
     }
 
     for (thread& t: threads) {
