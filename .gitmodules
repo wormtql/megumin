@@ -10,3 +10,6 @@
 [submodule "3rd/argparse"]
 	path = 3rd/argparse
 	url = https://github.com/p-ranav/argparse.git
+[submodule "3rd/catch2"]
+	path = 3rd/catch2
+	url = https://github.com/catchorg/Catch2.git

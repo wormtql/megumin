@@ -7,29 +7,23 @@
 #include <Instruction.h>
 #include <bb/BasicBlock.h>
 #include <bb/BBExtractor.h>
+#include <visitor/InstructionExecution.h>
+#include <megumin_utils.h>
 
 using namespace std;
 using namespace arm;
 
 int main() {
-    BBExtractor extractor{R"(E:\CLionProjects\megumin\test_files\pocketfft-aarch64.s)"};
-//    BBExtractor extractor{R"(E:\CLionProjects\megumin\test_files\pocketfft-aarch64.s)"};
-    extractor.set_max_bb(100);
-    auto bbs = extractor.extract_basic_blocks();
+    MachineState s{};
+    s.fp.set64(1, bits{(double) -3.5});
+    InstructionExecution execution{s};
 
-    map<int, int> counts;
-    for (const auto& bb: bbs) {
-        int size = bb.size();
-        counts[size]++;
-        if (size == 10) {
-            cout << bb << endl;
-        }
-    }
+//    Program prog = megumin::aarch64_asm("fneg d2, d1").value();
+    Program prog = megumin::aarch64_asm("frintn d2, d1").value();
+    execution.execute(prog.get_instruction_const(0));
 
-    for (const auto& p: counts) {
-        cout << p.first << ": " << p.second << endl;
-    }
-
+    cout << s.fp.get(64, 1).as_f64() << endl;
+    cout << s.fp.get(64, 2).as_f64() << endl;
 
     return 0;
 }

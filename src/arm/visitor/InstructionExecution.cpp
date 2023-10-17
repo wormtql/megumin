@@ -450,21 +450,8 @@ namespace arm {
             bool merge = state.is_merging();
             bits operand = state.fp.get(esize, n);
 
-            if (esize == 64) {
-                double f = operand.as_f64();
-                f = sqrt(f);
-                bits result{f};
-                state.fp.set(esize, d, result, merge);
-            } else if (esize == 32) {
-                float f = operand.as_f32();
-                f = sqrt(f);
-                bits result{f};
-                state.fp.set(esize, d, result, merge);
-            } else if (esize == 16) {
-                megumin_assert(false);
-            } else {
-                megumin_assert(false);
-            }
+            bits result = FPUtils::fp_sqrt(operand, state.fp_exception);
+            state.fp.set(esize, d, result, merge);
         } else if (opcode[{2, 6}] == 0b0001) {
             // fcvt
             bits opc = opcode[{0, 2}];

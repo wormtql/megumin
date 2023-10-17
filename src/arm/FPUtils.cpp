@@ -71,6 +71,82 @@ namespace arm {
         return op.is_set(size - 1);
     }
 
+    bool FPUtils::is_floor_even(float x) {
+        bits b{x};
+        bits mantissa = b.get_range(0, 23);
+        bits exponent = b.get_range(23, 31);
+        bool sign = b.is_set(31);
+
+        auto ty = FPUtils::get_fp_type(b);
+        if (ty == FPType::Denormal) {
+            // +0.xxxx -> 0  -0.xxxx -> -1
+            return sign == 0;
+        }
+        if (ty == FPType::Zero) {
+            return true;
+        }
+        if (ty == FPType::SNaN || ty == FPType::QNaN || ty == FPType::Infinity) {
+            return false;
+        }
+
+        int real_exponent = exponent.as_i32() - 127;
+        if (real_exponent < 0) {
+            return sign == 0;
+        } else if (real_exponent == 0) {
+            // 1.xxxx -> 1   -1.xxxx -> -2
+            return sign == 1;
+        } else {
+            if (real_exponent > 23) {
+                return true;
+            } else {
+                bool bit = b.is_set(23 - real_exponent);
+                if (sign == 0) {
+                    return bit == 0;
+                } else {
+                    return bit == 1;
+                }
+            }
+        }
+    }
+
+    bool FPUtils::is_floor_even(double x) {
+        bits b{x};
+        bits mantissa = b.get_range(0, 52);
+        bits exponent = b.get_range(52, 63);
+        bool sign = b.is_set(63);
+
+        auto ty = FPUtils::get_fp_type(b);
+        if (ty == FPType::Denormal) {
+            // +0.xxxx -> 0  -0.xxxx -> -1
+            return sign == 0;
+        }
+        if (ty == FPType::Zero) {
+            return true;
+        }
+        if (ty == FPType::SNaN || ty == FPType::QNaN || ty == FPType::Infinity) {
+            return false;
+        }
+
+        int real_exponent = exponent.as_i32() - 1023;
+        if (real_exponent < 0) {
+            return sign == 0;
+        } else if (real_exponent == 0) {
+            // 1.xxxx -> 1   -1.xxxx -> -2
+            return sign == 1;
+        } else {
+            if (real_exponent > 52) {
+                return true;
+            } else {
+                bool bit = b.is_set(52 - real_exponent);
+                if (sign == 0) {
+                    return bit == 0;
+                } else {
+                    return bit == 1;
+                }
+            }
+        }
+    }
+
     bits FPUtils::fp_round_int(bits op, FPRounding rounding, bool exact, FPException& exc) {
         int size = op.size;
         auto fp_type = FPUtils::get_fp_type(op);
@@ -101,7 +177,11 @@ namespace arm {
             }
 
             if (rounding == FPRounding::TIEEVEN) {
-                return bits{round(d)};
+                bool even = FPUtils::is_floor_even(d);
+                if (err > 0.5 || (err == 0.5 && !even)) {
+                    return bits{r + 1};
+                }
+                return bits{r};
             } else if (rounding == FPRounding::POSINF) {
                 return bits{ceil(d)};
             } else if (rounding == FPRounding::NEGINF) {
@@ -130,7 +210,11 @@ namespace arm {
             }
 
             if (rounding == FPRounding::TIEEVEN) {
-                return bits{round(d)};
+                bool even = FPUtils::is_floor_even(d);
+                if (err > 0.5 || (err == 0.5 && !even)) {
+                    return bits{r + 1};
+                }
+                return bits{r};
             } else if (rounding == FPRounding::POSINF) {
                 return bits{ceil(d)};
             } else if (rounding == FPRounding::NEGINF) {
@@ -152,5 +236,50 @@ namespace arm {
         }
 
         megumin::megumin_assert(false);
+    }
+
+    bits FPUtils::fp_process_nan(FPType ty, bits op, FPException& exc) {
+        if (ty == FPType::SNaN) {
+            exc = FPException::InvalidOp;
+        }
+        return op;
+    }
+
+    bits FPUtils::fp_sqrt(bits op, FPException& exc) {
+        auto ty = FPUtils::get_fp_type(op);
+        auto sign = FPUtils::get_fp_sign(op);
+        int size = op.size;
+
+        if (ty == FPType::SNaN || ty == FPType::QNaN) {
+            return FPUtils::fp_process_nan(ty, op, exc);
+        } else if (ty == FPType::Zero) {
+            return op;
+        } else if (ty == FPType::Infinity) {
+            if (sign == 0) {
+                return op;
+            } else {
+                exc = FPException::InvalidOp;
+                return bits::snan(size);
+            }
+        } else {
+            if (sign == 1) {
+                exc = FPException::InvalidOp;
+                return bits::snan(size);
+            }
+
+            if (size == 64) {
+                double value = op.as_f64();
+                value = sqrt(value);
+                return bits{value};
+            } else if (size == 32) {
+                float value = op.as_f32();
+                value = sqrt(value);
+                return bits{value};
+            } else {
+                megumin::megumin_assert(false);
+            }
+        }
+
+        return bits{size, 0};
     }
 }

@@ -65,7 +65,7 @@ namespace arm {
         bool operator==(const MachineState& other) const;
         bool operator!=(const MachineState& other) const;
 
-        FPRounding get_rounding_mode() const;
+        [[nodiscard]] FPRounding get_rounding_mode() const;
     };
 
     std::ostream& operator<<(std::ostream& os, const arm::PState& p_state);

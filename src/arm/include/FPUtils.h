@@ -42,10 +42,17 @@ namespace arm {
 
         static bool get_fp_sign(bits op);
 
+        static bool is_floor_even(double x);
+        static bool is_floor_even(float x);
+
         static FPRounding fp_decode_rounding(int value);
 
         // float to nearest integral **float** （不是round到整数，还是round到IEEE浮点）
         static bits fp_round_int(bits op, FPRounding rounding, bool exact, FPException& exc);
+
+        static bits fp_process_nan(FPType ty, bits op, FPException& exc);
+
+        static bits fp_sqrt(bits op, FPException& exc);
     };
 }
 
