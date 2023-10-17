@@ -8,6 +8,7 @@
 #include <random>
 #include "Bitvec.h"
 #include "RegBank.h"
+#include "FPUtils.h"
 
 namespace arm {
     class PState {
@@ -40,6 +41,7 @@ namespace arm {
         PState p_state;
         bits fpcr{64, 0};
         bits sp{64, 0};
+        FPException fp_exception = FPException::None;
 
         MachineState() = default;
 //        MachineState(const MachineState& other);
@@ -62,6 +64,8 @@ namespace arm {
 
         bool operator==(const MachineState& other) const;
         bool operator!=(const MachineState& other) const;
+
+        FPRounding get_rounding_mode() const;
     };
 
     std::ostream& operator<<(std::ostream& os, const arm::PState& p_state);

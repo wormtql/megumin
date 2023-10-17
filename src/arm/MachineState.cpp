@@ -140,6 +140,11 @@ namespace arm {
     bool MachineState::operator!=(const MachineState &other) const {
         return !(*this == other);
     }
+
+    FPRounding MachineState::get_rounding_mode() const {
+        bits rmode = this->fpcr[{22, 24}];
+        return FPUtils::fp_decode_rounding(rmode.as_i32());
+    }
 }
 
 namespace arm {

@@ -6,6 +6,7 @@
 #include "ArmUtils.h"
 #include "megumin_utils.h"
 #include "MyFloat.h"
+#include "FPUtils.h"
 
 using megumin::megumin_assert;
 using megumin::megumin_todo;
@@ -416,8 +417,7 @@ namespace arm {
         } else if (opcode == 0b000001) {
             // fabs
 
-            bool merge = state.fpcr.is_set(2); // NEP
-//            bits result = bits{esize, 0};
+            bool merge = state.is_merging();
 
             bits operand = state.fp.get(esize, n);
             if (esize == 64) {
@@ -446,10 +446,127 @@ namespace arm {
             state.fp.set(esize, d, operand, merge);
         } else if (opcode == 0b000011) {
             // fsqrt
-            // todo, 有点复杂
+            // 直接不采用比特操作了
             bool merge = state.is_merging();
             bits operand = state.fp.get(esize, n);
-//            megumin_todo();
+
+            if (esize == 64) {
+                double f = operand.as_f64();
+                f = sqrt(f);
+                bits result{f};
+                state.fp.set(esize, d, result, merge);
+            } else if (esize == 32) {
+                float f = operand.as_f32();
+                f = sqrt(f);
+                bits result{f};
+                state.fp.set(esize, d, result, merge);
+            } else if (esize == 16) {
+                megumin_assert(false);
+            } else {
+                megumin_assert(false);
+            }
+        } else if (opcode[{2, 6}] == 0b0001) {
+            // fcvt
+            bits opc = opcode[{0, 2}];
+            if (opc == ptype) {
+                // undefined
+                return;
+            }
+
+            int srcsize = esize;
+            int dstsize = 0;
+            if (opc == 0b00) {
+                dstsize = 32;
+            } else if (opc == 0b01) {
+                dstsize = 64;
+            } else if (opc == 0b10) {
+                megumin::megumin_assert(false); // undefined
+            } else {
+                dstsize = 16;
+            }
+
+            if (srcsize == 16 || dstsize == 16) {
+                megumin::megumin_assert("fp16 not supported");
+            }
+
+            bits operand = state.fp.get(srcsize, n);
+
+            bool merge = state.is_merging();
+            if (srcsize == 64) {
+                double src = operand.as_f64();
+                if (dstsize == 32) {
+                    auto dst = static_cast<float>(src);
+                    bits result{dst};
+                    state.fp.set(dstsize, d, result, merge);
+                } else {
+                    megumin::megumin_assert(false);
+                }
+            } else if (srcsize == 32) {
+                float src = operand.as_f32();
+                if (dstsize == 64) {
+                    auto dst = static_cast<double>(src);
+                    bits result{dst};
+                    state.fp.set(dstsize, d, result, merge);
+                }
+            } else {
+                megumin::megumin_assert(false);
+            }
+        } else if (opcode == 0b001000) {
+            // frintn
+            arm::FPRounding rounding = FPUtils::fp_decode_rounding(0);
+            bool merge = state.is_merging();
+            bits operand = state.fp.get(esize, n);
+            FPException exp;
+
+            bits result = FPUtils::fp_round_int(operand, rounding, false, state.fp_exception);
+            state.fp.set(esize, d, result, merge);
+        } else if (opcode == 0b001001) {
+            // frintp
+            arm::FPRounding rounding = FPUtils::fp_decode_rounding(1);
+            bool merge = state.is_merging();
+            bits operand = state.fp.get(esize, n);
+
+            bits result = FPUtils::fp_round_int(operand, rounding, false, state.fp_exception);
+            state.fp.set(esize, d, result, merge);
+        } else if (opcode == 0b001010) {
+            // frintm
+            arm::FPRounding rounding = FPUtils::fp_decode_rounding(2);
+            bool merge = state.is_merging();
+            bits operand = state.fp.get(esize, n);
+
+            bits result = FPUtils::fp_round_int(operand, rounding, false, state.fp_exception);
+            state.fp.set(esize, d, result, merge);
+        } else if (opcode == 0b001011) {
+            // frintz
+            arm::FPRounding rounding = FPUtils::fp_decode_rounding(3);
+            bool merge = state.is_merging();
+            bits operand = state.fp.get(esize, n);
+
+            bits result = FPUtils::fp_round_int(operand, rounding, false, state.fp_exception);
+            state.fp.set(esize, d, result, merge);
+        } else if (opcode == 0b001100) {
+            // frinta
+            bool merge = state.is_merging();
+            bits operand = state.fp.get(esize, n);
+
+            bits result = FPUtils::fp_round_int(operand, FPRounding::TIEAWAY, false, state.fp_exception);
+            state.fp.set(esize, d, result, merge);
+        } else if (opcode == 0b001110) {
+            // frintx
+            arm::FPRounding rounding = state.get_rounding_mode();
+            bool merge = state.is_merging();
+            bits operand = state.fp.get(esize, n);
+
+            bits result = FPUtils::fp_round_int(operand, rounding, true, state.fp_exception);
+            state.fp.set(esize, d, result, merge);
+        } else if (opcode == 0b001111) {
+            // frinti
+            arm::FPRounding rounding = state.get_rounding_mode();
+            bool merge = state.is_merging();
+            bits operand = state.fp.get(esize, n);
+
+            bits result = FPUtils::fp_round_int(operand, rounding, false, state.fp_exception);
+            state.fp.set(esize, d, result, merge);
         }
     }
 

@@ -50,6 +50,7 @@ namespace arm {
         static int count_leading_sign_bits(const bits& x);
 
         static bool condition_holds(int cond, const MachineState& state);
+
     };
 }
 

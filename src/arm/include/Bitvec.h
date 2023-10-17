@@ -76,6 +76,11 @@ namespace arm {
         [[nodiscard]] bits get_imms() const { return get_range(10, 16); }
 
         void print_bin(std::ostream& os) const;
+
+        static bits snan(int size);
+        static bits qnan(int size);
+        static bits inf(bool sign, int size);
+        static bits fpzero(bool sign, int size);
     };
 }
 
