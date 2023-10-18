@@ -566,9 +566,9 @@ namespace arm {
         bits rn = instruction.get_range(5, 10);
         bits rd = instruction.get_range(0, 5);
 
-        uint32_t n = rn.as_u32();
-        uint32_t d = rd.as_u32();
-        uint32_t m = rm.as_u32();
+        int n = rn.as_i32();
+        int d = rd.as_i32();
+        int m = rm.as_i32();
 
         int esize = 0;
         if (ptype == 0b00) {
@@ -796,7 +796,7 @@ namespace arm {
         if (ptype == 0b00) {
             size = 32;
         } else if (ptype == 0b01) {
-            size = 16;
+            size = 64;
         } else {
             megumin::megumin_assert(false);
         }

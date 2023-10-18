@@ -298,7 +298,7 @@ namespace arm {
 
         bool sign = imm8.is_set(7);
         bits exp = bits::from_bools({!imm8.is_set(6)});
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < e - 3; i++) {
             exp = exp.concat(bits::from_bools({imm8.is_set(6)}));
         }
         exp = exp.concat(imm8.get_range(4, 6));

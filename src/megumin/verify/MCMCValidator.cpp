@@ -41,5 +41,8 @@ namespace megumin {
 
 
         }
+
+        VerifyResult result{false, {}};
+        return result;
     }
 }
