@@ -42,6 +42,8 @@ namespace arm {
         void visit_fp_simd_dp_1source(const Instruction &instruction) override;
 
         void visit_fp_simd_dp_2source(const Instruction &instruction) override;
+
+        void visit_fp_simd_imm(const Instruction &instruction) override;
     };
 }
 

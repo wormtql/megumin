@@ -53,6 +53,8 @@ namespace arm {
         static bits fp_process_nan(FPType ty, bits op, FPException& exc);
 
         static bits fp_sqrt(bits op, FPException& exc);
+
+        static bits vfp_expand_imm(int size, bits imm8);
     };
 }
 

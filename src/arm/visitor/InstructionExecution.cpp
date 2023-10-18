@@ -780,4 +780,28 @@ namespace arm {
             }
         }
     }
+
+    void InstructionExecution::visit_fp_simd_imm(const Instruction &instruction) {
+        bits ptype = instruction.get_range(22, 24);
+        bits imm8 = instruction.get_range(13, 21);
+        bits imm5 = instruction.get_range(5, 10);
+        bits rd = instruction.get_range(0, 5);
+
+        int d = rd.as_i32();
+
+        megumin::megumin_assert(!instruction.is_set(31));
+        megumin::megumin_assert(!instruction.is_set(29));
+
+        int size = 0;
+        if (ptype == 0b00) {
+            size = 32;
+        } else if (ptype == 0b01) {
+            size = 16;
+        } else {
+            megumin::megumin_assert(false);
+        }
+
+        bits imm = FPUtils::vfp_expand_imm(size, imm8);
+        state.fp.set(size, d, imm, false);
+    }
 }

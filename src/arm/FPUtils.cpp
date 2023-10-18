@@ -282,4 +282,30 @@ namespace arm {
 
         return bits{size, 0};
     }
+
+    bits FPUtils::vfp_expand_imm(int size, bits imm8) {
+        int e = 0;
+        int f = 0;
+        if (size == 32) {
+            e = 8;
+            f = 32 - 8 - 1;
+        } else if (size == 64) {
+            e = 11;
+            f = 64 - 11 - 1;
+        } else {
+            megumin::megumin_assert(false);
+        }
+
+        bool sign = imm8.is_set(7);
+        bits exp = bits::from_bools({!imm8.is_set(6)});
+        for (int i = 0; i < 3; i++) {
+            exp = exp.concat(bits::from_bools({imm8.is_set(6)}));
+        }
+        exp = exp.concat(imm8.get_range(4, 6));
+
+        bits frac = imm8.get_range(0, 4).concat(bits{f - 4, 0});
+        bits result = bits::from_bools({sign}).concat(exp).concat(frac);
+
+        return result;
+    }
 }

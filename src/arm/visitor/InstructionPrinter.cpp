@@ -539,4 +539,33 @@ namespace arm {
         os << reg << rm.as_i32() << ", ";
         print_cond(cond.as_i32());
     }
+
+    void InstructionPrinter::visit_fp_simd_imm(const Instruction &instruction) {
+        bits ftype = instruction.get_range(22, 24);
+        bits imm8 = instruction.get_range(13, 21);
+        bits rd = instruction.get_range(0, 5);
+
+        char reg = '0';
+        int size = 0;
+        if (ftype == 0b00) {
+            reg = 's';
+            size = 32;
+        } else if (ftype == 0b01) {
+            reg = 'd';
+            size = 64;
+        } else if (ftype == 0b11) {
+            reg = 'h';
+            size = 16;
+        } else {
+            megumin::megumin_assert(false);
+        }
+
+        bits imm = FPUtils::vfp_expand_imm(size, imm8);
+
+        if (size == 32) {
+            os << "fmov " << reg << rd.as_i32() << " #" << imm.as_f32();
+        } else if (size == 64) {
+            os << "fmov " << reg << rd.as_i32() << " #" << imm.as_f64();
+        }
+    }
 }

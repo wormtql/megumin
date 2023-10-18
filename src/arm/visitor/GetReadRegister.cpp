@@ -94,3 +94,7 @@ void arm::GetReadRegister::visit_dp_reg_cond_select(const arm::Instruction &inst
     add_rn(instruction);
     add_rm(instruction);
 }
+
+void arm::GetReadRegister::visit_fp_simd_imm(const arm::Instruction &instruction) {
+    size = 0;
+}
