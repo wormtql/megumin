@@ -33,6 +33,10 @@ namespace megumin {
             int fp_and_simd_dp_2source = 1;
         };
     private:
+        bool use_integral_instructions = true;
+        bool use_fp_instructions = true;
+        int integral_instruction_bound = 0;
+
         std::uniform_int_distribution<> uniform_int;
         std::mt19937& generator;
 
@@ -43,6 +47,9 @@ namespace megumin {
         MutationResult mutate(arm::Program &program) override;
 
         void undo(arm::Program &program, const MutationResult &result) override;
+
+        void set_use_integral_instructions(bool value);
+        void set_use_fp_instructions(bool value);
     };
 }
 

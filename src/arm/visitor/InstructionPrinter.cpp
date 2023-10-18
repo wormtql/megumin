@@ -330,21 +330,6 @@ namespace arm {
         assert(!M);
         assert(!S);
 
-        if (opcode == 0b000000) {
-            os << "fmov";
-        } else if (opcode == 0b000001) {
-            os << "fabs";
-        } else if (opcode == 0b000010) {
-            os << "fneg";
-        } else if (opcode == 0b000011) {
-            os << "fsqrt";
-        } else if (opcode == 0b000101) {
-            os << "fcvt";
-        } else if (opcode == 0b000111) {
-            os << "fcvt";
-        }
-        // todo
-
         char reg = '0';
         if (ptype == 0b00) {
             reg = 'S';
@@ -356,8 +341,42 @@ namespace arm {
             assert(false);
         }
 
+        char dst_reg = reg;
+        if (opcode == 0b000000) {
+            os << "fmov";
+        } else if (opcode == 0b000001) {
+            os << "fabs";
+        } else if (opcode == 0b000010) {
+            os << "fneg";
+        } else if (opcode == 0b000011) {
+            os << "fsqrt";
+        } else if (opcode == 0b000101) {
+            dst_reg = 'd';
+            os << "fcvt";
+        } else if (opcode == 0b000111) {
+            dst_reg = 'h';
+            os << "fcvt";
+        } else if (opcode == 0b000100) {
+            dst_reg = 's';
+            os << "fcvt";
+        } else if (opcode == 0b001000) {
+            os << "frintn";
+        } else if (opcode == 0b001001) {
+            os << "frintp";
+        } else if (opcode == 0b001010) {
+            os << "frintm";
+        } else if (opcode == 0b001011) {
+            os << "frintz";
+        } else if (opcode == 0b001100) {
+            os << "frinta";
+        } else if (opcode == 0b001110) {
+            os << "frintx";
+        } else if (opcode == 0b001111) {
+            os << "frinti";
+        }
+
         os << " ";
-        os << reg << rd.as_u64() << ", ";
+        os << dst_reg << rd.as_u64() << ", ";
         os << reg << rn.as_u64();
     }
 

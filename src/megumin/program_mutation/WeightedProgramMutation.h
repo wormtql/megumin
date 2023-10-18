@@ -33,11 +33,20 @@ namespace megumin {
         std::mt19937& generator;
         std::uniform_int_distribution<> uniform_int;
     public:
-        WeightedProgramMutation(std::mt19937& generator, Prob prob, RandomInstructionMutation::RandomInstructionWeight random_weight);
+        WeightedProgramMutation(
+                std::mt19937& generator,
+                Prob prob,
+                RandomInstructionMutation::RandomInstructionWeight random_weight,
+                bool use_fp_instructions,
+                bool use_int_instructions
+                );
         explicit WeightedProgramMutation(std::mt19937& generator);
         MutationResult mutate(arm::Program &program) override;
 
         void undo(arm::Program &program, const MutationResult &result) override;
+
+        void set_use_fp_instructions(bool value);
+        void set_use_integral_instructions(bool value);
     };
 }
 

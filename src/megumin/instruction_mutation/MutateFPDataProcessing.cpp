@@ -27,12 +27,19 @@ namespace megumin {
     arm::Instruction MutateFPDataProcessing1::mutate_opcode(const arm::Program& program, int index) {
         const arm::Instruction& instruction = program.get_instruction_const(index);
         static int opcodes[] = {
-                0b000000,
-                0b000001,
-//                0b000010,
-//                0b000011,
-//                0b000101,
-//                0b000111,
+                0b000000, // fmov
+                0b000001, // fabs
+                0b000010, // fneg
+                0b000011, // fsqrt
+                0b000101, // fcvt
+//                0b000111, // fcvt single to half
+                0b001000, // frintn
+                0b001001, // frintp
+                0b001010, // frintm
+                0b001011, // frintz
+                0b001100, // frinta
+//                0b001110, // frintx
+//                0b001111, // frinti
         };
         int opcode_size = std::end(opcodes) - std::begin(opcodes);
         int opcode = uniform_int(generator) % opcode_size;

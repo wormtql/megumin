@@ -37,14 +37,16 @@ int eval_distance(const arm::bits &v1, const arm::bits &v2) {
     return count_set_bits(a ^ b);
 }
 
-double ulp_distance(const arm::bits& v1, const arm::bits& v2) {
+uint64_t ulp_distance(const arm::bits& v1, const arm::bits& v2) {
     int64_t a = v1.data0;
     int64_t b = v2.data0;
 
     a = a < 0 ? std::numeric_limits<int64_t>::min() - a : a;
     b = b < 0 ? std::numeric_limits<int64_t>::min() - b : b;
 
-    double ulp = a > b ? (double) a - b : (double) b - a;
+    uint64_t ulp = a >= b ? a - b : b - a;
+//    ulp = ulp < min_ulp_ ? 0 : ulp - min_ulp_;
+//    double ulp = a > b ? (double) a - b : (double) b - a;
     // cout << "ulp: " << ulp << endl;
 //    if (ulp > 0) {
 //        assert(false);
