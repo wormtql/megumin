@@ -899,4 +899,96 @@ namespace arm {
         bits imm = FPUtils::vfp_expand_imm(size, imm8);
         state.fp.set(size, d, imm, false);
     }
+
+    void InstructionExecution::visit_fp_simd_dp_3source(const Instruction &instruction) {
+        bits ptype = instruction.get_range(22, 24);
+        bool o1 = instruction.is_set(21);
+        bits rm = instruction.get_range(16, 21);
+        bool o0 = instruction.is_set(15);
+        bits ra = instruction.get_range(10, 15);
+        bits rn = instruction.get_range(5, 10);
+        bits rd = instruction.get_range(0, 5);
+
+        int d = rd.as_i32();
+        int a = ra.as_i32();
+        int n = rn.as_i32();
+        int m = rm.as_i32();
+        bool merging = state.is_merging();
+
+        int esize = 0;
+        if (ptype == 0b00) {
+            esize = 32;
+        } else if (ptype == 0b01) {
+            esize = 64;
+        } else {
+            megumin::megumin_assert(false);
+        }
+
+        bits operanda = state.fp.get(esize, a);
+        bits operand1 = state.fp.get(esize, n);
+        bits operand2 = state.fp.get(esize, m);
+
+        bits op = bits::from_bools({o1, o0});
+        if (op == 0b00) {
+            // fmadd
+            if (esize == 64) {
+                double v1 = operand1.as_f64();
+                double v2 = operand2.as_f64();
+                double va = operanda.as_f64();
+                double result = v1 * v2 + va;
+                state.fp.set(esize, d, bits{result});
+            } else if (esize == 32) {
+                float v1 = operand1.as_f32();
+                float v2 = operand2.as_f32();
+                float va = operanda.as_f32();
+                float result = v1 * v2 + va;
+                state.fp.set(esize, d, bits{result});
+            }
+        } else if (op == 0b01) {
+            // fmsub
+            if (esize == 64) {
+                double v1 = -operand1.as_f64();
+                double v2 = operand2.as_f64();
+                double va = operanda.as_f64();
+                double result = v1 * v2 + va;
+                state.fp.set(esize, d, bits{result});
+            } else if (esize == 32) {
+                float v1 = -operand1.as_f32();
+                float v2 = operand2.as_f32();
+                float va = operanda.as_f32();
+                float result = v1 * v2 + va;
+                state.fp.set(esize, d, bits{result});
+            }
+        } else if (op == 0b10) {
+            // fnmadd
+            if (esize == 64) {
+                double v1 = -operand1.as_f64();
+                double v2 = operand2.as_f64();
+                double va = -operanda.as_f64();
+                double result = v1 * v2 + va;
+                state.fp.set(esize, d, bits{result});
+            } else if (esize == 32) {
+                float v1 = -operand1.as_f32();
+                float v2 = operand2.as_f32();
+                float va = -operanda.as_f32();
+                float result = v1 * v2 + va;
+                state.fp.set(esize, d, bits{result});
+            }
+        } else if (op == 0b11) {
+            // fnmsub
+            if (esize == 64) {
+                double v1 = operand1.as_f64();
+                double v2 = operand2.as_f64();
+                double va = -operanda.as_f64();
+                double result = v1 * v2 + va;
+                state.fp.set(esize, d, bits{result});
+            } else if (esize == 32) {
+                float v1 = operand1.as_f32();
+                float v2 = operand2.as_f32();
+                float va = -operanda.as_f32();
+                float result = v1 * v2 + va;
+                state.fp.set(esize, d, bits{result});
+            }
+        }
+    }
 }
