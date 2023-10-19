@@ -29,6 +29,12 @@ void arm::GetReadRegister::add_rm_fp(const Instruction &instruction) {
     size++;
 }
 
+void arm::GetReadRegister::add_ra_fp(const Instruction &instruction) {
+    bits ra = instruction.get_range(10, 15);
+    results[size] = Reg::fp(ra.as_i32());
+    size++;
+}
+
 void arm::GetReadRegister::visit_nop(const arm::Instruction &instruction) {
     size = 0;
 }
@@ -97,4 +103,10 @@ void arm::GetReadRegister::visit_dp_reg_cond_select(const arm::Instruction &inst
 
 void arm::GetReadRegister::visit_fp_simd_imm(const arm::Instruction &instruction) {
     size = 0;
+}
+
+void arm::GetReadRegister::visit_fp_simd_dp_3source(const arm::Instruction &instruction) {
+    add_rn_fp(instruction);
+    add_rm_fp(instruction);
+    add_ra_fp(instruction);
 }

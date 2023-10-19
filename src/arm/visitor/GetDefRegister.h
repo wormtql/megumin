@@ -12,6 +12,7 @@ namespace arm {
     class GetDefRegister: public InstructionVisitor {
     private:
         void set_rd(const Instruction& instruction);
+        void set_rd_fp(const Instruction& instruction);
     public:
         Reg result;
 
@@ -44,6 +45,8 @@ namespace arm {
         void visit_fp_simd_dp_2source(const Instruction &instruction) override;
 
         void visit_fp_simd_imm(const Instruction &instruction) override;
+
+        void visit_fp_simd_dp_3source(const Instruction &instruction) override;
     };
 }
 

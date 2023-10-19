@@ -568,4 +568,46 @@ namespace arm {
             os << "fmov " << reg << rd.as_i32() << " #" << imm.as_f64();
         }
     }
+
+    void InstructionPrinter::visit_fp_simd_dp_3source(const Instruction &instruction) {
+        bits ptype = instruction.get_range(22, 24);
+        bool o1 = instruction.is_set(21);
+        bool o0 = instruction.is_set(15);
+        bits rm = instruction.get_range(16, 21);
+        bits ra = instruction.get_range(10, 15);
+        bits rn = instruction.get_range(5, 10);
+        bits rd = instruction.get_range(0, 5);
+
+        int m = rm.as_i32();
+        int a = ra.as_i32();
+        int n = rn.as_i32();
+        int d = rd.as_i32();
+
+        bits op = bits::from_bools({o1, o0});
+        if (op == 0b00) {
+            os << "fmadd";
+        } else if (op == 0b01) {
+            os << "fmsub";
+        } else if (op == 0b10) {
+            os << "fnmadd";
+        } else if (op == 0b11) {
+            os << "fnmsub";
+        }
+
+        char reg = '0';
+        if (ptype == 0b00) {
+            reg = 's';
+        } else if (ptype == 0b01) {
+            reg = 'd';
+        } else if (ptype == 0b11) {
+            reg = 'h';
+        } else {
+            megumin::megumin_assert(false);
+        }
+
+        os << " " << reg << d
+            << ", " << reg << n
+            << ", " << reg << m
+            << ", " << reg << a;
+    }
 }

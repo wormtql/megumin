@@ -32,6 +32,8 @@ namespace megumin {
 
         MutateFPDataProcessing1 mutate_fp_simd_dp_1source;
         MutateFPDataProcessing2 mutate_fp_simd_dp_2source;
+        MutateFPDataProcessing3 mutate_fp_simd_dp_3source;
+        MutateFPImm mutate_fp_imm;
     public:
         arm::Instruction result;
         const arm::Program* program = nullptr;
@@ -68,6 +70,10 @@ namespace megumin {
         void visit_fp_simd_dp_2source(const arm::Instruction &instruction) override;
 
         void visit_dp_reg_logical_shifted_reg(const arm::Instruction &instruction) override;
+
+        void visit_fp_simd_dp_3source(const arm::Instruction &instruction) override;
+
+        void visit_fp_simd_imm(const arm::Instruction &instruction) override;
     };
 }
 

@@ -9,20 +9,12 @@
 namespace megumin {
     MutateFPDataProcessing1::MutateFPDataProcessing1(Prob prob)
         : InstructionMutation({{
-            {mutate_ptype, prob.w_ptype},
+            {mutate_fp_ptype, prob.w_ptype},
             {mutate_opcode, prob.w_opcode},
             {mutate_rn_fp, prob.w_rn},
             {mutate_rd_fp, prob.w_rd}
         }})
     {}
-
-    arm::Instruction MutateFPDataProcessing1::mutate_ptype(const arm::Program& program, int index) {
-        const arm::Instruction& instruction = program.get_instruction_const(index);
-        auto result = instruction;
-        // todo half precision
-        result.set_range(22, 24, uniform_int(generator) % 2);
-        return result;
-    }
 
     arm::Instruction MutateFPDataProcessing1::mutate_opcode(const arm::Program& program, int index) {
         const arm::Instruction& instruction = program.get_instruction_const(index);
@@ -54,21 +46,13 @@ namespace megumin {
 namespace megumin {
     MutateFPDataProcessing2::MutateFPDataProcessing2(Prob prob)
         : InstructionMutation({
-            {mutate_ptype, prob.w_ptype},
+            {mutate_fp_ptype, prob.w_ptype},
             {mutate_rm_fp, prob.w_rm},
             {mutate_opcode, prob.w_opcode},
             {mutate_rn_fp, prob.w_rn},
             {mutate_rd_fp, prob.w_rd},
         })
     {}
-
-    arm::Instruction MutateFPDataProcessing2::mutate_ptype(const arm::Program& program, int index) {
-        const arm::Instruction& instruction = program.get_instruction_const(index);
-        auto result = instruction;
-        // todo half precision
-        result.set_range(22, 24, uniform_int(generator) % 2);
-        return result;
-    }
 
     arm::Instruction MutateFPDataProcessing2::mutate_opcode(const arm::Program& program, int index) {
         const arm::Instruction& instruction = program.get_instruction_const(index);
@@ -90,4 +74,39 @@ namespace megumin {
         result.set_range(12, 16, opcode);
         return result;
     }
+}
+
+// fp dp 3-source
+namespace megumin {
+    MutateFPDataProcessing3::MutateFPDataProcessing3(Prob prob)
+        : InstructionMutation({
+            {mutate_fp_ptype, prob.w_ptype},
+            {mutate_opcode, prob.w_op},
+            {mutate_rm_fp, prob.w_op},
+            {mutate_ra_fp, prob.w_ra},
+            {mutate_rn_fp, prob.w_rn},
+            {mutate_rd_fp, prob.w_rd},
+        })
+    {}
+
+    arm::Instruction MutateFPDataProcessing3::mutate_opcode(const arm::Program &program, int index) {
+        const arm::Instruction& instruction = program.get_instruction_const(index);
+        auto result = instruction;
+
+        result.set_bit(21, uniform_int(generator) % 2);
+        result.set_bit(15, uniform_int(generator) % 2);
+
+        return result;
+    }
+}
+
+// fp imm
+namespace megumin {
+    MutateFPImm::MutateFPImm(Prob prob)
+        : InstructionMutation({
+            {mutate_fp_ptype, prob.w_ptype},
+            {make_mutate_range(13, 21), prob.w_imm8},
+            {mutate_rd_fp, prob.w_rd}
+        })
+    {}
 }
