@@ -64,7 +64,9 @@ void f(const arm::Program& target, vector<MachineState> test_cases, int init_mod
 }
 
 int main() {
-    auto program = megumin::aarch64_asm("fmov d1, d2; frintn d3, d2").value();
+    auto program = megumin::aarch64_asm(R"(fmov d1, d2; fadd d1, d1, d3)").value();
+
+
 
     cout << "size: " << program.get_size() << endl;
     program.print();
@@ -80,7 +82,7 @@ int main() {
     }
 
 //    program.print();
-    f(program, test_cases, 0);
+    f(program, test_cases, 1);
 
 //    megumin::CorrectnessCost cost{program, std::move(test_cases)};
 //

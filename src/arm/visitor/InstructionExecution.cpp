@@ -602,8 +602,103 @@ namespace arm {
             state.fp.set(esize, d, result.to_bits());
         } else if (opcode == 0b0100) {
             // fmax
+            bits operand1 = state.fp.get(esize, n);
+            bits operand2 = state.fp.get(esize, m);
+            bits result = FPUtils::fp_max(operand1, operand2, false, state.fp_exception);
+            state.fp.set(esize, d, result);
         } else if (opcode == 0b0101) {
             // fmin
+            bits operand1 = state.fp.get(esize, n);
+            bits operand2 = state.fp.get(esize, m);
+            bits result = FPUtils::fp_min(operand1, operand2, false, state.fp_exception);
+            state.fp.set(esize, d, result);
+        } else if (opcode == 0b0000) {
+            // fmul
+            bits operand1 = state.fp.get(esize, n);
+            bits operand2 = state.fp.get(esize, m);
+            if (esize == 64) {
+                double op1 = operand1.as_f64();
+                double op2 = operand2.as_f64();
+                double result = op1 * op2;
+                state.fp.set(esize, d, bits{result});
+            } else if (esize == 32) {
+                float op1 = operand1.as_f32();
+                float op2 = operand2.as_f32();
+                float result = op1 * op2;
+                state.fp.set(esize, d, bits{result});
+            } else {
+                megumin::megumin_assert(false);
+            }
+        } else if (opcode == 0b0001) {
+            // fdiv
+            bits operand1 = state.fp.get(esize, n);
+            bits operand2 = state.fp.get(esize, m);
+            if (esize == 64) {
+                double op1 = operand1.as_f64();
+                double op2 = operand2.as_f64();
+                double result = op1 / op2;
+                state.fp.set(esize, d, bits{result});
+            } else if (esize == 32) {
+                float op1 = operand1.as_f32();
+                float op2 = operand2.as_f32();
+                float result = op1 / op2;
+                state.fp.set(esize, d, bits{result});
+            } else {
+                megumin::megumin_assert(false);
+            }
+        } else if (opcode == 0b0110) {
+            // fmaxnm
+            bits operand1 = state.fp.get(esize, n);
+            bits operand2 = state.fp.get(esize, m);
+            if (esize == 64) {
+                double op1 = operand1.as_f64();
+                double op2 = operand2.as_f64();
+                double result = fmax(op1, op2);
+                state.fp.set(esize, d, bits{result});
+            } else if (esize == 32) {
+                float op1 = operand1.as_f32();
+                float op2 = operand2.as_f32();
+                float result = fmax(op1, op2);
+                state.fp.set(esize, d, bits{result});
+            } else {
+                megumin::megumin_assert(false);
+            }
+        } else if (opcode == 0b0111) {
+            // fminnm
+            bits operand1 = state.fp.get(esize, n);
+            bits operand2 = state.fp.get(esize, m);
+            if (esize == 64) {
+                double op1 = operand1.as_f64();
+                double op2 = operand2.as_f64();
+                double result = fmin(op1, op2);
+                state.fp.set(esize, d, bits{result});
+            } else if (esize == 32) {
+                float op1 = operand1.as_f32();
+                float op2 = operand2.as_f32();
+                float result = fmin(op1, op2);
+                state.fp.set(esize, d, bits{result});
+            } else {
+                megumin::megumin_assert(false);
+            }
+        } else if (opcode == 0b1000) {
+            // fnmul
+            bits operand1 = state.fp.get(esize, n);
+            bits operand2 = state.fp.get(esize, m);
+            if (esize == 64) {
+                double op1 = operand1.as_f64();
+                double op2 = operand2.as_f64();
+                double result = -op1 * op2;
+                state.fp.set(esize, d, bits{result});
+            } else if (esize == 32) {
+                float op1 = operand1.as_f32();
+                float op2 = operand2.as_f32();
+                float result = -op1 * op2;
+                state.fp.set(esize, d, bits{result});
+            } else {
+                megumin::megumin_assert(false);
+            }
+        } else {
+            megumin::megumin_assert(false);
         }
     }
 

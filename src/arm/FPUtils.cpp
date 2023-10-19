@@ -308,4 +308,111 @@ namespace arm {
 
         return result;
     }
+
+    std::pair<bool, bits> FPUtils::fp_process_nans(FPType type1, FPType type2, bits op1, bits op2, bits fpcr,
+                                                   bool altfmaxmin, FPException &exc) {
+        // to be simple raise error when any is sNaN
+
+        bool op1_nan = type1 == FPType::SNaN || type1 == FPType::QNaN;
+        bool op2_nan = type2 == FPType::SNaN || type2 == FPType::QNaN;
+        bool any_snan = type1 == FPType::SNaN || type2 == FPType::SNaN;
+
+        if (type1 == FPType::SNaN || type2 == FPType::SNaN) {
+            exc = FPException::InvalidOp;
+            return {true, bits::snan(op1.size)};
+        }
+        if (op1_nan || op2_nan) {
+            return {true, bits::qnan(op1.size)};
+        }
+
+        return {false, op1};
+
+//        bool op1_nan = type1 == FPType::SNaN || type1 == FPType::QNaN;
+//        bool op2_nan = type2 == FPType::SNaN || type2 == FPType::QNaN;
+//        bool any_snan = type1 == FPType::SNaN || type2 == FPType::SNaN;
+//        int size = op1.size;
+//
+//        bool done = false;
+//        bool sign2;
+//        bits result;
+//
+//        if (altfmaxmin && (op1_nan || op2_nan)) {
+//            exc = FPException::InvalidOp;
+//            done = true;
+//            sign2 = op2.is_set(op2.size - 1);
+//            result = type2 == FPType::Zero ? bits::fpzero(sign2, size) : op2;
+//        } else if (altfp)
+    }
+
+    bits FPUtils::fp_max(bits op1, bits op2, bool altfp, FPException& exc) {
+        FPType type1 = FPUtils::get_fp_type(op1);
+        FPType type2 = FPUtils::get_fp_type(op2);
+        bool sign1 = FPUtils::get_fp_sign(op1);
+        bool sign2 = FPUtils::get_fp_sign(op2);
+
+        if (altfp && type1 == FPType::Zero && type2 == FPType::Zero && sign1 + sign2 == 1) {
+            return bits::fpzero(sign2, op1.size);
+        }
+
+        auto r = FPUtils::fp_process_nans(type1, type2, op1, op2, bits{64, 0}, false, exc);
+        bool done = r.first;
+        bits result = r.second;
+
+        if (done) {
+            return result;
+        }
+
+        int size = op1.size;
+        if (size == 64) {
+            double d1 = op1.as_f64();
+            double d2 = op2.as_f64();
+            double m = fmax(d1, d2);
+            return bits{m};
+        } else if (size == 32) {
+            float d1 = op1.as_f32();
+            float d2 = op2.as_f32();
+            float m = fmax(d1, d2);
+            return bits{m};
+        } else {
+            megumin::megumin_assert(false);
+        }
+
+        return bits::snan(size);
+    }
+
+    bits FPUtils::fp_min(bits op1, bits op2, bool altfp, FPException &exc) {
+        FPType type1 = FPUtils::get_fp_type(op1);
+        FPType type2 = FPUtils::get_fp_type(op2);
+        bool sign1 = FPUtils::get_fp_sign(op1);
+        bool sign2 = FPUtils::get_fp_sign(op2);
+
+        if (altfp && type1 == FPType::Zero && type2 == FPType::Zero && sign1 + sign2 == 1) {
+            return bits::fpzero(sign2, op1.size);
+        }
+
+        auto r = FPUtils::fp_process_nans(type1, type2, op1, op2, bits{64, 0}, false, exc);
+        bool done = r.first;
+        bits result = r.second;
+
+        if (done) {
+            return result;
+        }
+
+        int size = op1.size;
+        if (size == 64) {
+            double d1 = op1.as_f64();
+            double d2 = op2.as_f64();
+            double m = fmin(d1, d2);
+            return bits{m};
+        } else if (size == 32) {
+            float d1 = op1.as_f32();
+            float d2 = op2.as_f32();
+            float m = fmin(d1, d2);
+            return bits{m};
+        } else {
+            megumin::megumin_assert(false);
+        }
+
+        return bits::snan(size);
+    }
 }

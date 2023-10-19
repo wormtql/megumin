@@ -52,9 +52,15 @@ namespace arm {
 
         static bits fp_process_nan(FPType ty, bits op, FPException& exc);
 
+        static std::pair<bool, bits> fp_process_nans(FPType type1, FPType type2, bits op1, bits op2, bits fpcr, bool altfmaxmin, FPException& exc);
+
         static bits fp_sqrt(bits op, FPException& exc);
 
         static bits vfp_expand_imm(int size, bits imm8);
+
+        static bits fp_max(bits op1, bits op2, bool altfp, FPException& exc);
+
+        static bits fp_min(bits op1, bits op2, bool altfp, FPException& exc);
     };
 }
 

@@ -37,24 +37,24 @@ int eval_distance(const arm::bits &v1, const arm::bits &v2) {
     return count_set_bits(a ^ b);
 }
 
-uint64_t ulp_distance(const arm::bits& v1, const arm::bits& v2) {
-    int64_t a = v1.data0;
-    int64_t b = v2.data0;
+namespace megumin {
+    uint64_t ulp_distance(const arm::bits& v1, const arm::bits& v2) {
+        int64_t a = v1.data0;
+        int64_t b = v2.data0;
 
-    a = a < 0 ? std::numeric_limits<int64_t>::min() - a : a;
-    b = b < 0 ? std::numeric_limits<int64_t>::min() - b : b;
+        a = a < 0 ? std::numeric_limits<int64_t>::min() - a : a;
+        b = b < 0 ? std::numeric_limits<int64_t>::min() - b : b;
 
-    uint64_t ulp = a >= b ? a - b : b - a;
+        uint64_t ulp = a >= b ? a - b : b - a;
 //    ulp = ulp < min_ulp_ ? 0 : ulp - min_ulp_;
 //    double ulp = a > b ? (double) a - b : (double) b - a;
-    // cout << "ulp: " << ulp << endl;
+        // cout << "ulp: " << ulp << endl;
 //    if (ulp > 0) {
 //        assert(false);
 //    }
-    return ulp;
-}
+        return ulp;
+    }
 
-namespace megumin {
     CorrectnessCost::CorrectnessCost(const arm::Program &target, std::vector<arm::MachineState>&& test_cases)
         : test_cases(test_cases) {
         for (int i = 0; i < test_cases.size(); i++) {
