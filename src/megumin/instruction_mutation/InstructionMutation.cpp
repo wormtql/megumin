@@ -56,6 +56,14 @@ namespace megumin {
         return result;
     }
 
+    arm::Instruction InstructionMutation::mutate_ra(const arm::Program& program, int index) {
+        auto result = program.get_instruction_const(index);
+
+        const auto& def_ins = program.get_def_in(index);
+        result.set_range(10, 15, def_ins.random_gp(generator));
+        return result;
+    }
+
     arm::Instruction InstructionMutation::mutate_rn_fp(const arm::Program &program, int index) {
         auto result = program.get_instruction_const(index);
 

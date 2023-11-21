@@ -94,3 +94,20 @@ void arm::GetReadRegister::visit_dp_reg_cond_select(const arm::Instruction &inst
     add_rn(instruction);
     add_rm(instruction);
 }
+
+void arm::GetReadRegister::visit_dp_reg_3source(const arm::Instruction &instruction) {
+    bits op31 = instruction.get_range(21, 24);
+    bool o0 = instruction.is_set(15);
+    bits ra = instruction.get_range(10, 15);
+    bits op = op31.concat(bits::from_bools({o0}));
+
+    if (op == 0b0100 || op == 0b1100) {
+        add_rn(instruction);
+        add_rm(instruction);
+    } else {
+        add_rn(instruction);
+        add_rm(instruction);
+        results[size] = Reg::gp(ra.as_i32());
+        size++;
+    }
+}

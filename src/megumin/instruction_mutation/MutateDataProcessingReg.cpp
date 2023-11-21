@@ -209,3 +209,35 @@ namespace megumin {
         return result;
     }
 }
+
+// 3 source
+namespace megumin {
+    MutateDataProcessingReg3Source::MutateDataProcessingReg3Source(Prob prob)
+        : InstructionMutation({
+            {mutate_op, prob.w_op},
+            {mutate_rm, prob.w_rm},
+            {mutate_rn, prob.w_rn},
+            {mutate_rd, prob.w_rd},
+            {mutate_ra, prob.w_ra}
+        })
+    {}
+
+    arm::Instruction MutateDataProcessingReg3Source::mutate_op(const arm::Program &program, int index) {
+        auto result = program.get_instruction_const(index);
+
+        static int ops[] = {
+                0b0000, 0b0001, 0b0000, 0b0001, 0b0010, 0b0011, 0b0100, 0b1010, 0b1011, 0b1100
+        };
+
+        int i = r() % 10;
+        // sf
+        result.set_bit(31, i >= 2);
+        int op = ops[i];
+        // op31
+        result.set_range(21, 24, op >> 1);
+        // o0
+        result.set_bit(15, op & 1);
+
+        return result;
+    }
+}

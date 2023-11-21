@@ -6,6 +6,7 @@
 #include "ArmUtils.h"
 #include "megumin_utils.h"
 #include "MyFloat.h"
+#include <absl/numeric/int128.h>
 
 using megumin::megumin_assert;
 using megumin::megumin_todo;
@@ -674,6 +675,123 @@ namespace arm {
                 result = ~result + 1;
                 state.gp.set(datasize, d, result);
             }
+        }
+    }
+
+    void InstructionExecution::visit_dp_reg_3source(const Instruction &instruction) {
+        bool sf = instruction.is_set(31);
+        bits op54 = instruction.get_range(29, 31);
+        bits op31 = instruction.get_range(21, 24);
+        bits rm = instruction.get_rm();
+        bool o0 = instruction.is_set(15);
+        bits ra = instruction.get_range(10, 15);
+        bits rn = instruction.get_rn();
+        bits rd = instruction.get_rd();
+        bits op = op31.concat(bits::from_bools({o0}));
+
+        megumin::megumin_assert(op54 == 0);
+
+        int d = rd.as_i32();
+        int n = rn.as_i32();
+        int m = rm.as_i32();
+        int a = ra.as_i32();
+        int datasize = sf ? 64 : 32;
+
+        bits operand1 = state.get_gp(datasize, n, false, true);
+        bits operand2 = state.get_gp(datasize, m, false, true);
+        bits operand3 = state.get_gp(datasize, a, false, true);
+
+        if (op == 0b0000) {
+            // madd
+            if (datasize == 32) {
+                uint32_t op1 = operand1.as_u32();
+                uint32_t op2 = operand2.as_u32();
+                uint32_t op3 = operand3.as_u32();
+                uint32_t result = op3 + op1 * op2;
+                state.set_gp(datasize, d, bits::from_u32(result), false);
+            } else if (datasize == 64) {
+                uint64_t result = operand3.as_u64() + operand1.as_u64() * operand2.as_u64();
+                state.set_gp(datasize, d, bits::from_u64(result), false);
+            }
+        } else if (op == 0b0001) {
+            // msub
+            if (datasize == 32) {
+                uint32_t result = operand3.as_u32() - operand1.as_u32() * operand2.as_u32();
+                state.set_gp(32, d, bits::from_u32(result), false);
+            } else if (datasize == 64) {
+                uint64_t result = operand3.as_u64() - operand1.as_u64() * operand2.as_u64();
+                state.set_gp(datasize, d, bits::from_u64(result), false);
+            }
+        } else if (op == 0b0010) {
+            // smaddl
+            megumin::megumin_assert(datasize == 64);
+
+            int32_t op1 = state.get_gp(32, n, false, true).as_i32();
+            int32_t op2 = state.get_gp(32, m, false, true).as_i32();
+            int64_t op3 = state.get_gp(64, a, false, true).as_i64();
+            uint64_t temp1 = static_cast<uint64_t>(op1);
+            uint64_t temp2 = static_cast<uint64_t>(op2);
+            int64_t temp3 = static_cast<int64_t>(temp1);
+            int64_t temp4 = static_cast<int64_t>(temp2);
+            int64_t result = op3 + temp3 * temp4;
+            state.set_gp(64, d, bits{64, result}, false);
+        } else if (op == 0b0011) {
+            // smsubl
+            megumin::megumin_assert(datasize == 64);
+
+            int32_t op1 = state.get_gp(32, n, false, true).as_i32();
+            int32_t op2 = state.get_gp(32, m, false, true).as_i32();
+            int64_t op3 = state.get_gp(64, a, false, true).as_i64();
+            uint64_t temp1 = static_cast<uint64_t>(op1);
+            uint64_t temp2 = static_cast<uint64_t>(op2);
+            int64_t temp3 = static_cast<int64_t>(temp1);
+            int64_t temp4 = static_cast<int64_t>(temp2);
+            int64_t result = op3 - temp3 * temp4;
+            state.set_gp(64, d, bits{64, result}, false);
+        } else if (op == 0b0100) {
+            // smulh
+            megumin::megumin_assert(datasize == 64);
+
+            int64_t op1 = operand1.as_i64();
+            int64_t op2 = operand2.as_i64();
+
+            absl::int128 temp = absl::MakeInt128(0, op1) * absl::MakeInt128(0, op2);
+            int64_t high = absl::Int128High64(temp);
+            state.set_gp(64, d, bits{64, high}, false);
+        } else if (op == 0b1010) {
+            // umaddl
+            megumin::megumin_assert(datasize == 64);
+
+            uint32_t op1 = state.get_gp(32, n, false, true).as_i32();
+            uint32_t op2 = state.get_gp(32, m, false, true).as_i32();
+            uint64_t op3 = state.get_gp(64, a, false, true).as_i64();
+            uint64_t temp1 = static_cast<uint64_t>(op1);
+            uint64_t temp2 = static_cast<uint64_t>(op2);
+            uint64_t result = op3 + temp1 * temp2;
+            state.set_gp(64, d, bits{64, (int64_t)result}, false);
+        } else if (op == 0b1011) {
+            // umsubl
+            megumin::megumin_assert(datasize == 64);
+
+            uint32_t op1 = state.get_gp(32, n, false, true).as_i32();
+            uint32_t op2 = state.get_gp(32, m, false, true).as_i32();
+            uint64_t op3 = state.get_gp(64, a, false, true).as_i64();
+            uint64_t temp1 = static_cast<uint64_t>(op1);
+            uint64_t temp2 = static_cast<uint64_t>(op2);
+            uint64_t result = op3 - temp1 * temp2;
+            state.set_gp(64, d, bits{64, (int64_t)result}, false);
+        } else if (op == 0b1100) {
+            // umulh
+            megumin::megumin_assert(datasize == 64);
+
+            uint64_t op1 = operand1.as_u64();
+            uint64_t op2 = operand2.as_u64();
+
+            absl::uint128 temp = absl::MakeUint128(0, op1) * absl::MakeUint128(0, op2);
+            int64_t high = (int64_t) absl::Uint128High64(temp);
+            state.set_gp(64, d, bits{64, high}, false);
+        } else {
+            megumin::megumin_assert(false);
         }
     }
 }

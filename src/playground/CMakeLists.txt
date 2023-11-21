@@ -19,6 +19,7 @@ add_megumin_executable(auto_opt)
 add_megumin_executable(main)
 add_megumin_executable(z3_test)
 add_megumin_executable(z3_2)
+add_megumin_executable(test_small_instruction)
 
 
 # add_executable(playground main.cpp)

@@ -14,6 +14,9 @@ set(CMAKE_BUILD_TYPE Release)
 # argpase
 include_directories(3rd/argparse/include)
 
+# abseil
+add_subdirectory(3rd/abseil-cpp)
+
 if (WIN32)
     add_definitions(-DMEGUMIN_IS_WINDOWS)
     include_directories(keystone_install/include)

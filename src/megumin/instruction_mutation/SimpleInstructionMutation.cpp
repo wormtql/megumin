@@ -67,4 +67,8 @@ namespace megumin {
     void SimpleInstructionMutation::visit_dp_reg_cond_select(const arm::Instruction &instruction) {
         result = mutate_dp_reg_cond_select.mutate(*program, index);
     }
+
+    void SimpleInstructionMutation::visit_dp_reg_3source(const arm::Instruction &instruction) {
+        result = mutate_dp_reg_3source.mutate(*program, index);
+    }
 }

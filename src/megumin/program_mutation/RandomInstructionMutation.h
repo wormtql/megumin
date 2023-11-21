@@ -28,6 +28,7 @@ namespace megumin {
             int dp_reg_add_sub_shifted_reg = 1;
             int dp_reg_add_sub_with_carry = 1;
             int dp_reg_cond_select = 1;
+            int dp_reg_3source = 1;
 
             int fp_and_simd_dp_1source = 1;
             int fp_and_simd_dp_2source = 1;

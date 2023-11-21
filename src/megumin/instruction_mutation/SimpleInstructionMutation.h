@@ -29,6 +29,7 @@ namespace megumin {
         MutateDataProcessingRegAddSubShiftedReg mutate_dp_reg_add_sub_shifted_reg;
         MutateDataProcessingRegAddSubWithCarry mutate_dp_reg_add_sub_with_carry;
         MutateDataProcessingRegCondSelect mutate_dp_reg_cond_select;
+        MutateDataProcessingReg3Source mutate_dp_reg_3source;
 
         MutateFPDataProcessing1 mutate_fp_simd_dp_1source;
         MutateFPDataProcessing2 mutate_fp_simd_dp_2source;
@@ -62,6 +63,8 @@ namespace megumin {
         void visit_dp_reg_add_sub_with_carry(const arm::Instruction &instruction) override;
 
         void visit_dp_reg_cond_select(const arm::Instruction &instruction) override;
+
+        void visit_dp_reg_3source(const arm::Instruction &instruction) override;
 
         void visit_fp_simd_dp_1source(const arm::Instruction &instruction) override;
 

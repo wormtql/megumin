@@ -10,3 +10,6 @@
 [submodule "3rd/argparse"]
 	path = 3rd/argparse
 	url = https://github.com/p-ranav/argparse.git
+[submodule "3rd/abseil-cpp"]
+	path = 3rd/abseil-cpp
+	url = https://github.com/abseil/abseil-cpp.git

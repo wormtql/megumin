@@ -27,6 +27,8 @@ namespace arm {
         explicit bits(float f);
         explicit bits(int size);
         bits() = default;
+        static bits from_u32(uint32_t value);
+        static bits from_u64(uint64_t value);
 
         [[nodiscard]] bool is_set(int index) const;
         [[nodiscard]] bits get_range(int low, int high) const;

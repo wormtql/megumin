@@ -259,4 +259,15 @@ namespace arm {
         std::bitset<64> b(data0);
         os << b;
     }
+
+    bits bits::from_u32(uint32_t value) {
+        bits x{32, 0};
+        x.set_range(0, 32, value);
+        return x;
+    }
+
+    bits bits::from_u64(uint64_t value) {
+        bits x{64, (int64_t)value};
+        return x;
+    }
 }

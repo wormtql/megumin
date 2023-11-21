@@ -37,6 +37,7 @@ namespace megumin {
         static arm::Instruction mutate_rn(const arm::Program& program, int index);
         static arm::Instruction mutate_rd(const arm::Program& program, int index);
         static arm::Instruction mutate_rm(const arm::Program& program, int index);
+        static arm::Instruction mutate_ra(const arm::Program& program, int index);
         static arm::Instruction mutate_rn_fp(const arm::Program& program, int index);
         static arm::Instruction mutate_rm_fp(const arm::Program& program, int index);
         static arm::Instruction mutate_rd_fp(const arm::Program& program, int index);

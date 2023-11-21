@@ -52,6 +52,8 @@ namespace arm {
             visit_dp_reg_add_sub_with_carry(instruction);
         } else if (op1 == 1 && op2 == 0b0100) {
             visit_dp_reg_cond_select(instruction);
+        } else if (op1 == 1 && op2[3] == 1) {
+            visit_dp_reg_3source(instruction);
         }
         // todo
     }

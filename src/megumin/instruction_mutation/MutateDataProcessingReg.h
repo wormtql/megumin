@@ -130,6 +130,22 @@ namespace megumin {
         explicit MutateDataProcessingRegCondSelect(Prob prob);
         MutateDataProcessingRegCondSelect(): MutateDataProcessingRegCondSelect(Prob{}) {}
     };
+
+    class MutateDataProcessingReg3Source: public InstructionMutation {
+    private:
+        static arm::Instruction mutate_op(const arm::Program& program, int index);
+    public:
+        struct Prob {
+            int w_op = 3;
+            int w_rm = 5;
+            int w_ra = 5;
+            int w_rn = 5;
+            int w_rd = 5;
+        };
+
+        explicit MutateDataProcessingReg3Source(Prob prob);
+        MutateDataProcessingReg3Source(): MutateDataProcessingReg3Source(Prob{}) {}
+    };
 }
 
 

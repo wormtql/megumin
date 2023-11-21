@@ -74,3 +74,7 @@ void arm::GetDefRegister::visit_dp_reg_add_sub_with_carry(const arm::Instruction
 void arm::GetDefRegister::visit_dp_reg_cond_select(const arm::Instruction &instruction) {
     set_rd(instruction);
 }
+
+void arm::GetDefRegister::visit_dp_reg_3source(const arm::Instruction &instruction) {
+    set_rd(instruction);
+}

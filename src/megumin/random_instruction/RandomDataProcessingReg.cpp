@@ -185,3 +185,31 @@ megumin::RandomDataProcessingRegCondSelect::random_instruction(const arm::Progra
 
     return arm::Instruction{inst};
 }
+
+arm::Instruction megumin::RandomDataProcessing3Source::random_instruction(const arm::Program &program, int index) {
+    arm::bits inst{32, 0};
+    inst.set_range(24, 31, 0b0011011);
+
+    static int ops[] = {
+            0b0000, 0b0001, 0b0000, 0b0001, 0b0010, 0b0011, 0b0100, 0b1010, 0b1011, 0b1100
+    };
+
+    int i = r() % 10;
+    inst.set_bit(31, i >= 2);
+    int op = ops[i];
+
+    // op
+    inst.set_range(21, 24, op >> 1);
+    inst.set_bit(15, op & 1);
+    // rm
+    const auto& def_ins = program.get_def_in(index);
+    inst.set_range(16, 21, def_ins.random_gp(generator));
+    // ra
+    inst.set_range(10, 15, def_ins.random_gp(generator));
+    // rn
+    inst.set_range(5, 10, def_ins.random_gp(generator));
+    // rd
+    inst.set_range(0, 5, r() % 32);
+
+    return arm::Instruction{inst};
+}

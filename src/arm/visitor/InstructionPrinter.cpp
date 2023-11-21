@@ -520,4 +520,50 @@ namespace arm {
         os << reg << rm.as_i32() << ", ";
         print_cond(cond.as_i32());
     }
+
+    void InstructionPrinter::visit_dp_reg_3source(const Instruction &instruction) {
+        bool sf = instruction.is_set(31);
+        bits op54 = instruction.get_range(29, 31);
+        bits op31 = instruction.get_range(21, 24);
+        bits rm = instruction.get_rm();
+        bool o0 = instruction.is_set(15);
+        bits ra = instruction.get_range(10, 15);
+        bits rn = instruction.get_rn();
+        bits rd = instruction.get_rd();
+
+        megumin::megumin_assert(op54 == 0);
+
+        bits op = op31.concat(bits::from_bools({o0}));
+
+        bool use_ra = true;
+        if (op == 0b0000) {
+            os << "madd";
+        } else if (op == 0b0001) {
+            os << "msub";
+        } else if (op == 0b0010) {
+            os << "smaddl";
+        } else if (op == 0b0011) {
+            os << "smsubl";
+        } else if (op == 0b0100) {
+            os << "smulh";
+            use_ra = false;
+        } else if (op == 0b1010) {
+            os << "umaddl";
+        } else if (op == 0b1011) {
+            os << "umsubl";
+        } else if (op == 0b1100) {
+            os << "umulh";
+            use_ra = false;
+        } else {
+            megumin::megumin_assert(false);
+        }
+
+        auto reg = sf ? "x" : "w";
+        os << " " << reg << rd.as_i32() << ", "
+            << reg << rn.as_i32() << ", "
+            << reg << rm.as_i32();
+        if (use_ra) {
+            os << ", " << reg << ra.as_i32();
+        }
+    }
 }

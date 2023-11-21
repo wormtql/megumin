@@ -19,6 +19,7 @@ target_include_directories(arm_asm
 
 target_link_libraries(arm_asm
     megumin_utils
+    absl::int128
 )
 
 if (WIN32)
