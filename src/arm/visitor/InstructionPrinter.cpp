@@ -330,21 +330,6 @@ namespace arm {
         assert(!M);
         assert(!S);
 
-        if (opcode == 0b000000) {
-            os << "fmov";
-        } else if (opcode == 0b000001) {
-            os << "fabs";
-        } else if (opcode == 0b000010) {
-            os << "fneg";
-        } else if (opcode == 0b000011) {
-            os << "fsqrt";
-        } else if (opcode == 0b000101) {
-            os << "fcvt";
-        } else if (opcode == 0b000111) {
-            os << "fcvt";
-        }
-        // todo
-
         char reg = '0';
         if (ptype == 0b00) {
             reg = 'S';
@@ -356,8 +341,42 @@ namespace arm {
             assert(false);
         }
 
+        char dst_reg = reg;
+        if (opcode == 0b000000) {
+            os << "fmov";
+        } else if (opcode == 0b000001) {
+            os << "fabs";
+        } else if (opcode == 0b000010) {
+            os << "fneg";
+        } else if (opcode == 0b000011) {
+            os << "fsqrt";
+        } else if (opcode == 0b000101) {
+            dst_reg = 'd';
+            os << "fcvt";
+        } else if (opcode == 0b000111) {
+            dst_reg = 'h';
+            os << "fcvt";
+        } else if (opcode == 0b000100) {
+            dst_reg = 's';
+            os << "fcvt";
+        } else if (opcode == 0b001000) {
+            os << "frintn";
+        } else if (opcode == 0b001001) {
+            os << "frintp";
+        } else if (opcode == 0b001010) {
+            os << "frintm";
+        } else if (opcode == 0b001011) {
+            os << "frintz";
+        } else if (opcode == 0b001100) {
+            os << "frinta";
+        } else if (opcode == 0b001110) {
+            os << "frintx";
+        } else if (opcode == 0b001111) {
+            os << "frinti";
+        }
+
         os << " ";
-        os << reg << rd.as_u64() << ", ";
+        os << dst_reg << rd.as_u64() << ", ";
         os << reg << rn.as_u64();
     }
 
@@ -560,10 +579,81 @@ namespace arm {
 
         auto reg = sf ? "x" : "w";
         os << " " << reg << rd.as_i32() << ", "
-            << reg << rn.as_i32() << ", "
-            << reg << rm.as_i32();
+           << reg << rn.as_i32() << ", "
+           << reg << rm.as_i32();
         if (use_ra) {
             os << ", " << reg << ra.as_i32();
         }
+    }
+
+    void InstructionPrinter::visit_fp_simd_imm(const Instruction &instruction) {
+        bits ftype = instruction.get_range(22, 24);
+        bits imm8 = instruction.get_range(13, 21);
+        bits rd = instruction.get_range(0, 5);
+
+        char reg = '0';
+        int size = 0;
+        if (ftype == 0b00) {
+            reg = 's';
+            size = 32;
+        } else if (ftype == 0b01) {
+            reg = 'd';
+            size = 64;
+        } else if (ftype == 0b11) {
+            reg = 'h';
+            size = 16;
+        } else {
+            megumin::megumin_assert(false);
+        }
+
+        bits imm = FPUtils::vfp_expand_imm(size, imm8);
+
+        if (size == 32) {
+            os << "fmov " << reg << rd.as_i32() << " #" << imm.as_f32();
+        } else if (size == 64) {
+            os << "fmov " << reg << rd.as_i32() << " #" << imm.as_f64();
+        }
+    }
+
+    void InstructionPrinter::visit_fp_simd_dp_3source(const Instruction &instruction) {
+        bits ptype = instruction.get_range(22, 24);
+        bool o1 = instruction.is_set(21);
+        bool o0 = instruction.is_set(15);
+        bits rm = instruction.get_range(16, 21);
+        bits ra = instruction.get_range(10, 15);
+        bits rn = instruction.get_range(5, 10);
+        bits rd = instruction.get_range(0, 5);
+
+        int m = rm.as_i32();
+        int a = ra.as_i32();
+        int n = rn.as_i32();
+        int d = rd.as_i32();
+
+        bits op = bits::from_bools({o1, o0});
+        if (op == 0b00) {
+            os << "fmadd";
+        } else if (op == 0b01) {
+            os << "fmsub";
+        } else if (op == 0b10) {
+            os << "fnmadd";
+        } else if (op == 0b11) {
+            os << "fnmsub";
+        }
+
+        char reg = '0';
+        if (ptype == 0b00) {
+            reg = 's';
+        } else if (ptype == 0b01) {
+            reg = 'd';
+        } else if (ptype == 0b11) {
+            reg = 'h';
+        } else {
+            megumin::megumin_assert(false);
+        }
+
+        os << " " << reg << d
+            << ", " << reg << n
+            << ", " << reg << m
+            << ", " << reg << a;
     }
 }

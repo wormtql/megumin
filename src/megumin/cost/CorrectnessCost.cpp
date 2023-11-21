@@ -37,22 +37,24 @@ int eval_distance(const arm::bits &v1, const arm::bits &v2) {
     return count_set_bits(a ^ b);
 }
 
-double ulp_distance(const arm::bits& v1, const arm::bits& v2) {
-    int64_t a = v1.data0;
-    int64_t b = v2.data0;
+namespace megumin {
+    uint64_t ulp_distance(const arm::bits& v1, const arm::bits& v2) {
+        int64_t a = v1.data0;
+        int64_t b = v2.data0;
 
-    a = a < 0 ? std::numeric_limits<int64_t>::min() - a : a;
-    b = b < 0 ? std::numeric_limits<int64_t>::min() - b : b;
+        a = a < 0 ? std::numeric_limits<int64_t>::min() - a : a;
+        b = b < 0 ? std::numeric_limits<int64_t>::min() - b : b;
 
-    double ulp = a > b ? (double) a - b : (double) b - a;
-    // cout << "ulp: " << ulp << endl;
+        uint64_t ulp = a >= b ? a - b : b - a;
+//    ulp = ulp < min_ulp_ ? 0 : ulp - min_ulp_;
+//    double ulp = a > b ? (double) a - b : (double) b - a;
+        // cout << "ulp: " << ulp << endl;
 //    if (ulp > 0) {
 //        assert(false);
 //    }
-    return ulp;
-}
+        return ulp;
+    }
 
-namespace megumin {
     CorrectnessCost::CorrectnessCost(const arm::Program &target, std::vector<arm::MachineState>&& test_cases)
         : test_cases(test_cases) {
         for (int i = 0; i < test_cases.size(); i++) {
@@ -70,7 +72,6 @@ namespace megumin {
                                                       const arm::MachineState &rewrite_state) const {
         double result = 0;
 
-        // todo extract few registers instead of all registers
         for (int i = 0; i < 32; i++) {
             const bits& reg_target = target_state.gp.get_ref(i);
             const bits& reg_rewrite = rewrite_state.gp.get_ref(i);
@@ -82,7 +83,11 @@ namespace megumin {
         for (int i = 0; i < 32; i++) {
             const bits& reg_target = target_state.fp.get_ref(i, true);
             const bits& reg_rewrite = rewrite_state.fp.get_ref(i, true);
-            result += ulp_distance(reg_target, reg_rewrite);
+            auto ulp = ulp_distance(reg_target, reg_rewrite);
+            if (ulp < min_ulp_error) {
+                ulp = 0;
+            }
+            result += ulp;
         }
 
         // nzcv cost

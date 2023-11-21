@@ -18,7 +18,6 @@ namespace megumin {
             int w_rd = 5;
         };
     private:
-        static arm::Instruction mutate_ptype(const arm::Program& program, int index);
         static arm::Instruction mutate_opcode(const arm::Program& program, int index);
     public:
         explicit MutateFPDataProcessing1(Prob prob);
@@ -36,11 +35,39 @@ namespace megumin {
             int w_rd = 5;
         };
     private:
-        static arm::Instruction mutate_ptype(const arm::Program& program, int index);
         static arm::Instruction mutate_opcode(const arm::Program& program, int index);
     public:
         explicit MutateFPDataProcessing2(Prob prob);
         MutateFPDataProcessing2(): MutateFPDataProcessing2(Prob{}) {}
+    };
+
+    class MutateFPDataProcessing3: public InstructionMutation {
+    public:
+        struct Prob {
+            int w_ptype = 1;
+            int w_op = 1;
+            int w_rm = 5;
+            int w_ra = 5;
+            int w_rn = 5;
+            int w_rd = 5;
+        };
+    private:
+        static arm::Instruction mutate_opcode(const arm::Program& program, int index);
+    public:
+        explicit MutateFPDataProcessing3(Prob prob);
+        MutateFPDataProcessing3(): MutateFPDataProcessing3(Prob{}) {}
+    };
+
+    class MutateFPImm: public InstructionMutation {
+    public:
+        struct Prob {
+            int w_ptype = 1;
+            int w_imm8 = 8;
+            int w_rd = 5;
+        };
+
+        explicit MutateFPImm(Prob prob);
+        MutateFPImm(): MutateFPImm(Prob{}) {}
     };
 }
 

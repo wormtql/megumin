@@ -9,6 +9,11 @@ void arm::GetDefRegister::set_rd(const Instruction &instruction) {
     result = Reg::gp(rd.as_i32());
 }
 
+void arm::GetDefRegister::set_rd_fp(const Instruction &instruction) {
+    bits rd = instruction.get_range(0, 5);
+    result = Reg::fp(rd.as_i32());
+}
+
 void arm::GetDefRegister::visit_dp_imm_add_sub(const arm::Instruction &instruction) {
     bits rd = instruction.get_range(0, 5);
     result = Reg::gp(rd.as_i32());
@@ -77,4 +82,12 @@ void arm::GetDefRegister::visit_dp_reg_cond_select(const arm::Instruction &instr
 
 void arm::GetDefRegister::visit_dp_reg_3source(const arm::Instruction &instruction) {
     set_rd(instruction);
+}
+
+void arm::GetDefRegister::visit_fp_simd_imm(const arm::Instruction &instruction) {
+    set_rd(instruction);
+}
+
+void arm::GetDefRegister::visit_fp_simd_dp_3source(const arm::Instruction &instruction) {
+    set_rd_fp(instruction);
 }

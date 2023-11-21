@@ -65,12 +65,18 @@ namespace arm {
         bits op3 = instruction.get_range(10, 19);
 
         bool floating_point_flag1 = op0[0] && !op0[2] && !op1[1] && op2[2];
+        bool floating_point_flag2 = op0[0] && !op0[2] && op1[1];
 
         if (floating_point_flag1 && op3[{0, 5}] == 0b10000) {
             visit_fp_simd_dp_1source(instruction);
         } else if (floating_point_flag1 && op3[{0, 2}] == 0b10) {
             visit_fp_simd_dp_2source(instruction);
-        } else {
+        } else if (floating_point_flag1 && op3[{0, 3}] == 0b100) {
+            visit_fp_simd_imm(instruction);
+        } else if (floating_point_flag2) {
+            visit_fp_simd_dp_3source(instruction);
+        }
+        else {
             // todo
 //            assert(false);
         }

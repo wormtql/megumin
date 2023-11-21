@@ -13,3 +13,6 @@
 [submodule "3rd/abseil-cpp"]
 	path = 3rd/abseil-cpp
 	url = https://github.com/abseil/abseil-cpp.git
+[submodule "3rd/catch2"]
+	path = 3rd/catch2
+	url = https://github.com/catchorg/Catch2.git

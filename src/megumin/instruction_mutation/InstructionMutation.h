@@ -41,6 +41,8 @@ namespace megumin {
         static arm::Instruction mutate_rn_fp(const arm::Program& program, int index);
         static arm::Instruction mutate_rm_fp(const arm::Program& program, int index);
         static arm::Instruction mutate_rd_fp(const arm::Program& program, int index);
+        static arm::Instruction mutate_ra_fp(const arm::Program& program, int index);
+        static arm::Instruction mutate_fp_ptype(const arm::Program& program, int index);
 
         static LambdaMutateBit make_mutate_bit(int mutate_index) {
             return LambdaMutateBit {

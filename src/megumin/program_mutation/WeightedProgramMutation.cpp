@@ -6,16 +6,32 @@
 
 namespace megumin {
     WeightedProgramMutation::WeightedProgramMutation(std::mt19937 &generator)
-        : WeightedProgramMutation(generator, {}, {})
+        : WeightedProgramMutation(generator, {}, {}, true, true)
     {}
 
-    WeightedProgramMutation::WeightedProgramMutation(std::mt19937 &generator, Prob prob, RandomInstructionMutation::RandomInstructionWeight random_weight)
+    void WeightedProgramMutation::set_use_integral_instructions(bool value) {
+        random_instruction_mutation.set_use_integral_instructions(value);
+    }
+
+    void WeightedProgramMutation::set_use_fp_instructions(bool value) {
+        random_instruction_mutation.set_use_fp_instructions(value);
+    }
+
+    WeightedProgramMutation::WeightedProgramMutation(
+            std::mt19937 &generator,
+            Prob prob,
+            RandomInstructionMutation::RandomInstructionWeight random_weight,
+            bool use_fp_instructions,
+            bool use_int_instructions
+            )
         : generator(generator),
           delete_instruction_mutation(generator),
           in_class_instruction_mutation(generator),
           random_instruction_mutation(generator, random_weight),
           swap_instruction_mutation(generator)
     {
+        random_instruction_mutation.set_use_fp_instructions(use_fp_instructions);
+        random_instruction_mutation.set_use_integral_instructions(use_int_instructions);
         for (int i = 0; i < prob.w_delete_instruction; i++) {
             mutations.push_back(&delete_instruction_mutation);
         }

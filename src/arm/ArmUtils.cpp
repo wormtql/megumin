@@ -7,6 +7,7 @@
 
 #include "ArmUtils.h"
 #include "Bitvec.h"
+#include "megumin_utils.h"
 
 // shared functions
 namespace arm {

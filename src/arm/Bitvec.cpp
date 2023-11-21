@@ -6,7 +6,9 @@
 #include <initializer_list>
 #include <utility>
 #include <bitset>
+#include <numeric>
 
+#include "megumin_utils.h"
 #include "Bitvec.h"
 
 inline int64_t get_mask(int size) {
@@ -267,7 +269,56 @@ namespace arm {
     }
 
     bits bits::from_u64(uint64_t value) {
-        bits x{64, (int64_t)value};
+        bits x{64, (int64_t) value};
         return x;
+    }
+
+    bits bits::snan(int size) {
+        if (size == 64) {
+            return bits{std::numeric_limits<double>::signaling_NaN()};
+        } else if (size == 32) {
+            return bits{std::numeric_limits<float>::signaling_NaN()};
+        }
+
+        megumin::megumin_assert(false);
+    }
+
+    bits bits::qnan(int size) {
+        if (size == 64) {
+            return bits{std::numeric_limits<double>::quiet_NaN()};
+        } else if (size == 32) {
+            return bits{std::numeric_limits<float>::quiet_NaN()};
+        }
+
+        megumin::megumin_assert(false);
+    }
+
+    bits bits::inf(bool sign, int size) {
+        if (size == 64) {
+            double d = std::numeric_limits<double>::infinity();
+            bits ret{d};
+            ret.set_bit(63, sign);
+            return ret;
+        } else if (size == 32) {
+            float d = std::numeric_limits<float>::infinity();
+            bits ret{d};
+            ret.set_bit(31, sign);
+            return ret;
+        }
+
+        megumin::megumin_assert(false);
+    }
+
+    bits bits::fpzero(bool sign, int size) {
+        if (size == 64) {
+            bits z{64, 0};
+            z.set_bit(63, sign);
+            return z;
+        } else if (size == 32) {
+            bits z{32, 0};
+            z.set_bit(31, sign);
+        }
+
+        megumin::megumin_assert(false);
     }
 }

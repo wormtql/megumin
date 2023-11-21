@@ -29,7 +29,7 @@ namespace arm {
     }
 
     std::mt19937 MachineState::generator{999};
-    std::uniform_int_distribution<> MachineState::uniform_int;
+    std::uniform_int_distribution<> MachineState::uniform_int{std::numeric_limits<int>::min(), std::numeric_limits<int>::max()};
 
 //    MachineState::MachineState(const MachineState &other) {
 //        this->gp = other.gp;
@@ -52,9 +52,15 @@ namespace arm {
     void MachineState::fill_fp_random() {
         for (int i = 0; i < 32; i++) {
             for (int j = 0; j < 2; j++) {
-                auto temp = (int64_t) uniform_int(generator);
-                int64_t r = (temp << 32) | (int64_t) uniform_int(generator);
-                fp.get_mut_ref(i, j).set_value(r);
+//                auto temp = (int64_t) uniform_int(generator);
+//                cout << temp << endl;
+//                int64_t r = (temp << 32) | (int64_t) uniform_int(generator);
+//                fp.get_mut_ref(i, j).set_value(r);
+//                cout << uniform_int.min() << endl;
+                fp.get_mut_ref(i, j).set_range(0, 32, uniform_int(generator));
+                fp.get_mut_ref(i, j).set_range(32, 64, uniform_int(generator));
+//                cout << fp.get_ref(i, j).is_set(63) << endl;
+//                cout << fp.get_ref(i, j).as_f64() << endl;
             }
         }
     }
@@ -139,6 +145,11 @@ namespace arm {
 
     bool MachineState::operator!=(const MachineState &other) const {
         return !(*this == other);
+    }
+
+    FPRounding MachineState::get_rounding_mode() const {
+        bits rmode = this->fpcr[{22, 24}];
+        return FPUtils::fp_decode_rounding(rmode.as_i32());
     }
 }
 

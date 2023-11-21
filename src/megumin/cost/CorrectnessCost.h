@@ -13,10 +13,13 @@
 using std::vector;
 
 namespace megumin {
+    uint64_t ulp_distance(const arm::bits& v1, const arm::bits& v2);
+
     class CorrectnessCost: public CostFunction {
     private:
         vector<arm::MachineState> target_states;
         vector<arm::MachineState> test_cases;
+        int min_ulp_error = 10000;
 
     public:
         explicit CorrectnessCost(const arm::Program& target, vector<arm::MachineState>&& test_cases);

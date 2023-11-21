@@ -53,6 +53,7 @@ namespace megumin {
         for (int i = 0; i < weight.dp_reg_3source; i++) {
             random_functions.push_back(std::make_unique<RandomDataProcessing3Source>());
         }
+        integral_instruction_bound = random_functions.size();
 
         // fp and simd
         for (int i = 0; i < weight.fp_and_simd_dp_1source; i++) {
@@ -61,6 +62,12 @@ namespace megumin {
         for (int i = 0; i < weight.fp_and_simd_dp_2source; i++) {
             random_functions.push_back(std::make_unique<RandomFPDataProcessing2>(generator));
         }
+        for (int i = 0; i < weight.fp_and_simd_dp_3source; i++) {
+            random_functions.push_back(std::make_unique<RandomFPDataProcessing3>(generator));
+        }
+        for (int i = 0; i < weight.fp_and_simd_imm; i++) {
+            random_functions.push_back(std::make_unique<RandomFPImm>(generator));
+        }
     }
 }
 
@@ -68,7 +75,17 @@ megumin::MutationResult megumin::RandomInstructionMutation::mutate(arm::Program 
     int size = program.get_size();
     int index = uniform_int(generator) % size;
 
-    int random_index = uniform_int(generator) % (random_functions.size());
+    int random_index = 0;
+    int random_function_size = (int) random_functions.size();
+    if (use_integral_instructions && use_fp_instructions) {
+        random_index = uniform_int(generator) % random_function_size;
+    } else if (use_integral_instructions) {
+        random_index = uniform_int(generator) % integral_instruction_bound;
+    } else if (use_fp_instructions) {
+        random_index = uniform_int(generator) % (random_function_size - integral_instruction_bound) + integral_instruction_bound;
+    } else {
+        random_index = uniform_int(generator) % random_function_size;
+    }
 
     arm::Instruction instruction = random_functions[random_index]->random_instruction(program, index);
 
@@ -88,4 +105,12 @@ void megumin::RandomInstructionMutation::undo(arm::Program &program, const megum
 
     program.set_instruction(result.mutation_index[0], result.mutation_instructions[0]);
     program.calculate_def_ins();
+}
+
+void megumin::RandomInstructionMutation::set_use_integral_instructions(bool value) {
+    this->use_integral_instructions = value;
+}
+
+void megumin::RandomInstructionMutation::set_use_fp_instructions(bool value) {
+    this->use_fp_instructions = value;
 }

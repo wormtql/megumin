@@ -13,6 +13,11 @@
 #include "symbol/MachineStateS.h"
 
 namespace arm {
+    enum class InstructionTypeCoarse {
+        Integral,
+        FPAndSIMD,
+    };
+
     enum class InstructionType {
         Reserved,
         Unallocated,

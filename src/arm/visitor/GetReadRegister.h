@@ -15,6 +15,7 @@ namespace arm {
         void add_rm(const Instruction& instruction);
         void add_rn_fp(const Instruction& instruction);
         void add_rm_fp(const Instruction& instruction);
+        void add_ra_fp(const Instruction& instruction);
     public:
         // at most 3 registers
         Reg results[3];
@@ -51,6 +52,10 @@ namespace arm {
         void visit_fp_simd_dp_1source(const Instruction &instruction) override;
 
         void visit_fp_simd_dp_2source(const Instruction &instruction) override;
+
+        void visit_fp_simd_imm(const Instruction &instruction) override;
+
+        void visit_fp_simd_dp_3source(const Instruction &instruction) override;
     };
 }
 

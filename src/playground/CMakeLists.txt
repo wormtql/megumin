@@ -20,7 +20,7 @@ add_megumin_executable(main)
 add_megumin_executable(z3_test)
 add_megumin_executable(z3_2)
 add_megumin_executable(test_small_instruction)
-
+add_megumin_executable(test_synthesize)
 
 # add_executable(playground main.cpp)
 # add_executable(main2 main2.cpp)

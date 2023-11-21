@@ -71,4 +71,12 @@ namespace megumin {
     void SimpleInstructionMutation::visit_dp_reg_3source(const arm::Instruction &instruction) {
         result = mutate_dp_reg_3source.mutate(*program, index);
     }
+
+    void SimpleInstructionMutation::visit_fp_simd_dp_3source(const arm::Instruction &instruction) {
+        result = mutate_fp_simd_dp_3source.mutate(*program, index);
+    }
+
+    void SimpleInstructionMutation::visit_fp_simd_imm(const arm::Instruction &instruction) {
+        result = mutate_fp_imm.mutate(*program, index);
+    }
 }

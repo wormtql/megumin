@@ -9,7 +9,7 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-set(CMAKE_BUILD_TYPE Release)
+#set(CMAKE_BUILD_TYPE Release)
 
 # argpase
 include_directories(3rd/argparse/include)
@@ -51,10 +51,17 @@ else()
     link_directories(z3_install/lib)
 endif()
 
+# catch2
+add_subdirectory(3rd/catch2)
+
+
 add_subdirectory(src/arm)
 add_subdirectory(src/playground)
 add_subdirectory(src/megumin)
 add_subdirectory(src/utils)
+
+# test
+add_subdirectory(test)
 
 # keystone
 

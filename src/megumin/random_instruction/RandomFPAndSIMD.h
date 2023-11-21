@@ -33,6 +33,26 @@ namespace megumin {
 
         arm::Instruction random_instruction(const arm::Program& program, int index) override;
     };
+
+    class RandomFPDataProcessing3: public RandomInstruction {
+    private:
+        std::mt19937& generator;
+        std::uniform_int_distribution<> uniform_int;
+    public:
+        explicit RandomFPDataProcessing3(std::mt19937& generator): generator(generator) {}
+
+        arm::Instruction random_instruction(const arm::Program& program, int index) override;
+    };
+
+    class RandomFPImm: public RandomInstruction {
+    private:
+        std::mt19937& generator;
+        std::uniform_int_distribution<> uniform_int;
+    public:
+        explicit RandomFPImm(std::mt19937& generator): generator(generator) {}
+
+        arm::Instruction random_instruction(const arm::Program &program, int index) override;
+    };
 }
 
 

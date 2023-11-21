@@ -90,4 +90,20 @@ namespace megumin {
         int i = uniform_int(generator) % mutation_functions.size();
         return mutation_functions[i](program, index);
     }
+
+    arm::Instruction InstructionMutation::mutate_fp_ptype(const arm::Program &program, int index) {
+        const arm::Instruction& instruction = program.get_instruction_const(index);
+        auto result = instruction;
+        // todo half precision
+        result.set_range(22, 24, uniform_int(generator) % 2);
+        return result;
+    }
+
+    arm::Instruction InstructionMutation::mutate_ra_fp(const arm::Program &program, int index) {
+        auto result = program.get_instruction_const(index);
+
+        const auto& def_ins = program.get_def_in(index);
+        result.set_range(10, 15, def_ins.random_fp(generator));
+        return result;
+    }
 }
