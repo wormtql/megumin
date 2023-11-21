@@ -19,6 +19,7 @@ namespace megumin {
     private:
         vector<arm::MachineState> target_states;
         vector<arm::MachineState> test_cases;
+        int min_ulp_error = 10000;
 
     public:
         explicit CorrectnessCost(const arm::Program& target, vector<arm::MachineState>&& test_cases);

@@ -45,7 +45,7 @@ void f(const arm::Program& target, vector<MachineState> test_cases, int init_mod
 
 
     RegSet min_def_ins = target.get_minimum_def_ins();
-    min_def_ins.set_fp(1, true);
+//    min_def_ins.set_fp(1, true);
     min_def_ins.set_gp(1, true);
     cout << min_def_ins << endl;
 
@@ -64,7 +64,8 @@ void f(const arm::Program& target, vector<MachineState> test_cases, int init_mod
 }
 
 int main() {
-    auto program = megumin::aarch64_asm(R"(fmadd d1, d2, d3, d4)").value();
+    auto program = megumin::aarch64_asm(R"(fmadd	d1, d5, d2, d1
+	fmadd	d1, d6, d14, d1)").value();
 
 
 

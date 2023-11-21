@@ -72,7 +72,6 @@ namespace megumin {
                                                       const arm::MachineState &rewrite_state) const {
         double result = 0;
 
-        // todo extract few registers instead of all registers
         for (int i = 0; i < 32; i++) {
             const bits& reg_target = target_state.gp.get_ref(i);
             const bits& reg_rewrite = rewrite_state.gp.get_ref(i);
@@ -84,7 +83,11 @@ namespace megumin {
         for (int i = 0; i < 32; i++) {
             const bits& reg_target = target_state.fp.get_ref(i, true);
             const bits& reg_rewrite = rewrite_state.fp.get_ref(i, true);
-            result += ulp_distance(reg_target, reg_rewrite);
+            auto ulp = ulp_distance(reg_target, reg_rewrite);
+            if (ulp < min_ulp_error) {
+                ulp = 0;
+            }
+            result += ulp;
         }
 
         // nzcv cost
