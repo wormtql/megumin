@@ -9,3 +9,4 @@
 #include "test_fp_imm.h"
 #include "test_fp_2source.h"
 #include "test_fp_3source.h"
+#include "test_dp_reg_3source.h"

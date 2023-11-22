@@ -56,7 +56,7 @@ add_subdirectory(3rd/catch2)
 
 
 add_subdirectory(src/arm)
-add_subdirectory(src/playground)
+add_subdirectory(src/bin)
 add_subdirectory(src/megumin)
 add_subdirectory(src/utils)
 
