@@ -8,6 +8,7 @@
 #include <string>
 #include <optional>
 #include <z3++.h>
+#include <filesystem>
 
 #include "Program.h"
 
@@ -24,6 +25,8 @@ namespace megumin {
     std::optional<arm::Program> aarch64_asm(const std::string& code);
 
     string trim(const string& s);
+
+    string read_file_to_string(const std::filesystem::path& path);
 
     expr set_expr_range(expr x, int low, int high, int64_t value);
     expr set_expr_range(expr x, int low, int high, expr value);

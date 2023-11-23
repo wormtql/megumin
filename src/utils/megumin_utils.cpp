@@ -5,6 +5,10 @@
 #include "megumin_utils.h"
 #include <iostream>
 #include "symbol/ArmUtilsS.h"
+#include <fstream>
+#include <sstream>
+
+using namespace std;
 
 inline int64_t get_mask(int size) {
     if (size == 64) {
@@ -15,6 +19,16 @@ inline int64_t get_mask(int size) {
 }
 
 namespace megumin {
+    string read_file_to_string(const std::filesystem::path& path) {
+        std::ifstream f(path);
+        if (!f.is_open()) {
+            return "";
+        }
+        stringstream ss;
+        ss << f.rdbuf();
+        return ss.str();
+    }
+
     void megumin_assert(bool expression, std::optional<std::string> message) {
         if (!expression) {
             if (message.has_value()) {

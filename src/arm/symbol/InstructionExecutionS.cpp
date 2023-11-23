@@ -240,7 +240,7 @@ namespace arm {
             } else {
                 expr low = operand2.extract(datasize - 1, lsb);
                 expr high = operand1.extract(lsb - 1, 0);
-                expr result = z3::concat(low, high);
+                expr result = z3::concat(high, low);
                 state.set_gp(datasize, d, result, false);
             }
         } else {

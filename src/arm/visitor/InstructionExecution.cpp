@@ -234,7 +234,7 @@ namespace arm {
             } else {
                 bits low = operand2.get_range(lsb, datasize);
                 bits high = operand1.get_range(0, lsb);
-                bits result = low.concat(high);
+                bits result = high.concat(low);
                 state.gp.set(datasize, d, result);
             }
         } else {
