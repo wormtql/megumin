@@ -9,6 +9,7 @@
 
 #include "program_mutation/ProgramMutation.h"
 #include "cost/CostFunction.h"
+#include "program_mutation/WeightedProgramMutation.h"
 
 namespace megumin {
     class SearchState {
@@ -49,6 +50,11 @@ namespace megumin {
 
         inline void set_max_time(int t) {
             this->max_time = t;
+        }
+
+        inline void set_use_fp(bool value) {
+            WeightedProgramMutation* weighted_mutation = dynamic_cast<WeightedProgramMutation*>(this->program_mutation);
+            weighted_mutation->set_use_fp_instructions(value);
         }
 
         void do_search(SearchState& state);

@@ -58,6 +58,7 @@ std::optional<arm::Program> opt_once(const arm::Program& target, vector<MachineS
     megumin::WeightedProgramMutation weighted_program_mutation{generator};
 
     megumin::Search search{&weighted_program_mutation, &simple_cost, generator};
+    search.set_use_fp(false);
     search.set_max_time(max_time);
     megumin::SearchState state;
 
