@@ -16,6 +16,11 @@ endfunction()
 
 add_megumin_executable(apply_opt)
 add_megumin_executable(auto_opt)
+
+if (UNIX)
+    target_link_libraries(auto_opt ${CMAKE_THREAD_LIBS_INIT})
+endif()
+
 add_megumin_executable(main)
 add_megumin_executable(z3_test)
 add_megumin_executable(z3_2)

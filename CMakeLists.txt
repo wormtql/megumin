@@ -49,6 +49,9 @@ else()
     include_directories(${Z3_INCLUDE_DIR})
     link_libraries(${Z3_LIBRARIES})
     link_directories(z3_install/lib)
+
+    # pthreads
+    find_package(Threads)
 endif()
 
 # catch2
