@@ -11,6 +11,7 @@
 #include <thread>
 #include <future>
 #include <mutex>
+#include <memory>
 
 #include <MachineState.h>
 #include <Bitvec.h>
@@ -116,8 +117,17 @@ std::optional<arm::Program> opt_once(const arm::Program& target, vector<MachineS
 
 mutex g_error_stream;
 mutex g_correct_stream;
+mutex g_progress_data;
 
-void worker(promise<vector<SearchResult>> && p, const BasicBlock* bb_ptr, int bb_size, int time_per_opt, ostream* error_stream, ostream* correct_stream) {
+struct GlobalData {
+    shared_ptr<ostream> error_stream;
+    shared_ptr<ostream> correct_stream;
+    shared_ptr<ostream> progress_stream;
+    int finished_bb = 0;
+    int total_bb = 0;
+};
+
+void worker(promise<vector<SearchResult>> && p, const BasicBlock* bb_ptr, int bb_size, int time_per_opt, GlobalData* global_data) {
     vector<SearchResult> results;
 
     for (int i = 0; i < bb_size; i++) {
@@ -149,7 +159,7 @@ void worker(promise<vector<SearchResult>> && p, const BasicBlock* bb_ptr, int bb
                 // there is an error which is not expected
                 if (verifier.error_debug_info.has_value()) {
                     lock_guard<mutex> guard(g_error_stream);
-                    (*error_stream) << verifier.error_debug_info.value() << endl;
+                    (*global_data->error_stream) << verifier.error_debug_info.value() << endl;
                 }
 
                 if (verify_result.success) {
@@ -162,7 +172,7 @@ void worker(promise<vector<SearchResult>> && p, const BasicBlock* bb_ptr, int bb
                     {
                         lock_guard<mutex> guard(g_correct_stream);
 
-                        ostream& cs = *correct_stream;
+                        ostream& cs = *global_data->correct_stream;
 
                         cs << "[optimization success]" << endl;
                         cs << bb_ptr[i].get_start() << ", " << bb_ptr[i].get_end() << endl;
@@ -189,6 +199,11 @@ void worker(promise<vector<SearchResult>> && p, const BasicBlock* bb_ptr, int bb
                 break;
             }
         }
+
+        lock_guard<mutex> progress_guard(g_progress_data);
+        global_data->finished_bb++;
+        printf("progress: %d/%d(%.2lf%%)\n", global_data->finished_bb, global_data->total_bb, (double)global_data->finished_bb / global_data->total_bb * 100);
+        (*global_data->progress_stream) << bb_ptr[i].get_start() << " " << bb_ptr[i].get_end() << endl;
     }
 
     p.set_value(move(results));
@@ -196,33 +211,37 @@ void worker(promise<vector<SearchResult>> && p, const BasicBlock* bb_ptr, int bb
 
 int main(int argc, char* argv[]) {
     argparse::ArgumentParser program("megumin auto opt");
+    // save optimization results
     program.add_argument("--correct-file").default_value("correct.txt");
+    // input assembly file
     program.add_argument("--input-file");
+    // error recording file
     program.add_argument("--error-file").default_value("error.txt");
+    // time spent on a single search
     program.add_argument("--time-per-opt").default_value(10000).scan<'i', int>();
+    // threads used
     program.add_argument("--thread-count").default_value(1).scan<'i', int>();
 
     program.parse_args(argc, argv);
 
-    ofstream correct_file{program.get<std::string>("--correct-file")};
+    shared_ptr<ofstream> correct_file = make_shared<ofstream>(program.get<std::string>("--correct-file"));
     BBExtractor extractor{program.get<string>("--input-file")};
-    ofstream error_file{program.get<string>("--error-file")};
+    shared_ptr<ofstream> error_file = make_shared<ofstream>(program.get<string>("--error-file"));
+    shared_ptr<ofstream> progress_file = make_shared<ofstream>("progress.txt");
 
-    if (!correct_file.is_open()) {
+    if (!correct_file->is_open()) {
         cout << "cannot open " << program.get<string>("--correct-file") << endl;
+        return 0;
     }
-    if (!error_file.is_open()) {
+    if (!error_file->is_open()) {
         cout << "cannot open " << program.get<string>("--error-file") << endl;
+        return 0;
+    }
+    if (!progress_file->is_open()) {
+        cout << "cannot open" << "progress.txt" << endl;
+        return 0;
     }
 
-//    BBExtractor extractor{R"(E:\CLionProjects\megumin\test_files\pocketfft-aarch64.s)"};
-//    BBExtractor extractor{R"(E:\CLionProjects\megumin\test_files\raytracinginoneweekend.s)"};
-//    BBExtractor extractor{R"(E:\CLionProjects\megumin\test_files\rt2.s)"};
-//    BBExtractor extractor{R"(E:\CLionProjects\megumin\test_files\rt3.s)"};
-    // BBExtractor extractor{R"(E:\CLionProjects\megumin\test_files\crypto.s)"};
-//    BBExtractor extractor{R"(/root/super/rt2.s)"};
-//    BBExtractor extractor{R"(E:\CLionProjects\megumin\test_files\a.s)"};
-//    extractor.set_max_bb(-1);
     extractor.set_max_bb(-1);
     auto bbs = extractor.extract_basic_blocks();
 
@@ -245,6 +264,13 @@ int main(int argc, char* argv[]) {
 
     vector<thread> threads;
     vector<future<vector<SearchResult>>> futures;
+    GlobalData global_data = {
+            .error_stream = dynamic_pointer_cast<ostream>(error_file),
+            .correct_stream = dynamic_pointer_cast<ostream>(correct_file),
+            .progress_stream = dynamic_pointer_cast<ostream>(progress_file),
+            .finished_bb = 0,
+            .total_bb = viable_bb_size
+    };
 
     for (int i = 0; i < thread_count; i++) {
         promise<vector<SearchResult>> prom;
@@ -255,7 +281,7 @@ int main(int argc, char* argv[]) {
             size = last_block_count;
         }
 
-        thread t(&worker, move(prom), viable_bbs.data() + offset, size, time_per_opt, &error_file, &correct_file);
+        thread t(&worker, move(prom), viable_bbs.data() + offset, size, time_per_opt, &global_data);
 
         futures.push_back(move(f));
         threads.push_back(move(t));
@@ -266,73 +292,6 @@ int main(int argc, char* argv[]) {
     for (thread& t: threads) {
         t.join();
     }
-
-//    for (int i = 0; i < viable_bbs.size(); i++) {
-//        bool success = false;
-//        auto prog = viable_bbs[i].to_program();
-//        cout << viable_bbs[i];
-//
-//        std::vector<MachineState> test_cases;
-//        for (int ii = 0; ii < 1; ii++) {
-//            test_cases.emplace_back(MachineState{});
-//            test_cases[ii].fill_gp_random();
-//            test_cases[ii].fill_fp_random();
-//            test_cases[ii].fill_nzcv_random();
-//            test_cases[ii].fill_sp_random();
-//        }
-//
-//        while (!success && test_cases.size() <= 200) {
-//            auto result = opt_once(prog, test_cases, program.get<int>("--time-per-opt"),1);
-//            if (result.has_value()) {
-//                // find a solution
-//                auto rewrite = result.value();
-//                auto verifier = megumin::SymbolicVerifier(error_file);
-//                auto verify_result = verifier.verify(prog, rewrite);
-//                if (verify_result.success) {
-//                    success = true;
-//
-//                    correct_file << "[optimization success]" << endl;
-//                    correct_file << viable_bbs[i].get_start() << ", " << viable_bbs[i].get_end() << endl;
-//                    prog.print(correct_file);
-//                    correct_file << endl << ">>>" << endl;
-//                    rewrite.print(correct_file);
-//                    correct_file << "\n\n";
-//                    correct_file.flush();
-//
-//                    cout << "[optimization success]" << endl;
-//                    prog.print(cout);
-//                    cout << endl << ">>>" << endl;
-//                    rewrite.print(cout);
-//                    cout << "\n\n";
-//                } else {
-//                    if (verify_result.counter_example.has_value()) {
-//                        cout << "found counter example:" << endl;
-//                        test_cases.push_back(verify_result.counter_example.value());
-//                    }
-//                }
-//            } else {
-//                // did not find a solution
-//                break;
-//            }
-//        }
-//    }
-
-//    std::vector<MachineState> test_cases;
-//    for (int i = 0; i < 100; i++) {
-//        test_cases.emplace_back(MachineState{});
-//        test_cases[i].fill_gp_random();
-//        test_cases[i].fill_fp_random();
-//        test_cases[i].fill_nzcv_random();
-//        test_cases[i].fill_sp_random();
-//    }
-//
-//    for (int i = 0; i < viable_bbs.size(); i++) {
-//        const auto& bb = viable_bbs[i];
-//        auto prog = bb.to_program();
-//
-//        f(prog, test_cases, 1);
-//    }
-
 
     return 0;
 }
