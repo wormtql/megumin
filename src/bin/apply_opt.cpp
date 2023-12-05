@@ -118,7 +118,7 @@ int main(int argc, char* argv[]) {
 
     vector<string> source_asm;
     while (std::getline(source_file, line)) {
-        source_asm.push_back(line);
+        source_asm.push_back(line + "\n");
     }
 
     apply_opts(source_asm, opt_items);
