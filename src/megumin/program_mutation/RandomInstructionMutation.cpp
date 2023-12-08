@@ -84,6 +84,8 @@ megumin::MutationResult megumin::RandomInstructionMutation::mutate(arm::Program 
     } else if (use_fp_instructions) {
         random_index = uniform_int(generator) % (random_function_size - integral_instruction_bound) + integral_instruction_bound;
     } else {
+        // this should not happen
+        assert(false);
         random_index = uniform_int(generator) % random_function_size;
     }
 

@@ -44,6 +44,9 @@ namespace arm {
         [[nodiscard]] const RegSet& get_def_in(int index) const;
 
         [[nodiscard]] RegSet get_minimum_def_ins() const;
+
+        bool is_all_integral_instructions() const;
+        bool is_all_fp_instructions() const;
     };
 
     std::ostream& operator<<(std::ostream& os, const arm::Program& prog);

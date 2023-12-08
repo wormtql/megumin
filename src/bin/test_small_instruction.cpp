@@ -27,6 +27,16 @@ void f(const arm::Program& target, vector<MachineState> test_cases, int init_mod
     megumin::WeightedProgramMutation weighted_program_mutation{generator};
 
     megumin::Search search{&weighted_program_mutation, &simple_cost, generator};
+    if (target.is_all_integral_instructions()) {
+        search.set_use_fp(false);
+        search.set_use_integral(true);
+    } else if (target.is_all_fp_instructions()) {
+        search.set_use_fp(true);
+        search.set_use_integral(false);
+    } else {
+        search.set_use_integral(true);
+        search.set_use_fp(true);
+    }
     megumin::SearchState state;
 
     arm::Program init_program{};
@@ -65,27 +75,27 @@ int main() {
     // auto program = megumin::aarch64_asm("fmov d1, d2; fmov d3, d2");
 //    auto program = megumin::aarch64_asm("add sp, x1, #10").value();
 //    auto program = megumin::aarch64_asm("smulh x0, x1, x2").value();
-    auto program = megumin::aarch64_asm(R"(ror	x10, x10, #32
-add	x15, x15, x18
-ror	x12, x12, #63
-ror	x13, x13, #63
-add	x9, x21, x9
-add	x17, x17, x5
-add	x16, x10, x16
-eor	x2, x9, x2
-add	x3, x3, x12
-add	x1, x1, x13
-eor	x11, x16, x11
-eor	x0, x3, x0
-eor	x4, x1, x4
-ror	x2, x2, #24
-mov	x24, x26
-mov	x26, x18
-ror	x11, x11, #24
-ror	x0, x0, #32
-ror	x4, x4, #32
-add	x15, x15, x2
-eor	x20, x15, x21)").value();
+//    auto program = megumin::aarch64_asm(R"(ror	x10, x10, #32
+//add	x15, x15, x18
+//ror	x12, x12, #63
+//ror	x13, x13, #63
+//add	x9, x21, x9
+//add	x17, x17, x5
+//add	x16, x10, x16
+//eor	x2, x9, x2
+//add	x3, x3, x12
+//add	x1, x1, x13
+//eor	x11, x16, x11
+//eor	x0, x3, x0
+//eor	x4, x1, x4
+//ror	x2, x2, #24
+//mov	x24, x26
+//mov	x26, x18
+//ror	x11, x11, #24
+//ror	x0, x0, #32
+//ror	x4, x4, #32
+//add	x15, x15, x2
+//eor	x20, x15, x21)").value();
 //    auto program = megumin::aarch64_asm("madd x0, x1, x2, x3").value();
 //     auto program = megumin::aarch64_asm("and sp, x1, #16").value();
     // auto program = megumin::aarch64_asm("clz w1, w2; cls x3, x1");
@@ -94,7 +104,12 @@ eor	x20, x15, x21)").value();
     // auto program = megumin::aarch64_asm("sub sp, sp, #1");
     // auto program = megumin::aarch64_asm("extr x0, x1, x2, #5");
     // auto program = megumin::aarch64_asm("fadd d1, d2, d3");
-    // auto program = megumin::aarch64_asm("fsub d1, d2, d3; fadd d4, d5, d2");
+//     auto program = megumin::aarch64_asm("fsub d1, d2, d3; fsub d1, d3, d4").value();
+     auto program = megumin::aarch64_asm(R"(fmadd	d0, d0, d1, d11
+	fmov	d1, #10.00000000
+	fabs	d0, d0
+	fmul	d0, d0, d1
+	fmadd	d0, d8, d9, d0)").value();
     // auto program = megumin::aarch64_asm("sub x10, x8, #1; lsl x11, x10, #4");
     // auto program = megumin::aarch64_asm("fadd d4, d5, d1");
     // auto program = megumin::aarch64_asm("mov w8, #3; mov w9, #7");
@@ -141,7 +156,7 @@ eor	x20, x15, x21)").value();
     }
 
 //    program.print();
-    f(program, test_cases, 0);
+    f(program, test_cases, 1);
 
 //    megumin::CorrectnessCost cost{program, std::move(test_cases)};
 //

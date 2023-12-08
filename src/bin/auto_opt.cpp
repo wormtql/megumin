@@ -58,7 +58,12 @@ std::optional<arm::Program> opt_once(const arm::Program& target, vector<MachineS
     megumin::WeightedProgramMutation weighted_program_mutation{generator};
 
     megumin::Search search{&weighted_program_mutation, &simple_cost, generator};
-    search.set_use_fp(false);
+    bool all_integral = target.is_all_integral_instructions();
+    if (all_integral) {
+        search.set_use_fp(false);
+    } else {
+        search.set_use_fp(true);
+    }
     search.set_max_time(max_time);
     megumin::SearchState state;
 

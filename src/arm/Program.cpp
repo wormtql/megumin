@@ -127,4 +127,24 @@ namespace arm {
             // todo control flow
         }
     }
+
+    bool Program::is_all_integral_instructions() const {
+        for (const auto& instruction: instructions) {
+            auto ty = instruction.get_type();
+            if (ty != InstructionType::DataProcessingImm && ty != InstructionType::DataProcessingReg) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    bool Program::is_all_fp_instructions() const {
+        for (const auto& instruction: instructions) {
+            auto ty = instruction.get_type();
+            if (ty != InstructionType::DataProcessingSIMD) {
+                return false;
+            }
+        }
+        return true;
+    }
 }

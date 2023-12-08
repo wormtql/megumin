@@ -57,6 +57,11 @@ namespace megumin {
             weighted_mutation->set_use_fp_instructions(value);
         }
 
+        inline void set_use_integral(bool value) {
+            auto mutation = dynamic_cast<WeightedProgramMutation*>(this->program_mutation);
+            mutation->set_use_integral_instructions(value);
+        }
+
         void do_search(SearchState& state);
     };
 }
