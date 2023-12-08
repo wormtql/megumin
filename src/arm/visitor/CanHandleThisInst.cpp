@@ -75,3 +75,7 @@ void arm::CanHandleThisInst::visit_fp_simd_imm(const arm::Instruction &instructi
 void arm::CanHandleThisInst::visit_fp_simd_dp_3source(const arm::Instruction &instruction) {
     result = false;
 }
+
+void arm::CanHandleThisInst::visit_fp_compare(const arm::Instruction &instruction) {
+    result = false;
+}

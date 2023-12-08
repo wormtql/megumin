@@ -75,6 +75,8 @@ namespace arm {
             visit_fp_simd_imm(instruction);
         } else if (floating_point_flag2) {
             visit_fp_simd_dp_3source(instruction);
+        } else if (floating_point_flag1 && op3[{0, 4}] == 0b1000) {
+            visit_fp_compare(instruction);
         }
         else {
             // todo

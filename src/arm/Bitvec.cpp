@@ -317,6 +317,7 @@ namespace arm {
         } else if (size == 32) {
             bits z{32, 0};
             z.set_bit(31, sign);
+            return z;
         }
 
         megumin::megumin_assert(false);

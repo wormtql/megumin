@@ -69,6 +69,21 @@ namespace megumin {
         explicit MutateFPImm(Prob prob);
         MutateFPImm(): MutateFPImm(Prob{}) {}
     };
+
+    class MutateFPCompare: InstructionMutation {
+    public:
+        struct Prob {
+            int w_ptype = 1;
+            int w_operand2 = 5;
+            int w_rn = 5;
+            int w_signal = 1;
+        };
+    private:
+        static arm::Instruction mutate_operand2(const arm::Program& program, int index);
+    public:
+        explicit MutateFPCompare(Prob prob);
+        MutateFPCompare(): MutateFPCompare(Prob{}) {}
+    };
 }
 
 

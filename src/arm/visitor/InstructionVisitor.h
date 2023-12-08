@@ -34,7 +34,7 @@ namespace arm {
         virtual void visit_fp_simd_dp_2source(const Instruction& instruction) {};
         virtual void visit_fp_simd_dp_3source(const Instruction& instruction) {};
         virtual void visit_fp_simd_imm(const Instruction& instruction) {};
-
+        virtual void visit_fp_compare(const Instruction& instruction) {};
     };
 }
 

@@ -415,4 +415,45 @@ namespace arm {
 
         return bits::snan(size);
     }
+
+    bits FPUtils::fp_compare(bits op1, bits op2, bool signal_nans, FPException& exc) {
+        megumin::megumin_assert(op1.size == op2.size);
+        bits result{4, 0};
+        auto ty1 = get_fp_type(op1);
+        auto ty2 = get_fp_type(op2);
+
+        if (ty1 == FPType::SNaN || ty1 == FPType::QNaN || ty2 == FPType::SNaN || ty2 == FPType::QNaN) {
+            result.set_value(0b0011);
+            if (ty1 == FPType::SNaN || ty2 == FPType::SNaN || signal_nans) {
+                exc = FPException::InvalidOp;
+            }
+        } else {
+            int size = op1.size;
+            if (size == 32) {
+                float value1 = op1.as_f32();
+                float value2 = op2.as_f32();
+                if (value1 == value2) {
+                    result.set_value(0b0110);
+                } else if (value1 < value2) {
+                    result.set_value(0b1000);
+                } else {
+                    result.set_value(0b0010);
+                }
+            } else {
+                megumin::megumin_assert(size == 64);
+                double value1 = op1.as_f64();
+                double value2 = op2.as_f64();
+                if (value1 == value2) {
+                    result.set_value(0b0110);
+                } else if (value1 < value2) {
+                    result.set_value(0b1000);
+                } else {
+                    result.set_value(0b0010);
+                }
+            }
+            // process denorms
+        }
+
+        return result;
+    }
 }

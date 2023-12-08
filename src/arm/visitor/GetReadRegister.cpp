@@ -127,3 +127,13 @@ void arm::GetReadRegister::visit_fp_simd_dp_3source(const arm::Instruction &inst
     add_rm_fp(instruction);
     add_ra_fp(instruction);
 }
+
+void arm::GetReadRegister::visit_fp_compare(const arm::Instruction &instruction) {
+    bits opcode2 = instruction.get_range(0, 5);
+    bool cmp_with_zero = opcode2[3] == 1;
+
+    add_rn_fp(instruction);
+    if (!cmp_with_zero) {
+        add_rm_fp(instruction);
+    }
+}

@@ -57,6 +57,9 @@ namespace arm {
         static bits fp_max(bits op1, bits op2, bool altfp, FPException& exc);
 
         static bits fp_min(bits op1, bits op2, bool altfp, FPException& exc);
+
+        // return nzcv
+        static bits fp_compare(bits op1, bits op2, bool signal_nans, FPException& exc);
     };
 }
 

@@ -68,6 +68,9 @@ namespace megumin {
         for (int i = 0; i < weight.fp_and_simd_imm; i++) {
             random_functions.push_back(std::make_unique<RandomFPImm>(generator));
         }
+        for (int i = 0; i < weight.fp_compare; i++) {
+            random_functions.push_back(std::make_unique<RandomFPCompare>(generator));
+        }
     }
 }
 

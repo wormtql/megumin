@@ -47,7 +47,6 @@ namespace megumin {
 
         return arm::Instruction{instruction};
     }
-
 }
 
 // fp 2-source
@@ -117,6 +116,30 @@ namespace megumin {
         instruction.set_range(13, 21, uniform_int(generator) % (1 << 8));
         // rd
         instruction.set_range(0, 5, uniform_int(generator) % (1 << 5));
+
+        return arm::Instruction{instruction};
+    }
+}
+
+// fp compare
+namespace megumin {
+    arm::Instruction RandomFPCompare::random_instruction(const arm::Program &program, int index) {
+        bits instruction{32, 0};
+
+        instruction.set_range(24, 32, 0b00011110);
+        instruction.set_bit(21, true);
+        instruction.set_range(10, 16, 0b001000);
+        instruction.set_range(0, 3, 0b000);
+
+        // ptype
+        instruction.set_range(22, 24, uniform_int(generator) % 2);
+        // rm
+        const auto& def_ins = program.get_def_in(index);
+        instruction.set_range(16, 21, def_ins.random_fp(generator));
+        // rn
+        instruction.set_range(5, 10, def_ins.random_fp(generator));
+        // opcode2
+        instruction.set_range(3, 5, uniform_int(generator) % 4);
 
         return arm::Instruction{instruction};
     }

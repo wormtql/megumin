@@ -104,12 +104,12 @@ int main() {
     // auto program = megumin::aarch64_asm("sub sp, sp, #1");
     // auto program = megumin::aarch64_asm("extr x0, x1, x2, #5");
     // auto program = megumin::aarch64_asm("fadd d1, d2, d3");
-//     auto program = megumin::aarch64_asm("fsub d1, d2, d3; fsub d1, d3, d4").value();
-     auto program = megumin::aarch64_asm(R"(fmadd	d0, d0, d1, d11
-	fmov	d1, #10.00000000
-	fabs	d0, d0
-	fmul	d0, d0, d1
-	fmadd	d0, d8, d9, d0)").value();
+     auto program = megumin::aarch64_asm("fcmp d1, #0.0").value();
+//     auto program = megumin::aarch64_asm(R"(fmadd	d0, d0, d1, d11
+//	fmov	d1, #10.00000000
+//	fabs	d0, d0
+//	fmul	d0, d0, d1
+//	fmadd	d0, d8, d9, d0)").value();
     // auto program = megumin::aarch64_asm("sub x10, x8, #1; lsl x11, x10, #4");
     // auto program = megumin::aarch64_asm("fadd d4, d5, d1");
     // auto program = megumin::aarch64_asm("mov w8, #3; mov w9, #7");
@@ -156,7 +156,7 @@ int main() {
     }
 
 //    program.print();
-    f(program, test_cases, 1);
+    f(program, test_cases, 0);
 
 //    megumin::CorrectnessCost cost{program, std::move(test_cases)};
 //

@@ -34,6 +34,7 @@ namespace megumin {
             int fp_and_simd_dp_2source = 1;
             int fp_and_simd_dp_3source = 1;
             int fp_and_simd_imm = 1;
+            int fp_compare = 1;
         };
     private:
         bool use_integral_instructions = true;

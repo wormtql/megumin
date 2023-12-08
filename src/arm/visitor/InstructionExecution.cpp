@@ -1109,4 +1109,35 @@ namespace arm {
             }
         }
     }
+
+    void InstructionExecution::visit_fp_compare(const Instruction &instruction) {
+        bits ptype = instruction.get_range(22, 24);
+        bits rm = instruction.get_rm();
+        bits rn = instruction.get_rn();
+        bits opcode2 = instruction.get_range(0, 5);
+
+        int m = rm.as_i32();
+        int n = rn.as_i32();
+        int datasize = 0;
+        if (ptype == 0b00) {
+            datasize = 32;
+        } else if (ptype == 0b01) {
+            datasize = 64;
+        } else {
+            megumin::megumin_assert(false);
+            datasize = 64;
+        }
+        bool signal_all_nans = opcode2[4] == 1;
+        bool cmp_with_zero = opcode2[3] == 1;
+        bits operand1 = state.fp.get(datasize, n);
+        bits operand2;
+        if (cmp_with_zero) {
+            operand2 = bits::fpzero(false, datasize);
+        } else {
+            operand2 = state.fp.get(datasize, m);
+        }
+
+        bits result = FPUtils::fp_compare(operand1, operand2, signal_all_nans, state.fp_exception);
+        state.p_state.set_nzcv(result);
+    }
 }

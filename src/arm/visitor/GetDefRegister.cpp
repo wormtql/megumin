@@ -91,3 +91,7 @@ void arm::GetDefRegister::visit_fp_simd_imm(const arm::Instruction &instruction)
 void arm::GetDefRegister::visit_fp_simd_dp_3source(const arm::Instruction &instruction) {
     set_rd_fp(instruction);
 }
+
+void arm::GetDefRegister::visit_fp_compare(const arm::Instruction &instruction) {
+    // no def
+}

@@ -110,3 +110,32 @@ namespace megumin {
         })
     {}
 }
+
+// fp compare
+namespace megumin {
+    MutateFPCompare::MutateFPCompare(Prob prob)
+        : InstructionMutation({
+            {mutate_fp_ptype, prob.w_ptype},
+            {mutate_operand2, prob.w_operand2},
+            {mutate_rn_fp, prob.w_rn},
+            {make_mutate_bit(4), prob.w_signal}
+        })
+    {}
+
+    arm::Instruction MutateFPCompare::mutate_operand2(const arm::Program &program, int index) {
+        const arm::Instruction& instruction = program.get_instruction_const(index);
+        auto result = instruction;
+
+        if (uniform_int(generator) % 2 == 0) {
+            // mutate to #0.0
+            result.set_bit(3, true);
+
+            return result;
+        } else {
+            // random rm
+            arm::Instruction res = mutate_rm_fp(program, index);
+            res.set_bit(3, false);
+            return res;
+        }
+    }
+}
