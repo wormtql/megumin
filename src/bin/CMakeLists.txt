@@ -27,6 +27,7 @@ add_megumin_executable(z3_2)
 add_megumin_executable(test_small_instruction)
 add_megumin_executable(test_synthesize)
 add_megumin_executable(debug_single_block)
+add_megumin_executable(statistics)
 
 # add_executable(playground main.cpp)
 # add_executable(main2 main2.cpp)
