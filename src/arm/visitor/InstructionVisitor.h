@@ -13,6 +13,7 @@ namespace arm {
         void visit_data_processing_imm(const Instruction& instruction);
         void visit_data_processing_reg(const Instruction& instruction);
         void visit_fp_and_simd(const Instruction& instruction);
+        void visit_branch_exception_system(const Instruction& instruction);
 
         virtual void visit_nop(const Instruction& instruction) {};
         virtual void visit_dp_imm_add_sub(const Instruction& instruction) {};
@@ -35,6 +36,12 @@ namespace arm {
         virtual void visit_fp_simd_dp_3source(const Instruction& instruction) {};
         virtual void visit_fp_simd_imm(const Instruction& instruction) {};
         virtual void visit_fp_compare(const Instruction& instruction) {};
+
+        virtual void visit_conditional_branch(const Instruction& instruction) {};
+        virtual void visit_unconditional_branch_register(const Instruction& instruction) {};
+        virtual void visit_unconditional_branch_immediate(const Instruction& instruction) {};
+        virtual void visit_compare_and_branch(const Instruction& instruction) {};
+        virtual void visit_test_and_branch(const Instruction& instruction) {};
     };
 }
 

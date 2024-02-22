@@ -42,6 +42,7 @@ namespace arm {
         bits fpcr{64, 0};
         bits sp{64, 0};
         FPException fp_exception = FPException::None;
+        int pc = 0;
 
         MachineState() = default;
 //        MachineState(const MachineState& other);

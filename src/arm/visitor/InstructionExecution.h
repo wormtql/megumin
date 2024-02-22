@@ -12,6 +12,7 @@ namespace arm {
     class InstructionExecution: public arm::InstructionVisitor {
     private:
         MachineState& state;
+        int pc_offset = 0;
     public:
         explicit InstructionExecution(MachineState& state);
 

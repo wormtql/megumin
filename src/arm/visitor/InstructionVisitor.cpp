@@ -13,7 +13,27 @@ namespace arm {
                 visit_data_processing_reg(instruction);
             } else if (type == InstructionType::DataProcessingSIMD) {
                 visit_fp_and_simd(instruction);
+            } else if (type == InstructionType::BranchExceptionSystem) {
+                visit_branch_exception_system(instruction);
             }
+        }
+    }
+
+    void InstructionVisitor::visit_branch_exception_system(const Instruction &instruction) {
+        bits op0 = instruction.get_range(29, 32);
+        bits op1 = instruction.get_range(11, 25);
+        if (op0 == 0b010 && op1[{12, 14}] == 0b00) {
+            visit_conditional_branch(instruction);
+        } else if (op0 == 0b110 && op1[13] == 1) {
+            visit_unconditional_branch_register(instruction);
+        } else if (op0[{0, 2}] == 0) {
+            visit_unconditional_branch_immediate(instruction);
+        } else if (op0[{0, 2}] == 0b01 && op1[13] == 0) {
+            visit_compare_and_branch(instruction);
+        } else if (op0[{0, 2}] == 0b01 && op1[13] == 1) {
+            visit_test_and_branch(instruction);
+        } else {
+            assert(false);
         }
     }
 
