@@ -52,10 +52,14 @@ namespace arm {
                 state.p_state.set_nzcv(result.second);
             }
         }
+
+        next_basic_block = {};
     }
 
     void InstructionExecution::visit_dp_imm_add_sub_with_tags(const Instruction &instruction) {
         // todo execute add sub with tag
+
+        next_basic_block = {};
     }
 
     void InstructionExecution::visit_dp_imm_logical(const Instruction &instruction) {
@@ -117,6 +121,8 @@ namespace arm {
             bits nzcv = bits::from_bools({result.is_set(datasize - 1), result == 0, 0, 0});
             state.p_state.set_nzcv(nzcv);
         }
+
+        next_basic_block = {};
     }
 
     void InstructionExecution::visit_dp_imm_move_wide(const Instruction &instruction) {
@@ -153,6 +159,8 @@ namespace arm {
         } else {
             megumin_assert(false);
         }
+
+        next_basic_block = {};
     }
 
     void InstructionExecution::visit_dp_imm_bitfield(const Instruction &instruction) {
@@ -201,6 +209,8 @@ namespace arm {
             bits bot = ArmUtilsSharedFunctions::ror(src, R) & wmask;
             state.gp.set(datasize, d, bot & tmask);
         }
+
+        next_basic_block = {};
     }
 
     void InstructionExecution::visit_dp_imm_extract(const Instruction &instruction) {
@@ -240,6 +250,8 @@ namespace arm {
         } else {
             megumin::megumin_assert(false);
         }
+
+        next_basic_block = {};
     }
 
     void InstructionExecution::visit_dp_reg_1source(const Instruction &instruction) {
@@ -318,6 +330,8 @@ namespace arm {
         else {
             megumin_assert(false);
         }
+
+        next_basic_block = {};
     }
 
     void InstructionExecution::visit_dp_reg_2source(const Instruction &instruction) {
@@ -385,6 +399,8 @@ namespace arm {
         } else {
             megumin_assert(false);
         }
+
+        next_basic_block = {};
     }
 
     void InstructionExecution::visit_fp_simd_dp_1source(const Instruction &instruction) {
@@ -556,6 +572,8 @@ namespace arm {
             bits result = FPUtils::fp_round_int(operand, rounding, false, state.fp_exception);
             state.fp.set(esize, d, result, merge);
         }
+
+        next_basic_block = {};
     }
 
     void InstructionExecution::visit_fp_simd_dp_2source(const Instruction &instruction) {
@@ -701,6 +719,8 @@ namespace arm {
         } else {
             megumin::megumin_assert(false);
         }
+
+        next_basic_block = {};
     }
 
     void InstructionExecution::visit_dp_reg_logical_shifted_reg(const Instruction &instruction) {
@@ -746,6 +766,8 @@ namespace arm {
             state.gp.set(datasize, d, result);
             state.p_state.set_nzcv(nzcv);
         }
+
+        next_basic_block = {};
     }
 
     void InstructionExecution::visit_dp_reg_add_sub_shifted_reg(const Instruction &instruction) {
@@ -786,6 +808,8 @@ namespace arm {
                 state.p_state.set_nzcv(result.second);
             }
         }
+
+        next_basic_block = {};
     }
 
     void InstructionExecution::visit_dp_reg_add_sub_with_carry(const Instruction &instruction) {
@@ -818,6 +842,8 @@ namespace arm {
                 state.p_state.set_nzcv(result.second);
             }
         }
+
+        next_basic_block = {};
     }
 
     void InstructionExecution::visit_dp_reg_cond_select(const Instruction &instruction) {
@@ -875,6 +901,8 @@ namespace arm {
                 state.gp.set(datasize, d, result);
             }
         }
+
+        next_basic_block = {};
     }
 
     void InstructionExecution::visit_dp_reg_3source(const Instruction &instruction) {
@@ -992,6 +1020,8 @@ namespace arm {
         } else {
             megumin::megumin_assert(false);
         }
+
+        next_basic_block = {};
     }
 
     void InstructionExecution::visit_fp_simd_imm(const Instruction &instruction) {
@@ -1016,6 +1046,8 @@ namespace arm {
 
         bits imm = FPUtils::vfp_expand_imm(size, imm8);
         state.fp.set(size, d, imm, false);
+
+        next_basic_block = {};
     }
 
     void InstructionExecution::visit_fp_simd_dp_3source(const Instruction &instruction) {
@@ -1108,6 +1140,8 @@ namespace arm {
                 state.fp.set(esize, d, bits{result});
             }
         }
+
+        next_basic_block = {};
     }
 
     void InstructionExecution::visit_fp_compare(const Instruction &instruction) {
@@ -1139,5 +1173,95 @@ namespace arm {
 
         bits result = FPUtils::fp_compare(operand1, operand2, signal_all_nans, state.fp_exception);
         state.p_state.set_nzcv(result);
+
+        next_basic_block = {};
+    }
+
+    void InstructionExecution::visit_conditional_branch(const Instruction &instruction) {
+        // B.<cond>
+
+        // in real aarch64 encodings, imm19 represents a physical address offset
+        // but for simplicity, we use it as a basic block id
+        bits imm19 = instruction.get_range(5, 24);
+        bits cond = instruction.get_range(0, 4);
+        if (ArmUtilsSharedFunctions::condition_holds(cond.as_i32(), state)) {
+            next_basic_block = imm19.as_i32();
+        } else {
+            next_basic_block = {};
+        }
+    }
+
+    void InstructionExecution::visit_unconditional_branch_immediate(const Instruction &instruction) {
+        bool op = instruction.is_set(31);
+
+        if (op) {
+            // bl
+            // it a function call, thus not implemented
+            megumin::megumin_assert(false, "instruction `BL` is a function call, not implemented");
+            next_basic_block = {};
+        } else {
+            // b
+            bits imm26 = instruction.get_range(0, 26);
+            next_basic_block = imm26.as_i32();
+        }
+    }
+
+    void InstructionExecution::visit_unconditional_branch_register(const Instruction &instruction) {
+        // not related to label jumping
+        megumin::megumin_assert(false, "unconditional branch (register) not implemented");
+    }
+
+    void InstructionExecution::visit_compare_and_branch(const Instruction &instruction) {
+        bool sf = instruction.is_set(31);
+        bool op = instruction.is_set(24);
+        bits imm19 = instruction.get_range(5, 24);
+        bits rt = instruction.get_range(0, 5);
+
+        int datasize = sf ? 64 : 32;
+        bits operand = state.get_gp(datasize, rt.as_i32(), false, true);
+
+        if (op) {
+            // cbnz
+            if (operand != 0) {
+                next_basic_block = imm19.as_i32();
+            } else {
+                next_basic_block = {};
+            }
+        } else {
+            // cbz
+            if (operand == 0) {
+                next_basic_block = imm19.as_i32();
+            } else {
+                next_basic_block = {};
+            }
+        }
+    }
+
+    void InstructionExecution::visit_test_and_branch(const Instruction &instruction) {
+        bool op = instruction.is_set(24);
+        bits b5 = instruction.get_range(31, 32);
+        bits b40 = instruction.get_range(19, 24);
+        bits imm14 = instruction.get_range(5, 19);
+        bits rt = instruction.get_range(0, 5);
+
+        uint32_t bit_pos = b5.concat(b40).as_u32();
+        int datasize = b5 == 0 ? 32 : 1;
+        bits operand = state.get_gp(datasize, rt.as_i32(), false, true);
+
+        if (op) {
+            // tbnz
+            if (operand.is_set(static_cast<int>(bit_pos))) {
+                next_basic_block = imm14.as_i32();
+            } else {
+                next_basic_block = {};
+            }
+        } else {
+            // tbz
+            if (operand.is_set(static_cast<int>(bit_pos))) {
+                next_basic_block = imm14.as_i32();
+            } else {
+                next_basic_block = {};
+            }
+        }
     }
 }

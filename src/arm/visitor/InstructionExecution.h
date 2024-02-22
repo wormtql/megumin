@@ -8,13 +8,17 @@
 #include "InstructionVisitor.h"
 #include "MachineState.h"
 
+#include <optional>
+
 namespace arm {
     class InstructionExecution: public arm::InstructionVisitor {
     private:
         MachineState& state;
-        int pc_offset = 0;
+        std::optional<int> next_basic_block;
     public:
         explicit InstructionExecution(MachineState& state);
+
+        int get_pc_offset() { return pc_offset; }
 
         void execute(const Instruction& instruction) { visit_instruction(instruction); }
 
@@ -53,6 +57,16 @@ namespace arm {
         void visit_fp_simd_imm(const Instruction &instruction) override;
 
         void visit_fp_compare(const Instruction &instruction) override;
+
+        void visit_conditional_branch(const Instruction& instruction) override;
+
+        void visit_unconditional_branch_immediate(const Instruction &instruction) override;
+
+        void visit_unconditional_branch_register(const Instruction &instruction) override;
+
+        void visit_compare_and_branch(const Instruction &instruction) override;
+
+        void visit_test_and_branch(const Instruction &instruction) override;
     };
 }
 
