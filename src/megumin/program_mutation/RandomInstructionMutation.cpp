@@ -75,8 +75,10 @@ namespace megumin {
 }
 
 megumin::MutationResult megumin::RandomInstructionMutation::mutate(arm::Program &program) {
-    int size = program.get_size();
-    int index = uniform_int(generator) % size;
+    int basic_block_size = program.get_basic_block_size();
+    int basic_block = uniform_int(generator) % basic_block_size;
+    int instruction_size = program.get_instruction_size(basic_block);
+    int index = uniform_int(generator) % instruction_size;
 
     int random_index = 0;
     int random_function_size = (int) random_functions.size();
@@ -92,21 +94,25 @@ megumin::MutationResult megumin::RandomInstructionMutation::mutate(arm::Program 
         random_index = uniform_int(generator) % random_function_size;
     }
 
-    arm::Instruction instruction = random_functions[random_index]->random_instruction(program, index);
+    arm::Program::ProgramPosition position = { .basic_block_id=basic_block, .index=index };
+    arm::Instruction instruction = random_functions[random_index]->random_instruction(program, position);
 
     MutationResult result;
     result.success = true;
-    result.mutation_index[0] = index;
-    result.mutation_instructions[0] = program.get_instruction_const(index);
+    result.mutation_index[0] = position;
+    result.mutation_instructions[0] = program.get_instruction_const(position);
 
-    program.set_instruction(index, instruction);
+    program.set_instruction(position, instruction);
     program.calculate_def_ins();
 
     return result;
 }
 
 void megumin::RandomInstructionMutation::undo(arm::Program &program, const megumin::MutationResult &result) {
-    megumin_assert(result.mutation_index[0] < program.get_size());
+    int basic_block_id = result.mutation_index[0].basic_block_id;
+    int index = result.mutation_index[0].index;
+    megumin_assert(basic_block_id < program.get_basic_block_size());
+    megumin_assert(index < program.get_instruction_size(basic_block_id));
 
     program.set_instruction(result.mutation_index[0], result.mutation_instructions[0]);
     program.calculate_def_ins();

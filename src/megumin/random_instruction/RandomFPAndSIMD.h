@@ -19,7 +19,7 @@ namespace megumin {
     public:
         explicit RandomFPDataProcessing1(std::mt19937& generator): generator(generator) {}
 
-        arm::Instruction random_instruction(const arm::Program& program, int index) override;
+        arm::Instruction random_instruction(const arm::Program& program, arm::Program::ProgramPosition position) override;
     };
 
     // random fp 2-source
@@ -31,7 +31,7 @@ namespace megumin {
     public:
         explicit RandomFPDataProcessing2(std::mt19937& generator): generator(generator) {}
 
-        arm::Instruction random_instruction(const arm::Program& program, int index) override;
+        arm::Instruction random_instruction(const arm::Program& program, arm::Program::ProgramPosition position) override;
     };
 
     class RandomFPDataProcessing3: public RandomInstruction {
@@ -41,7 +41,7 @@ namespace megumin {
     public:
         explicit RandomFPDataProcessing3(std::mt19937& generator): generator(generator) {}
 
-        arm::Instruction random_instruction(const arm::Program& program, int index) override;
+        arm::Instruction random_instruction(const arm::Program& program, arm::Program::ProgramPosition position) override;
     };
 
     class RandomFPImm: public RandomInstruction {
@@ -51,7 +51,7 @@ namespace megumin {
     public:
         explicit RandomFPImm(std::mt19937& generator): generator(generator) {}
 
-        arm::Instruction random_instruction(const arm::Program &program, int index) override;
+        arm::Instruction random_instruction(const arm::Program &program, arm::Program::ProgramPosition position) override;
     };
 
     class RandomFPCompare: public RandomInstruction {
@@ -61,7 +61,7 @@ namespace megumin {
     public:
         explicit RandomFPCompare(std::mt19937 generator): generator(generator) {}
 
-        arm::Instruction random_instruction(const arm::Program &program, int index) override;
+        arm::Instruction random_instruction(const arm::Program &program, arm::Program::ProgramPosition position) override;
     };
 }
 

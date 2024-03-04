@@ -6,12 +6,13 @@
 #define MEGUMIN_MUTATIONRESULT_H
 
 #include "Instruction.h"
+#include "Program.h"
 
 namespace megumin {
     struct MutationResult {
         bool success = false;
 
-        int mutation_index[2];
+        arm::Program::ProgramPosition mutation_index[2];
         arm::Instruction mutation_instructions[2];
         int tag = 0;
     };

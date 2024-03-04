@@ -17,7 +17,7 @@ namespace megumin {
         std::uniform_int_distribution<> uniform_int_dist;
     public:
         explicit RandomAddSubImm(std::mt19937& generator);
-        arm::Instruction random_instruction(const arm::Program& program, int index) override;
+        arm::Instruction random_instruction(const arm::Program& program, arm::Program::ProgramPosition position) override;
     };
 
     class RandomDataProcessingImmLogical: public RandomInstruction {
@@ -26,7 +26,7 @@ namespace megumin {
         std::uniform_int_distribution<> uniform_int_distribution;
     public:
         explicit RandomDataProcessingImmLogical(std::mt19937& generator): generator(generator) {}
-        arm::Instruction random_instruction(const arm::Program& program, int index) override;
+        arm::Instruction random_instruction(const arm::Program& program, arm::Program::ProgramPosition position) override;
     };
 
     class RandomMoveWideImm: public RandomInstruction {
@@ -36,7 +36,7 @@ namespace megumin {
     public:
         explicit RandomMoveWideImm(std::mt19937& generator): generator(generator) {}
 
-        arm::Instruction random_instruction(const arm::Program& program, int index) override;
+        arm::Instruction random_instruction(const arm::Program& program, arm::Program::ProgramPosition position) override;
     };
 
     class RandomBitfield: public RandomInstruction {
@@ -46,7 +46,7 @@ namespace megumin {
     public:
         explicit RandomBitfield(std::mt19937& generator): generator(generator) {}
 
-        arm::Instruction random_instruction(const arm::Program& program, int index) override;
+        arm::Instruction random_instruction(const arm::Program& program, arm::Program::ProgramPosition position) override;
     };
 
     class RandomExtract: public RandomInstruction {
@@ -56,7 +56,7 @@ namespace megumin {
     public:
         explicit RandomExtract(std::mt19937& generator): generator(generator) {}
 
-        arm::Instruction random_instruction(const arm::Program& program, int index) override;
+        arm::Instruction random_instruction(const arm::Program& program, arm::Program::ProgramPosition position) override;
     };
 }
 

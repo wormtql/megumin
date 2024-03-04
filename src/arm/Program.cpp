@@ -30,6 +30,14 @@ namespace arm {
 //        return instruction_size;
     }
 
+    int Program::get_basic_block_size() const {
+        return instructions.size();
+    }
+
+    size_t Program::get_instruction_size(int basic_block_id) const {
+        return instructions[basic_block_id].size();
+    }
+
     int Program::calculate_size() const {
         int size = 0;
         for (const auto & instruction : instructions) {
@@ -64,6 +72,10 @@ namespace arm {
         instructions[basic_block_id][index] = instruction;
     }
 
+    void Program::set_instruction(Program::ProgramPosition position, const Instruction &instruction) {
+        set_instruction(position.basic_block_id, position.index, instruction);
+    }
+
     void Program::set_instruction_nop(int basic_block_id, int index) {
         megumin::megumin_assert(basic_block_id < instructions.size());
         megumin::megumin_assert(index < instructions[basic_block_id].size());
@@ -80,10 +92,18 @@ namespace arm {
         instructions[basic_block_id2][i2] = t;
     }
 
+    void Program::swap_instructions(ProgramPosition p1, ProgramPosition p2) {
+        swap_instructions(p1.basic_block_id, p1.index, p2.basic_block_id, p2.index);
+    }
+
     const Instruction& Program::get_instruction_const(int basic_block_id, int index) const {
         megumin::megumin_assert(basic_block_id < instructions.size());
         megumin::megumin_assert(index < instructions[basic_block_id].size());
         return instructions[basic_block_id][index];
+    }
+
+    const Instruction& Program::get_instruction_const(ProgramPosition position) const {
+        return get_instruction_const(position.basic_block_id, position.index);
     }
 
     void Program::print(std::ostream& os) const {
@@ -245,5 +265,21 @@ namespace arm {
         }
 
         return true;
+    }
+
+    int Program::get_non_nop_size() const {
+        int result = 0;
+        for (const auto& bb: instructions) {
+            for (const auto& inst: bb) {
+                if (!inst.is_nop()) {
+                    result++;
+                }
+            }
+        }
+        return result;
+    }
+
+    const RegSet& Program::get_def_in(Program::ProgramPosition position) const {
+        return get_def_in(position.basic_block_id, position.index);
     }
 }

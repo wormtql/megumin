@@ -16,6 +16,11 @@
 
 namespace arm {
     class Program {
+    public:
+        struct ProgramPosition {
+            int basic_block_id;
+            int index;
+        };
     private:
         /// instructions[i][j]: basic block i, instruction j
         /// instructions[0] is the entry basic block
@@ -49,22 +54,29 @@ namespace arm {
 
         /// get the instruction count of the program
         [[nodiscard]] int get_size() const;
+        [[nodiscard]] int get_basic_block_size() const;
+        [[nodiscard]] size_t get_instruction_size(int basic_block_id) const;
+        [[nodiscard]] int get_non_nop_size() const;
         int calculate_size() const;
         void add_instruction(int basic_block_id, const Instruction& instruction);
         void set_instruction(int basic_block_id, int index, const Instruction& instruction);
+        void set_instruction(ProgramPosition position, const Instruction& instruction);
         void set_instruction_nop(int basic_block_id, int index);
         void swap_instructions(int basic_block_id1, int i1, int basic_block_id2, int i2);
+        void swap_instructions(ProgramPosition p1, ProgramPosition p2);
 
         /// set def_ins[0][0], which is the def-ins at the beginning of the program
         void set_entry_def_ins(const RegSet& def_ins);
 
         [[nodiscard]] const Instruction& get_instruction_const(int basic_block_id, int index) const;
+        [[nodiscard]] const Instruction& get_instruction_const(ProgramPosition position) const;
         void print(std::ostream& os = std::cout) const;
 
         /// populate def_ins
         /// we assume there is no loop
         void calculate_def_ins();
         [[nodiscard]] const RegSet& get_def_in(int basic_block_id, int index) const;
+        [[nodiscard]] const RegSet& get_def_in(ProgramPosition position) const;
 
         /// 为了让程序能够顺利访问用到的寄存器，程序开头必须已经定义了一部分寄存器
         /// 该函数计算最小的这样的寄存器集合

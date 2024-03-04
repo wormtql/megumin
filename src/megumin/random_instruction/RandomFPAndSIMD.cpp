@@ -11,7 +11,7 @@
 using arm::bits;
 
 namespace megumin {
-    arm::Instruction RandomFPDataProcessing1::random_instruction(const arm::Program& program, int index) {
+    arm::Instruction RandomFPDataProcessing1::random_instruction(const arm::Program& program, arm::Program::ProgramPosition position) {
         bits instruction{32, 0};
 
         instruction.set_range(24, 32, 0b00011110);
@@ -40,7 +40,7 @@ namespace megumin {
         auto opcode_index = uniform_int(generator) % opcodes.size();
         instruction.set_range(15, 21, opcodes[opcode_index]);
         // rn
-        const auto& def_ins = program.get_def_in(index);
+        const auto& def_ins = program.get_def_in(position);
         instruction.set_range(5, 10, def_ins.random_fp(generator));
         // rd
         instruction.set_range(0, 5, uniform_int(generator) % (1 << 5));
@@ -51,7 +51,7 @@ namespace megumin {
 
 // fp 2-source
 namespace megumin {
-    arm::Instruction RandomFPDataProcessing2::random_instruction(const arm::Program& program, int index) {
+    arm::Instruction RandomFPDataProcessing2::random_instruction(const arm::Program& program, arm::Program::ProgramPosition position) {
         bits instruction{32, 0};
         
         instruction.set_range(24, 32, 0b00011110);
@@ -61,7 +61,7 @@ namespace megumin {
         // ptype
         instruction.set_range(22, 24, uniform_int(generator) % 2);
         // rm
-        const auto& def_ins = program.get_def_in(index);
+        const auto& def_ins = program.get_def_in(position);
         instruction.set_range(16, 21, def_ins.random_fp(generator));
         // opcode
         instruction.set_range(12, 16, uniform_int(generator) % 2 + 2);
@@ -76,7 +76,7 @@ namespace megumin {
 
 // fp 3-source
 namespace megumin {
-    arm::Instruction RandomFPDataProcessing3::random_instruction(const arm::Program &program, int index) {
+    arm::Instruction RandomFPDataProcessing3::random_instruction(const arm::Program &program, arm::Program::ProgramPosition position) {
         bits instruction{32, 0};
 
         instruction.set_range(24, 32, 0b00011111);
@@ -86,7 +86,7 @@ namespace megumin {
         // o1
         instruction.set_bit(21, uniform_int(generator) % 2);
         // rm
-        const auto& def_ins = program.get_def_in(index);
+        const auto& def_ins = program.get_def_in(position);
         instruction.set_range(16, 21, def_ins.random_fp(generator));
         // o0
         instruction.set_bit(15, uniform_int(generator) % 2);
@@ -103,7 +103,7 @@ namespace megumin {
 
 // fp imm
 namespace megumin {
-    arm::Instruction RandomFPImm::random_instruction(const arm::Program &program, int index) {
+    arm::Instruction RandomFPImm::random_instruction(const arm::Program &program, arm::Program::ProgramPosition position) {
         bits instruction{32, 0};
 
         instruction.set_range(24, 32, 0b00011110);
@@ -123,7 +123,7 @@ namespace megumin {
 
 // fp compare
 namespace megumin {
-    arm::Instruction RandomFPCompare::random_instruction(const arm::Program &program, int index) {
+    arm::Instruction RandomFPCompare::random_instruction(const arm::Program &program, arm::Program::ProgramPosition position) {
         bits instruction{32, 0};
 
         instruction.set_range(24, 32, 0b00011110);
@@ -134,7 +134,7 @@ namespace megumin {
         // ptype
         instruction.set_range(22, 24, uniform_int(generator) % 2);
         // rm
-        const auto& def_ins = program.get_def_in(index);
+        const auto& def_ins = program.get_def_in(position);
         instruction.set_range(16, 21, def_ins.random_fp(generator));
         // rn
         instruction.set_range(5, 10, def_ins.random_fp(generator));

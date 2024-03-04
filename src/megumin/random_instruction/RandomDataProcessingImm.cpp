@@ -10,7 +10,7 @@ using arm::bits;
 using namespace std;
 
 namespace megumin {
-    arm::Instruction RandomDataProcessingImmLogical::random_instruction(const arm::Program& program, int index) {
+    arm::Instruction RandomDataProcessingImmLogical::random_instruction(const arm::Program& program, arm::Program::ProgramPosition position) {
         bits result{32, 0};
 
         result.set_range(23, 29, 0b100100);
@@ -39,7 +39,7 @@ namespace megumin {
         result.set_range(10, 16, (0b11110ll << level) & (0b111111ll));
         result.set_range(10, 10 + level, uniform_int_distribution(generator) % ((1 << level) - 1));
         // rn
-        const auto& def_ins = program.get_def_in(index);
+        const auto& def_ins = program.get_def_in(position);
         result.set_range(5, 10, def_ins.random_gp(generator));
         // rd
         result.set_range(0, 5, uniform_int_distribution(generator) % 32);
@@ -50,7 +50,7 @@ namespace megumin {
         return arm::Instruction{result};
     }
 
-    arm::Instruction RandomMoveWideImm::random_instruction(const arm::Program& program, int index) {
+    arm::Instruction RandomMoveWideImm::random_instruction(const arm::Program& program, arm::Program::ProgramPosition position) {
         bits result{32, 0};
         result.set_range(23, 29, 0b100101);
         // sf
@@ -80,7 +80,7 @@ namespace megumin {
 
     RandomAddSubImm::RandomAddSubImm(std::mt19937 &generator): generator(generator), uniform_int_dist() {}
 
-    arm::Instruction RandomAddSubImm::random_instruction(const arm::Program& program, int index) {
+    arm::Instruction RandomAddSubImm::random_instruction(const arm::Program& program, arm::Program::ProgramPosition position) {
         int add_or_sub = uniform_int_dist(generator) % 2;
         bits instruction{32, 0};
 
@@ -98,7 +98,7 @@ namespace megumin {
         // imm12
         instruction.set_range(10, 22, uniform_int_dist(generator) % (1 << 12));
         // rn
-        const auto& def_ins = program.get_def_in(index);
+        const auto& def_ins = program.get_def_in(position);
         instruction.set_range(5, 10, def_ins.random_gp(generator));
         // rd
         instruction.set_range(0, 5, uniform_int_dist(generator) % 32);
@@ -106,7 +106,7 @@ namespace megumin {
         return arm::Instruction{instruction};
     }
 
-    arm::Instruction RandomBitfield::random_instruction(const arm::Program& program, int index) {
+    arm::Instruction RandomBitfield::random_instruction(const arm::Program& program, arm::Program::ProgramPosition position) {
         bits instruction{32, 0};
         instruction.set_range(23, 29, 0b100110);
 
@@ -124,7 +124,7 @@ namespace megumin {
         // imms
         instruction.set_range(10, 16, uniform_int(generator) % x);
         // rn
-        const auto& def_ins = program.get_def_in(index);
+        const auto& def_ins = program.get_def_in(position);
         instruction.set_range(5, 10, def_ins.random_gp(generator));
         // rd
         instruction.set_range(0, 5, uniform_int(generator) % 32);
@@ -132,7 +132,7 @@ namespace megumin {
         return arm::Instruction{instruction};
     }
 
-    arm::Instruction RandomExtract::random_instruction(const arm::Program& program, int index) {
+    arm::Instruction RandomExtract::random_instruction(const arm::Program& program, arm::Program::ProgramPosition position) {
         bits instruction{32, 0};
         instruction.set_range(23, 31, 0b00100111);
 
@@ -142,7 +142,7 @@ namespace megumin {
         instruction.set_bit(22, sf);
 
         // rm
-        const auto& def_ins = program.get_def_in(index);
+        const auto& def_ins = program.get_def_in(position);
         instruction.set_range(16, 21, def_ins.random_gp(generator));
         // rn
         instruction.set_range(5, 10, def_ins.random_gp(generator));

@@ -4,7 +4,7 @@
 
 #include "RandomDataProcessingReg.h"
 
-arm::Instruction megumin::RandomDataProcessing2Source::random_instruction(const arm::Program& program, int index) {
+arm::Instruction megumin::RandomDataProcessing2Source::random_instruction(const arm::Program& program, arm::Program::ProgramPosition position) {
     arm::bits inst{32, 0};
     inst.set_range(21, 29, 0b11010110);
 
@@ -18,7 +18,7 @@ arm::Instruction megumin::RandomDataProcessing2Source::random_instruction(const 
     // sf
     inst.set_bit(31, uniform_int(generator) % 2);
     // rm
-    const auto& def_ins = program.get_def_in(index);
+    const auto& def_ins = program.get_def_in(position);
     inst.set_range(16, 21, def_ins.random_gp(generator));
     // rn
     inst.set_range(5, 10, def_ins.random_gp(generator));
@@ -28,7 +28,7 @@ arm::Instruction megumin::RandomDataProcessing2Source::random_instruction(const 
     return arm::Instruction{inst};
 }
 
-arm::Instruction megumin::RandomDataProcessing1Source::random_instruction(const arm::Program& program, int index) {
+arm::Instruction megumin::RandomDataProcessing1Source::random_instruction(const arm::Program& program, arm::Program::ProgramPosition position) {
     arm::bits inst{32, 0};
     inst.set_range(21, 31, 0b1011010110);
     inst.set_range(16, 21, 0);
@@ -48,7 +48,7 @@ arm::Instruction megumin::RandomDataProcessing1Source::random_instruction(const 
         inst.set_range(10, 16, 0b100 + i - 4);
     }
     // rn
-    const auto& def_ins = program.get_def_in(index);
+    const auto& def_ins = program.get_def_in(position);
     inst.set_range(5, 10, def_ins.random_gp(generator));
     // rd
     inst.set_range(0, 5, uniform_int(generator) % 31);
@@ -56,7 +56,7 @@ arm::Instruction megumin::RandomDataProcessing1Source::random_instruction(const 
     return arm::Instruction{inst};
 }
 
-arm::Instruction megumin::RandomDataProcessingRegLogical::random_instruction(const arm::Program &program, int index) {
+arm::Instruction megumin::RandomDataProcessingRegLogical::random_instruction(const arm::Program &program, arm::Program::ProgramPosition position) {
     arm::bits inst{32, 0};
     inst.set_range(24, 29, 0b01010);
 
@@ -80,7 +80,7 @@ arm::Instruction megumin::RandomDataProcessingRegLogical::random_instruction(con
     // N
     inst.set_bit(21, f() % 2);
     // rm
-    const auto& def_ins = program.get_def_in(index);
+    const auto& def_ins = program.get_def_in(position);
     inst.set_range(16, 21, def_ins.random_gp(generator));
     // imm6
     if (sf) {
@@ -96,7 +96,7 @@ arm::Instruction megumin::RandomDataProcessingRegLogical::random_instruction(con
     return arm::Instruction{inst};
 }
 
-arm::Instruction megumin::RandomDataProcessingRegAddSubShiftedReg::random_instruction(const arm::Program &program, int index) {
+arm::Instruction megumin::RandomDataProcessingRegAddSubShiftedReg::random_instruction(const arm::Program &program, arm::Program::ProgramPosition position) {
     arm::bits inst{32, 0};
     inst.set_range(24, 29, 0b01011);
 
@@ -114,7 +114,7 @@ arm::Instruction megumin::RandomDataProcessingRegAddSubShiftedReg::random_instru
     // shift
     inst.set_range(22, 24, r() % 3);
     // rm
-    const auto& def_ins = program.get_def_in(index);
+    const auto& def_ins = program.get_def_in(position);
     inst.set_range(16, 21, def_ins.random_gp(generator));
     // imm6
     if (sf) {
@@ -131,7 +131,7 @@ arm::Instruction megumin::RandomDataProcessingRegAddSubShiftedReg::random_instru
 }
 
 arm::Instruction
-megumin::RandomDataProcessingRegAddSubWithCarry::random_instruction(const arm::Program &program, int index) {
+megumin::RandomDataProcessingRegAddSubWithCarry::random_instruction(const arm::Program &program, arm::Program::ProgramPosition position) {
     arm::bits inst{32, 0};
     inst.set_range(21, 29, 0b11010000);
 
@@ -147,7 +147,7 @@ megumin::RandomDataProcessingRegAddSubWithCarry::random_instruction(const arm::P
     // S
     inst.set_bit(29, r() % 2);
     // rm
-    const auto& def_ins = program.get_def_in(index);
+    const auto& def_ins = program.get_def_in(position);
     inst.set_range(16, 21, def_ins.random_gp(generator));
     // rn
     inst.set_range(5, 10, def_ins.random_gp(generator));
@@ -158,7 +158,7 @@ megumin::RandomDataProcessingRegAddSubWithCarry::random_instruction(const arm::P
 }
 
 arm::Instruction
-megumin::RandomDataProcessingRegCondSelect::random_instruction(const arm::Program &program, int index) {
+megumin::RandomDataProcessingRegCondSelect::random_instruction(const arm::Program &program, arm::Program::ProgramPosition position) {
     arm::bits inst{32, 0};
     inst.set_range(21, 30, 0b011010100);
 
@@ -172,7 +172,7 @@ megumin::RandomDataProcessingRegCondSelect::random_instruction(const arm::Progra
     // op
     inst.set_bit(30, r() % 2);
     // rm
-    const auto& def_ins = program.get_def_in(index);
+    const auto& def_ins = program.get_def_in(position);
     inst.set_range(16, 21, def_ins.random_gp(generator));
     // cond
     inst.set_range(12, 16, r() % 0b1110);
@@ -186,7 +186,7 @@ megumin::RandomDataProcessingRegCondSelect::random_instruction(const arm::Progra
     return arm::Instruction{inst};
 }
 
-arm::Instruction megumin::RandomDataProcessing3Source::random_instruction(const arm::Program &program, int index) {
+arm::Instruction megumin::RandomDataProcessing3Source::random_instruction(const arm::Program &program, arm::Program::ProgramPosition position) {
     arm::bits inst{32, 0};
     inst.set_range(24, 31, 0b0011011);
 
@@ -202,7 +202,7 @@ arm::Instruction megumin::RandomDataProcessing3Source::random_instruction(const 
     inst.set_range(21, 24, op >> 1);
     inst.set_bit(15, op & 1);
     // rm
-    const auto& def_ins = program.get_def_in(index);
+    const auto& def_ins = program.get_def_in(position);
     inst.set_range(16, 21, def_ins.random_gp(generator));
     // ra
     inst.set_range(10, 15, def_ins.random_gp(generator));

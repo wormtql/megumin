@@ -13,8 +13,8 @@ using namespace std::placeholders;
 
 // mutate 2-source
 namespace megumin {
-    arm::Instruction MutateDataProcessingReg2Source::mutate_opcode(const arm::Program& program, int index) {
-        const arm::Instruction& instruction = program.get_instruction_const(index);
+    arm::Instruction MutateDataProcessingReg2Source::mutate_opcode(const arm::Program& program, arm::Program::ProgramPosition position) {
+        const arm::Instruction& instruction = program.get_instruction_const(position);
         auto result = instruction;
 //        int temp = uniform_int(generator);
         bits opcode = instruction.get_range(10, 16);
@@ -39,8 +39,8 @@ namespace megumin {
 
 // mutate 1-source
 namespace megumin {
-    arm::Instruction MutateDataProcessingReg1Source::mutate_sf(const arm::Program& program, int index) {
-        const arm::Instruction& instruction = program.get_instruction_const(index);
+    arm::Instruction MutateDataProcessingReg1Source::mutate_sf(const arm::Program& program, arm::Program::ProgramPosition position) {
+        const arm::Instruction& instruction = program.get_instruction_const(position);
         int sf = instruction.is_set(31);
         int sf2 = !sf;
         bits opcode = instruction.get_range(10, 16);
@@ -56,8 +56,8 @@ namespace megumin {
         return result;
     }
 
-    arm::Instruction MutateDataProcessingReg1Source::mutate_opcode(const arm::Program& program, int index) {
-        const arm::Instruction& instruction = program.get_instruction_const(index);
+    arm::Instruction MutateDataProcessingReg1Source::mutate_opcode(const arm::Program& program, arm::Program::ProgramPosition position) {
+        const arm::Instruction& instruction = program.get_instruction_const(position);
         int sf = instruction.is_set(31);
 
         int opcode;
@@ -105,8 +105,8 @@ namespace megumin {
         })
     {}
 
-    arm::Instruction MutateDataProcessingRegLogical::mutate_imm6(const arm::Program &program, int index) {
-        auto result = program.get_instruction_const(index);
+    arm::Instruction MutateDataProcessingRegLogical::mutate_imm6(const arm::Program &program, arm::Program::ProgramPosition position) {
+        auto result = program.get_instruction_const(position);
         if (result.is_set(31)) {
             result.set_range(10, 16, uniform_int(generator) % (1 << 6));
         } else {
@@ -115,8 +115,8 @@ namespace megumin {
         return result;
     }
 
-    arm::Instruction MutateDataProcessingRegLogical::mutate_sf(const arm::Program &program, int index) {
-        auto result = program.get_instruction_const(index);
+    arm::Instruction MutateDataProcessingRegLogical::mutate_sf(const arm::Program &program, arm::Program::ProgramPosition position) {
+        auto result = program.get_instruction_const(position);
         if (result.is_set(15)) {
             return result;
         }
@@ -140,8 +140,8 @@ namespace megumin {
         })
     {}
 
-    arm::Instruction MutateDataProcessingRegAddSubShiftedReg::mutate_imm6(const arm::Program &program, int index) {
-        auto result = program.get_instruction_const(index);
+    arm::Instruction MutateDataProcessingRegAddSubShiftedReg::mutate_imm6(const arm::Program &program, arm::Program::ProgramPosition position) {
+        auto result = program.get_instruction_const(position);
         if (result.is_set(31)) {
             result.set_range(10, 16, uniform_int(generator) % (1 << 6));
         } else {
@@ -150,8 +150,8 @@ namespace megumin {
         return result;
     }
 
-    arm::Instruction MutateDataProcessingRegAddSubShiftedReg::mutate_sf(const arm::Program &program, int index) {
-        auto result = program.get_instruction_const(index);
+    arm::Instruction MutateDataProcessingRegAddSubShiftedReg::mutate_sf(const arm::Program &program, arm::Program::ProgramPosition position) {
+        auto result = program.get_instruction_const(position);
         if (result.is_set(15)) {
             return result;
         }
@@ -159,8 +159,8 @@ namespace megumin {
         return result;
     }
 
-    arm::Instruction MutateDataProcessingRegAddSubShiftedReg::mutate_shift(const arm::Program &program, int index) {
-        auto result = program.get_instruction_const(index);
+    arm::Instruction MutateDataProcessingRegAddSubShiftedReg::mutate_shift(const arm::Program &program, arm::Program::ProgramPosition position) {
+        auto result = program.get_instruction_const(position);
         result.set_range(22, 24, r() % 3);
         return result;
     }
@@ -193,18 +193,18 @@ namespace megumin {
         })
     {}
 
-    arm::Instruction MutateDataProcessingRegCondSelect::mutate_op(const arm::Program &program, int index) {
+    arm::Instruction MutateDataProcessingRegCondSelect::mutate_op(const arm::Program &program, arm::Program::ProgramPosition position) {
         int op = r() % 2;
         int op2 = r() % 2;
 
-        auto result = program.get_instruction_const(index);
+        auto result = program.get_instruction_const(position);
         result.set_bit(30, op);
         result.set_range(10, 11, op2);
         return result;
     }
 
-    arm::Instruction MutateDataProcessingRegCondSelect::mutate_cond(const arm::Program &program, int index) {
-        auto result = program.get_instruction_const(index);
+    arm::Instruction MutateDataProcessingRegCondSelect::mutate_cond(const arm::Program &program, arm::Program::ProgramPosition position) {
+        auto result = program.get_instruction_const(position);
         result.set_range(12, 16, r() % 14);
         return result;
     }
@@ -222,8 +222,8 @@ namespace megumin {
         })
     {}
 
-    arm::Instruction MutateDataProcessingReg3Source::mutate_op(const arm::Program &program, int index) {
-        auto result = program.get_instruction_const(index);
+    arm::Instruction MutateDataProcessingReg3Source::mutate_op(const arm::Program &program, arm::Program::ProgramPosition position) {
+        auto result = program.get_instruction_const(position);
 
         static int ops[] = {
                 0b0000, 0b0001, 0b0000, 0b0001, 0b0010, 0b0011, 0b0100, 0b1010, 0b1011, 0b1100

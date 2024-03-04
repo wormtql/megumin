@@ -18,7 +18,7 @@ namespace megumin {
             int w_rd = 5;
         };
     private:
-        static arm::Instruction mutate_opcode(const arm::Program& program, int index);
+        static arm::Instruction mutate_opcode(const arm::Program& program, arm::Program::ProgramPosition position);
     public:
         explicit MutateFPDataProcessing1(Prob prob);
         MutateFPDataProcessing1(): MutateFPDataProcessing1(Prob{}) {}
@@ -35,7 +35,7 @@ namespace megumin {
             int w_rd = 5;
         };
     private:
-        static arm::Instruction mutate_opcode(const arm::Program& program, int index);
+        static arm::Instruction mutate_opcode(const arm::Program& program, arm::Program::ProgramPosition position);
     public:
         explicit MutateFPDataProcessing2(Prob prob);
         MutateFPDataProcessing2(): MutateFPDataProcessing2(Prob{}) {}
@@ -52,7 +52,7 @@ namespace megumin {
             int w_rd = 5;
         };
     private:
-        static arm::Instruction mutate_opcode(const arm::Program& program, int index);
+        static arm::Instruction mutate_opcode(const arm::Program& program, arm::Program::ProgramPosition position);
     public:
         explicit MutateFPDataProcessing3(Prob prob);
         MutateFPDataProcessing3(): MutateFPDataProcessing3(Prob{}) {}
@@ -79,7 +79,7 @@ namespace megumin {
             int w_signal = 1;
         };
     private:
-        static arm::Instruction mutate_operand2(const arm::Program& program, int index);
+        static arm::Instruction mutate_operand2(const arm::Program& program, arm::Program::ProgramPosition position);
     public:
         explicit MutateFPCompare(Prob prob);
         MutateFPCompare(): MutateFPCompare(Prob{}) {}

@@ -17,14 +17,14 @@ namespace megumin {
     protected:
         struct LambdaMutateBit {
             int mutate_index;
-            arm::Instruction operator()(const arm::Program& program, int index) const;
+            arm::Instruction operator()(const arm::Program& program, arm::Program::ProgramPosition position) const;
         };
 
         struct LambdaMutateRange {
             int low;
             int high;
             bool bitwise;
-            arm::Instruction operator()(const arm::Program& program, int index) const;
+            arm::Instruction operator()(const arm::Program& program, arm::Program::ProgramPosition position) const;
         };
 
         static std::uniform_int_distribution<> uniform_int;
@@ -34,15 +34,15 @@ namespace megumin {
             return uniform_int(generator);
         }
 
-        static arm::Instruction mutate_rn(const arm::Program& program, int index);
-        static arm::Instruction mutate_rd(const arm::Program& program, int index);
-        static arm::Instruction mutate_rm(const arm::Program& program, int index);
-        static arm::Instruction mutate_ra(const arm::Program& program, int index);
-        static arm::Instruction mutate_rn_fp(const arm::Program& program, int index);
-        static arm::Instruction mutate_rm_fp(const arm::Program& program, int index);
-        static arm::Instruction mutate_rd_fp(const arm::Program& program, int index);
-        static arm::Instruction mutate_ra_fp(const arm::Program& program, int index);
-        static arm::Instruction mutate_fp_ptype(const arm::Program& program, int index);
+        static arm::Instruction mutate_rn(const arm::Program& program, arm::Program::ProgramPosition position);
+        static arm::Instruction mutate_rd(const arm::Program& program, arm::Program::ProgramPosition position);
+        static arm::Instruction mutate_rm(const arm::Program& program, arm::Program::ProgramPosition position);
+        static arm::Instruction mutate_ra(const arm::Program& program, arm::Program::ProgramPosition position);
+        static arm::Instruction mutate_rn_fp(const arm::Program& program, arm::Program::ProgramPosition position);
+        static arm::Instruction mutate_rm_fp(const arm::Program& program, arm::Program::ProgramPosition position);
+        static arm::Instruction mutate_rd_fp(const arm::Program& program, arm::Program::ProgramPosition position);
+        static arm::Instruction mutate_ra_fp(const arm::Program& program, arm::Program::ProgramPosition position);
+        static arm::Instruction mutate_fp_ptype(const arm::Program& program, arm::Program::ProgramPosition position);
 
         static LambdaMutateBit make_mutate_bit(int mutate_index) {
             return LambdaMutateBit {
@@ -66,16 +66,16 @@ namespace megumin {
             };
         }
     private:
-        std::vector<std::function<arm::Instruction(const arm::Program&, int)>> mutation_functions;
+        std::vector<std::function<arm::Instruction(const arm::Program&, arm::Program::ProgramPosition)>> mutation_functions;
     public:
         // func, weight
-        using MutationFuncPair = std::pair<std::function<arm::Instruction(const arm::Program&, int)>, int>;
+        using MutationFuncPair = std::pair<std::function<arm::Instruction(const arm::Program&, arm::Program::ProgramPosition)>, int>;
 
         InstructionMutation() = default;
         InstructionMutation(std::initializer_list<MutationFuncPair> func_pairs);
         virtual ~InstructionMutation() = default;
 
-        virtual arm::Instruction mutate(const arm::Program& program, int index);
+        virtual arm::Instruction mutate(const arm::Program& program, arm::Program::ProgramPosition position);
     };
 }
 

@@ -16,8 +16,8 @@ namespace megumin {
         }})
     {}
 
-    arm::Instruction MutateFPDataProcessing1::mutate_opcode(const arm::Program& program, int index) {
-        const arm::Instruction& instruction = program.get_instruction_const(index);
+    arm::Instruction MutateFPDataProcessing1::mutate_opcode(const arm::Program& program, arm::Program::ProgramPosition position) {
+        const arm::Instruction& instruction = program.get_instruction_const(position);
         static int opcodes[] = {
                 0b000000, // fmov
                 0b000001, // fabs
@@ -54,8 +54,8 @@ namespace megumin {
         })
     {}
 
-    arm::Instruction MutateFPDataProcessing2::mutate_opcode(const arm::Program& program, int index) {
-        const arm::Instruction& instruction = program.get_instruction_const(index);
+    arm::Instruction MutateFPDataProcessing2::mutate_opcode(const arm::Program& program, arm::Program::ProgramPosition position) {
+        const arm::Instruction& instruction = program.get_instruction_const(position);
         static int opcodes[] = {
                 0b0000,     // fmul
                 0b0001,     // fdiv
@@ -89,8 +89,8 @@ namespace megumin {
         })
     {}
 
-    arm::Instruction MutateFPDataProcessing3::mutate_opcode(const arm::Program &program, int index) {
-        const arm::Instruction& instruction = program.get_instruction_const(index);
+    arm::Instruction MutateFPDataProcessing3::mutate_opcode(const arm::Program &program, arm::Program::ProgramPosition position) {
+        const arm::Instruction& instruction = program.get_instruction_const(position);
         auto result = instruction;
 
         result.set_bit(21, uniform_int(generator) % 2);
@@ -122,8 +122,8 @@ namespace megumin {
         })
     {}
 
-    arm::Instruction MutateFPCompare::mutate_operand2(const arm::Program &program, int index) {
-        const arm::Instruction& instruction = program.get_instruction_const(index);
+    arm::Instruction MutateFPCompare::mutate_operand2(const arm::Program &program, arm::Program::ProgramPosition position) {
+        const arm::Instruction& instruction = program.get_instruction_const(position);
         auto result = instruction;
 
         if (uniform_int(generator) % 2 == 0) {
@@ -133,7 +133,7 @@ namespace megumin {
             return result;
         } else {
             // random rm
-            arm::Instruction res = mutate_rm_fp(program, index);
+            arm::Instruction res = mutate_rm_fp(program, position);
             res.set_bit(3, false);
             return res;
         }

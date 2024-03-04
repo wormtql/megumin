@@ -47,9 +47,9 @@ namespace megumin {
             int w_rd = 2;
         };
 
-        static arm::Instruction mutate_n(const arm::Program& program, int index);
-        static arm::Instruction mutate_sf(const arm::Program& program, int index);
-        static arm::Instruction mutate_imms(const arm::Program& program, int index);
+        static arm::Instruction mutate_n(const arm::Program& program, arm::Program::ProgramPosition position);
+        static arm::Instruction mutate_sf(const arm::Program& program, arm::Program::ProgramPosition position);
+        static arm::Instruction mutate_imms(const arm::Program& program, arm::Program::ProgramPosition position);
     public:
         explicit MutateDataProcessingImmLogical(Prob prob);
         MutateDataProcessingImmLogical(): MutateDataProcessingImmLogical(Prob{}) {}
@@ -66,9 +66,9 @@ namespace megumin {
             int w_rd = 5;
         };
     private:
-        static arm::Instruction mutate_sf(const arm::Program& program, int index);
-        static arm::Instruction mutate_opc(const arm::Program& program, int index);
-        static arm::Instruction mutate_hw(const arm::Program& program, int index);
+        static arm::Instruction mutate_sf(const arm::Program& program, arm::Program::ProgramPosition position);
+        static arm::Instruction mutate_opc(const arm::Program& program, arm::Program::ProgramPosition position);
+        static arm::Instruction mutate_hw(const arm::Program& program, arm::Program::ProgramPosition position);
     public:
         explicit MutateDataProcessingImmMoveWide(Prob prob);
         MutateDataProcessingImmMoveWide(): MutateDataProcessingImmMoveWide(Prob{}) {}
@@ -86,10 +86,10 @@ namespace megumin {
             int w_rd = 5;
         };
     private:
-        static arm::Instruction mutate_sf_and_n(const arm::Program& program, int index);
-        static arm::Instruction mutate_opc(const arm::Program& program, int index);
-        static arm::Instruction mutate_immr(const arm::Program& program, int index);
-        static arm::Instruction mutate_imms(const arm::Program& program, int index);
+        static arm::Instruction mutate_sf_and_n(const arm::Program& program, arm::Program::ProgramPosition position);
+        static arm::Instruction mutate_opc(const arm::Program& program, arm::Program::ProgramPosition position);
+        static arm::Instruction mutate_immr(const arm::Program& program, arm::Program::ProgramPosition position);
+        static arm::Instruction mutate_imms(const arm::Program& program, arm::Program::ProgramPosition position);
     public:
         explicit MutateDataProcessingBitfield(Prob prob);
         MutateDataProcessingBitfield(): MutateDataProcessingBitfield(Prob{}) {}
@@ -106,8 +106,8 @@ namespace megumin {
             int w_rd = 5;
         };
     private:
-        static arm::Instruction mutate_sf(const arm::Program& program, int index);
-        static arm::Instruction mutate_imms(const arm::Program& program, int index);
+        static arm::Instruction mutate_sf(const arm::Program& program, arm::Program::ProgramPosition position);
+        static arm::Instruction mutate_imms(const arm::Program& program, arm::Program::ProgramPosition position);
     public:
         explicit MutateDataProcessingExtract(Prob prob);
         MutateDataProcessingExtract(): MutateDataProcessingExtract(Prob{}) {}

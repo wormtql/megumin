@@ -20,7 +20,7 @@ namespace megumin {
             int w_rd = 5;
         };
     private:
-        static arm::Instruction mutate_opcode(const arm::Program& program, int index);
+        static arm::Instruction mutate_opcode(const arm::Program& program, arm::Program::ProgramPosition position);
     public:
         explicit MutateDataProcessingReg2Source(Prob prob);
         MutateDataProcessingReg2Source(): MutateDataProcessingReg2Source(Prob{}) {}
@@ -35,8 +35,8 @@ namespace megumin {
             int w_rd = 5;
         };
     private:
-        static arm::Instruction mutate_sf(const arm::Program& program, int index);
-        static arm::Instruction mutate_opcode(const arm::Program& program, int index);
+        static arm::Instruction mutate_sf(const arm::Program& program, arm::Program::ProgramPosition position);
+        static arm::Instruction mutate_opcode(const arm::Program& program, arm::Program::ProgramPosition position);
     public:
         explicit MutateDataProcessingReg1Source(Prob prob = Prob{.w_sf=1, .w_opcode=2, .w_rn=5, .w_rd=5});
     };
@@ -58,8 +58,8 @@ namespace megumin {
             int w_rd = 5;
         };
     private:
-        static arm::Instruction mutate_imm6(const arm::Program& program, int index);
-        static arm::Instruction mutate_sf(const arm::Program& program, int index);
+        static arm::Instruction mutate_imm6(const arm::Program& program, arm::Program::ProgramPosition position);
+        static arm::Instruction mutate_sf(const arm::Program& program, arm::Program::ProgramPosition position);
     public:
         explicit MutateDataProcessingRegLogical(Prob prob);
         explicit MutateDataProcessingRegLogical(): MutateDataProcessingRegLogical(Prob{}) {}
@@ -82,9 +82,9 @@ namespace megumin {
             int w_rd = 5;
         };
     private:
-        static arm::Instruction mutate_imm6(const arm::Program& program, int index);
-        static arm::Instruction mutate_sf(const arm::Program& program, int index);
-        static arm::Instruction mutate_shift(const arm::Program& program, int index);
+        static arm::Instruction mutate_imm6(const arm::Program& program, arm::Program::ProgramPosition position);
+        static arm::Instruction mutate_sf(const arm::Program& program, arm::Program::ProgramPosition position);
+        static arm::Instruction mutate_shift(const arm::Program& program, arm::Program::ProgramPosition position);
     public:
         explicit MutateDataProcessingRegAddSubShiftedReg(Prob prob);
         explicit MutateDataProcessingRegAddSubShiftedReg(): MutateDataProcessingRegAddSubShiftedReg(Prob{}) {}
@@ -111,8 +111,8 @@ namespace megumin {
 
     class MutateDataProcessingRegCondSelect: public InstructionMutation {
     private:
-        static arm::Instruction mutate_op(const arm::Program& program, int index);
-        static arm::Instruction mutate_cond(const arm::Program& program, int index);
+        static arm::Instruction mutate_op(const arm::Program& program, arm::Program::ProgramPosition position);
+        static arm::Instruction mutate_cond(const arm::Program& program, arm::Program::ProgramPosition position);
     public:
         struct Prob {
 #ifdef MEGUMIN_INST_64_ONLY
@@ -133,7 +133,7 @@ namespace megumin {
 
     class MutateDataProcessingReg3Source: public InstructionMutation {
     private:
-        static arm::Instruction mutate_op(const arm::Program& program, int index);
+        static arm::Instruction mutate_op(const arm::Program& program, arm::Program::ProgramPosition position);
     public:
         struct Prob {
             int w_op = 3;

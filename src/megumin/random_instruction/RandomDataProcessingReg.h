@@ -19,7 +19,7 @@ namespace megumin {
     public:
         explicit RandomDataProcessing2Source(std::mt19937& generator): generator(generator) {}
 
-        arm::Instruction random_instruction(const arm::Program& program, int index) override;
+        arm::Instruction random_instruction(const arm::Program& program, arm::Program::ProgramPosition position) override;
     };
 
     class RandomDataProcessing1Source: public RandomInstruction {
@@ -29,7 +29,7 @@ namespace megumin {
     public:
         explicit RandomDataProcessing1Source(std::mt19937& generator): generator(generator) {}
 
-        arm::Instruction random_instruction(const arm::Program& program, int index) override;
+        arm::Instruction random_instruction(const arm::Program& program, arm::Program::ProgramPosition position) override;
     };
 
     class RandomDataProcessingRegLogical: public RandomInstruction {
@@ -39,27 +39,27 @@ namespace megumin {
     public:
         explicit RandomDataProcessingRegLogical(std::mt19937& generator): generator(generator) {}
 
-        arm::Instruction random_instruction(const arm::Program& program, int index) override;
+        arm::Instruction random_instruction(const arm::Program& program, arm::Program::ProgramPosition position) override;
     };
 
     class RandomDataProcessingRegAddSubShiftedReg: public RandomInstruction {
     public:
-        arm::Instruction random_instruction(const arm::Program &program, int index) override;
+        arm::Instruction random_instruction(const arm::Program &program, arm::Program::ProgramPosition position) override;
     };
 
     class RandomDataProcessingRegAddSubWithCarry: public RandomInstruction {
     public:
-        arm::Instruction random_instruction(const arm::Program &program, int index) override;
+        arm::Instruction random_instruction(const arm::Program &program, arm::Program::ProgramPosition position) override;
     };
 
     class RandomDataProcessingRegCondSelect: public RandomInstruction {
     public:
-        arm::Instruction random_instruction(const arm::Program &program, int index) override;
+        arm::Instruction random_instruction(const arm::Program &program, arm::Program::ProgramPosition position) override;
     };
 
     class RandomDataProcessing3Source: public RandomInstruction {
     public:
-        arm::Instruction random_instruction(const arm::Program &program, int index) override;
+        arm::Instruction random_instruction(const arm::Program &program, arm::Program::ProgramPosition position) override;
     };
 }
 

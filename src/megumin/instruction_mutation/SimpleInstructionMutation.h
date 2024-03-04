@@ -37,8 +37,9 @@ namespace megumin {
         MutateFPImm mutate_fp_imm;
     public:
         arm::Instruction result;
+        // program and position is need, to get def-ins
         const arm::Program* program = nullptr;
-        int index = 0;
+        arm::Program::ProgramPosition position{};
 
         explicit SimpleInstructionMutation(std::mt19937& generator);
 

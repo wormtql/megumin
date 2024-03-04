@@ -48,7 +48,7 @@ namespace megumin {
 }
 
 megumin::MutationResult megumin::WeightedProgramMutation::mutate(arm::Program &program) {
-    int index = uniform_int(generator) % mutations.size();
+    int index = static_cast<int>(uniform_int(generator) % mutations.size());
 
     auto result = mutations[index]->mutate(program);
     result.tag = index;
