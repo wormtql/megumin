@@ -91,6 +91,25 @@ namespace arm {
         int index = uniform_int(generator) % size;
         return arr[index];
     }
+
+    RegSet RegSet::merge(const RegSet &other) const {
+        RegSet result{};
+        result.gp = this->gp | other.gp;
+        result.fp = this->fp | other.fp;
+        return result;
+    }
+
+    RegSet RegSet::intersect(const RegSet &other) const {
+        RegSet result{};
+        result.gp = this->gp & other.gp;
+        result.fp = this->fp & other.fp;
+        return result;
+    }
+
+    void RegSet::set_full() {
+        gp.data0 = -1;
+        fp.data0 = -1;
+    }
 }
 
 namespace arm {

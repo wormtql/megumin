@@ -44,6 +44,7 @@ namespace arm {
         FPException fp_exception = FPException::None;
         // the index of the next instructions, not a physical address like in a real machine (something like 0x12345678)
         int pc = 0;
+        int current_basic_block = 0;
 
         MachineState() = default;
 //        MachineState(const MachineState& other);

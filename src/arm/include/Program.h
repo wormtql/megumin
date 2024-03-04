@@ -7,6 +7,7 @@
 
 #include <vector>
 #include <iostream>
+#include <set>
 
 #include "Instruction.h"
 #include "MachineState.h"
@@ -16,37 +17,61 @@
 namespace arm {
     class Program {
     private:
-        std::vector<Instruction> instructions;
+        /// instructions[i][j]: basic block i, instruction j
+        /// instructions[0] is the entry basic block
+        std::vector<std::vector<Instruction>> instructions;
 
-        std::vector<RegSet> def_ins;
+        /// [i][j]: basic block i, out going edge to element j
+        std::vector<std::vector<int>> out_connections;
+        std::vector<std::vector<int>> in_connections;
+
+
+        /// def_ins[bb_id][inst_index]
+        /// def_ins[bb_id][0] stands for entry def ins of the basic block
+        /// def_ins[0][0] stands for entry def-ins of the program
+        std::vector<std::vector<RegSet>> def_ins;
+        /// conceptually equivalent to def_ins[0][0]
         RegSet entry_def_ins;
+
+        // it's a constant during search
+//        int instruction_size = 0;
+
+        /// when this function is called, we assume def_ins[basic_block_id][0] is properly set
+        void calc_def_ins_for_basic_block(int basic_block_id);
+
     public:
         Program() = default;
-        explicit Program(int size);
-        Program(int size, const RegSet& def_ins0);
+        explicit Program(int basic_block_size);
+//        explicit Program(int size);
 
         void execute(MachineState& state) const;
         void execute(MachineStateS& state) const;
 
-        [[nodiscard]] int get_size() const {
-            return instructions.size();
-        }
-        void add_instruction(const Instruction& instruction);
-        void set_instruction(int index, const Instruction& instruction);
-        void set_instruction_nop(int index);
-        void swap_instructions(int i1, int i2);
+        /// get the instruction count of the program
+        [[nodiscard]] int get_size() const;
+        int calculate_size() const;
+        void add_instruction(int basic_block_id, const Instruction& instruction);
+        void set_instruction(int basic_block_id, int index, const Instruction& instruction);
+        void set_instruction_nop(int basic_block_id, int index);
+        void swap_instructions(int basic_block_id1, int i1, int basic_block_id2, int i2);
+
+        /// set def_ins[0][0], which is the def-ins at the beginning of the program
         void set_entry_def_ins(const RegSet& def_ins);
 
-        [[nodiscard]] const Instruction& get_instruction_const(int index) const;
+        [[nodiscard]] const Instruction& get_instruction_const(int basic_block_id, int index) const;
         void print(std::ostream& os = std::cout) const;
 
+        /// populate def_ins
+        /// we assume there is no loop
         void calculate_def_ins();
-        [[nodiscard]] const RegSet& get_def_in(int index) const;
+        [[nodiscard]] const RegSet& get_def_in(int basic_block_id, int index) const;
 
+        /// 为了让程序能够顺利访问用到的寄存器，程序开头必须已经定义了一部分寄存器
+        /// 该函数计算最小的这样的寄存器集合
         [[nodiscard]] RegSet get_minimum_def_ins() const;
 
-        bool is_all_integral_instructions() const;
-        bool is_all_fp_instructions() const;
+        [[nodiscard]] bool is_all_integral_instructions() const;
+        [[nodiscard]] bool is_all_fp_instructions() const;
     };
 
     std::ostream& operator<<(std::ostream& os, const arm::Program& prog);

@@ -14,11 +14,15 @@ namespace arm {
     class InstructionExecution: public arm::InstructionVisitor {
     private:
         MachineState& state;
+        /// none indicated the machine must execute sequentially
+        /// while some(id) means the machine must goto the specified basic block
         std::optional<int> next_basic_block;
     public:
         explicit InstructionExecution(MachineState& state);
 
-        int get_pc_offset() { return pc_offset; }
+        std::optional<int> get_next_basic_block() {
+            return next_basic_block;
+        }
 
         void execute(const Instruction& instruction) { visit_instruction(instruction); }
 

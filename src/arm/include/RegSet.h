@@ -30,6 +30,11 @@ namespace arm {
 
         int random_gp(std::mt19937& generator) const;
         int random_fp(std::mt19937& generator) const;
+
+        [[nodiscard]] RegSet merge(const RegSet& other) const;
+        [[nodiscard]] RegSet intersect(const RegSet& other) const;
+
+        void set_full();
     };
 
     enum class RegType {

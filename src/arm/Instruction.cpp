@@ -56,6 +56,14 @@ namespace arm {
 
         InstructionExecution execution{state};
         execution.execute(*this);
+        std::optional<int> next_bb = execution.get_next_basic_block();
+        if (next_bb.has_value()) {
+            state.current_basic_block = next_bb.value();
+            // start from first instruction
+            state.pc = 0;
+        } else {
+            state.pc++;
+        }
     }
 
     void Instruction::execute(MachineStateS &state) const {
