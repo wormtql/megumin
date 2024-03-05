@@ -106,8 +106,9 @@ namespace megumin {
                         arm::MachineState machine_s{counter_example};
 
                         for (int j = 0; j <= i; j++) {
-                            target.get_instruction_const(j).execute(symbolic_s);
-                            target.get_instruction_const(j).execute(machine_s);
+                            // todo symbolic branch verify
+                            target.get_instruction_const(0, j).execute(symbolic_s);
+                            target.get_instruction_const(0, j).execute(machine_s);
                         }
                         cout << symbolic_s.p_state.n << endl;
                         cout << symbolic_s.p_state.z << endl;

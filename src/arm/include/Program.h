@@ -30,7 +30,6 @@ namespace arm {
         std::vector<std::vector<int>> out_connections;
         std::vector<std::vector<int>> in_connections;
 
-
         /// def_ins[bb_id][inst_index]
         /// def_ins[bb_id][0] stands for entry def ins of the basic block
         /// def_ins[0][0] stands for entry def-ins of the program
@@ -64,6 +63,9 @@ namespace arm {
         void set_instruction_nop(int basic_block_id, int index);
         void swap_instructions(int basic_block_id1, int i1, int basic_block_id2, int i2);
         void swap_instructions(ProgramPosition p1, ProgramPosition p2);
+        void add_basic_block(const std::vector<arm::Instruction>& bb, const std::vector<int>& out_edges);
+        void add_nop_basic_block();
+        void calc_in_connections_from_out_connections();
 
         /// set def_ins[0][0], which is the def-ins at the beginning of the program
         void set_entry_def_ins(const RegSet& def_ins);

@@ -11,9 +11,9 @@ namespace arm {
     {}
 
     Program BasicBlock::to_program() const {
-        Program prog;
+        Program prog{1};
         for (const auto& inst: instructions) {
-            prog.add_instruction(inst);
+            prog.add_instruction(0, inst);
         }
 
         return std::move(prog);

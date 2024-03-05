@@ -692,4 +692,78 @@ namespace arm {
             os << reg << m;
         }
     }
+
+    void InstructionPrinter::visit_conditional_branch(const Instruction &instruction) {
+        bits imm19 = instruction.get_range(5, 24);
+        bool o0 = instruction.is_set(4);
+        bits cond = instruction.get_range(0, 4);
+
+        if (!o0) {
+            os << "b.";
+        } else {
+            os << "bc.";
+        }
+        print_cond(cond.as_i32());
+        os << " " << imm19.as_u32();
+    }
+
+    void InstructionPrinter::visit_unconditional_branch_immediate(const Instruction &instruction) {
+        bits imm26 = instruction.get_range(0, 26);
+        bool op = instruction.is_set(31);
+
+        if (op) {
+            os << "bl";
+        } else {
+            os << "b";
+        }
+        os << " " << imm26.as_u32();
+    }
+
+    void InstructionPrinter::visit_compare_and_branch(const Instruction &instruction) {
+        bool sf = instruction.is_set(31);
+        bool op = instruction.is_set(24);
+        bits imm19 = instruction.get_range(5, 24);
+        bits rt = instruction.get_range(0, 5);
+
+        if (op) {
+            os << "cbnz";
+        } else {
+            os << "cbz";
+        }
+        char reg;
+        if (sf) {
+            reg = 'x';
+        } else {
+            reg = 'w';
+        }
+
+        os << " " << reg << rt.as_u32();
+        os << ", " << imm19.as_u32();
+    }
+
+    void InstructionPrinter::visit_test_and_branch(const Instruction &instruction) {
+        bool b5 = instruction.is_set(31);
+        bool op = instruction.is_set(24);
+        bits b40 = instruction.get_range(19, 24);
+        bits imm14 = instruction.get_range(5, 19);
+        bits rt = instruction.get_range(0, 5);
+
+        if (op) {
+            os << "tbnz";
+        } else {
+            os << "tbz";
+        }
+
+        char reg;
+        if (b5) {
+            reg = 'x';
+        } else {
+            reg = 'w';
+        }
+
+        bits bits_pos = bits::from_bools({b5}).concat(b40);
+        os << " " << reg << rt.as_u32()
+            << ", #" << bits_pos.as_u32()
+            << ", " << imm14.as_u32();
+    }
 }

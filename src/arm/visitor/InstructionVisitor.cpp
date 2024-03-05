@@ -21,7 +21,7 @@ namespace arm {
 
     void InstructionVisitor::visit_branch_exception_system(const Instruction &instruction) {
         bits op0 = instruction.get_range(29, 32);
-        bits op1 = instruction.get_range(11, 25);
+        bits op1 = instruction.get_range(12, 26);
         if (op0 == 0b010 && op1[{12, 14}] == 0b00) {
             visit_conditional_branch(instruction);
         } else if (op0 == 0b110 && op1[13] == 1) {

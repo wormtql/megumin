@@ -84,9 +84,9 @@ namespace arm {
                     break;
                 }
             } else {
-                auto prog = megumin::aarch64_asm(line2);
+                auto prog = megumin::aarch64_asm_basic_block(line2);
                 if (prog.has_value()) {
-                    const auto& inst = prog.value().get_instruction_const(0);
+                    const auto& inst = prog.value()[0];
                     if (bb.size() == 0) {
                         bb.set_start(i);
                     } else {

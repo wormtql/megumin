@@ -25,6 +25,31 @@ namespace arm {
 namespace arm {
     const int MAX_BB = 100;
 
+    void Program::add_basic_block(const std::vector<arm::Instruction> &bb, const std::vector<int> &out_edges) {
+        instructions.push_back(bb);
+        out_connections.push_back(out_edges);
+    }
+
+    void Program::add_nop_basic_block() {
+        instructions.emplace_back();
+        out_connections.emplace_back();
+    }
+
+    void Program::calc_in_connections_from_out_connections() {
+        assert(out_connections.size() == instructions.size());
+        in_connections.resize(instructions.size());
+
+        for (int i = 0; i < instructions.size(); i++) {
+            in_connections[i].clear();
+        }
+
+        for (int i = 0; i < instructions.size(); i++) {
+            for (int to: out_connections[i]) {
+                in_connections[to].push_back(i);
+            }
+        }
+    }
+
     int Program::get_size() const {
         return calculate_size();
 //        return instruction_size;
@@ -59,6 +84,9 @@ namespace arm {
     Program::Program(int basic_block_size) {
         for (int i = 0; i < basic_block_size; i++) {
             instructions.emplace_back();
+            out_connections.emplace_back();
+            in_connections.emplace_back();
+            def_ins.emplace_back();
         }
     }
 

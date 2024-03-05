@@ -57,6 +57,14 @@ namespace arm {
         void visit_fp_simd_dp_3source(const Instruction &instruction) override;
 
         void visit_fp_compare(const Instruction &instruction) override;
+
+        void visit_conditional_branch(const Instruction &instruction) override;
+
+        void visit_unconditional_branch_immediate(const Instruction &instruction) override;
+
+        void visit_compare_and_branch(const Instruction &instruction) override;
+
+        void visit_test_and_branch(const Instruction &instruction) override;
     };
 }
 

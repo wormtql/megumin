@@ -15,7 +15,7 @@ using namespace std;
 
 namespace megumin {
 #ifdef MEGUMIN_IS_WINDOWS
-    std::optional<arm::Program> aarch64_asm(const std::string& code) {
+    std::optional<std::vector<arm::Instruction>> aarch64_asm_basic_block(const std::string& code) {
         HMODULE hDll = LoadLibrary(TEXT("keystone"));
         if (!hDll || hDll == INVALID_HANDLE_VALUE) {
             cout << "cannot load dll\n";
@@ -48,29 +48,31 @@ namespace megumin {
         }
 
         if (megumin_ks_asm(ks, code.c_str(), 0, &encode, &size, &count) != KS_ERR_OK) {
-//            printf("ERROR: ks_asm() failed & count = %lu, error = %u\n",
-//                   count, megumin_ks_errno(ks));
             megumin_ks_free(encode);
             megumin_ks_close(ks);
-//            assert(false);
             return {};
         }
 
-        arm::Program program;
-
+        std::vector<arm::Instruction> result;
         for (int i = 0; i < count; i++) {
             unsigned char* e = encode + 4 * i;
             arm::Instruction instr{(void*)e};
-            program.add_instruction(instr);
+            result.push_back(instr);
         }
-        for (int i = 0; i < size; i++) {
-//            printf("%02x ", encode[i]);
-        }
-//        printf("\n");
-//        printf("Compiled: %lu bytes, statements: %lu\n", size, count);
 
         megumin_ks_free(encode);
         megumin_ks_close(ks);
+
+        return result;
+    }
+
+    std::optional<arm::Program> aarch64_asm(const std::string& code) {
+        std::vector<arm::Instruction> instructions = aarch64_asm_basic_block(code).value();
+
+        arm::Program program{1};
+        for (const auto& inst: instructions) {
+            program.add_instruction(0, inst);
+        }
 
         return program;
 //
