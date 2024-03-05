@@ -82,7 +82,7 @@ namespace arm {
         def_ins.resize(instructions.size() + 1);
         def_ins[0] = entry_def_ins;
         for (int i = 0; i < instructions.size(); i++) {
-            def_ins[i + 1] = def_ins[0];
+            def_ins[i + 1] = def_ins[i];
             const Instruction& instruction = instructions[i];
             auto def_reg = instruction.get_def_register();
             if (def_reg.has_value()) {
