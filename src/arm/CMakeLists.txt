@@ -1,6 +1,6 @@
 add_library(arm_asm STATIC "")
 
-file(GLOB arm_asm_headers "**/*.h" "*.h")
+file(GLOB arm_asm_headers "**/*.h" "*.h" include/arm/arm.h)
 file(GLOB arm_asm_sources "**/*.cpp" "*.cpp")
 #message(STATUS ${arm_asm_headers})
 

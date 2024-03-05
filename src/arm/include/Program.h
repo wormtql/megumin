@@ -78,8 +78,9 @@ namespace arm {
         [[nodiscard]] const RegSet& get_def_in(int basic_block_id, int index) const;
         [[nodiscard]] const RegSet& get_def_in(ProgramPosition position) const;
 
-        /// 为了让程序能够顺利访问用到的寄存器，程序开头必须已经定义了一部分寄存器
-        /// 该函数计算最小的这样的寄存器集合
+        /// In order to ensure the program will not encounter undefined register
+        /// the program have to have a set of defined register at the beginning of the program
+        /// this function returns the minimum register set which satisfies the above condition
         [[nodiscard]] RegSet get_minimum_def_ins() const;
 
         [[nodiscard]] bool is_all_integral_instructions() const;
