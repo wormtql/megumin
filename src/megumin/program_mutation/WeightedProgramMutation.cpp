@@ -28,7 +28,8 @@ namespace megumin {
           delete_instruction_mutation(generator),
           in_class_instruction_mutation(generator),
           random_instruction_mutation(generator, random_weight),
-          swap_instruction_mutation(generator)
+          swap_instruction_mutation(generator),
+          resize_mutation(generator)
     {
         random_instruction_mutation.set_use_fp_instructions(use_fp_instructions);
         random_instruction_mutation.set_use_integral_instructions(use_int_instructions);
@@ -43,6 +44,9 @@ namespace megumin {
         }
         for (int i = 0; i < prob.w_swap_instruction; i++) {
             mutations.push_back(&swap_instruction_mutation);
+        }
+        for (int i = 0; i < prob.w_resize; i++) {
+            mutations.push_back(&resize_mutation);
         }
     }
 }

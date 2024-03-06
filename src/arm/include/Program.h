@@ -63,6 +63,10 @@ namespace arm {
         void set_instruction_nop(int basic_block_id, int index);
         void swap_instructions(int basic_block_id1, int i1, int basic_block_id2, int i2);
         void swap_instructions(ProgramPosition p1, ProgramPosition p2);
+        void delete_instruction(int basic_block_id, int index);
+        void delete_instruction(ProgramPosition position);
+        void insert_instruction(int basic_block_id, int index, const arm::Instruction& instruction);
+        void insert_instruction(ProgramPosition position, const arm::Instruction& instruction);
         void add_basic_block(const std::vector<arm::Instruction>& bb, const std::vector<int>& out_edges);
         void add_nop_basic_block();
         void calc_in_connections_from_out_connections();
@@ -72,7 +76,9 @@ namespace arm {
 
         [[nodiscard]] const Instruction& get_instruction_const(int basic_block_id, int index) const;
         [[nodiscard]] const Instruction& get_instruction_const(ProgramPosition position) const;
+
         void print(std::ostream& os = std::cout) const;
+        void print_with_def_ins(std::ostream& os = std::cout) const;
 
         /// populate def_ins
         /// we assume there is no loop
@@ -87,6 +93,9 @@ namespace arm {
 
         [[nodiscard]] bool is_all_integral_instructions() const;
         [[nodiscard]] bool is_all_fp_instructions() const;
+        /// check if there is a nop instruction in a basic block
+        [[nodiscard]] std::optional<int> has_nop_in_basic_block(int basic_block_id) const;
+        [[nodiscard]] std::optional<int> random_nop_position_in_basic_block(int basic_block_id, int random_number) const;
     };
 
     std::ostream& operator<<(std::ostream& os, const arm::Program& prog);

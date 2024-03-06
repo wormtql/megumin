@@ -14,7 +14,13 @@ namespace megumin {
         int basic_block_size = program.get_basic_block_size();
         int basic_block = uniform_int(generator) % basic_block_size;
         int instruction_size = program.get_instruction_size(basic_block);
-        int index = uniform_int(generator) % instruction_size;
+
+        int index = 0;
+        if (program.get_instruction_const(basic_block, instruction_size - 1).is_branch_instruction()) {
+            index = uniform_int(generator) % (instruction_size - 1);
+        } else {
+            index = uniform_int(generator) % instruction_size;
+        }
 
         MutationResult result;
         result.success = true;

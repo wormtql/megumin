@@ -13,6 +13,7 @@
 #include "InClassInstructionMutation.h"
 #include "RandomInstructionMutation.h"
 #include "SwapInstructionMutation.h"
+#include "ResizeMutation.h"
 
 namespace megumin {
     class WeightedProgramMutation: public ProgramMutation {
@@ -22,12 +23,14 @@ namespace megumin {
             int w_in_class_mutation = 1;
             int w_random_instruction = 1;
             int w_swap_instruction = 1;
+            int w_resize = 1;
         };
     private:
         DeleteInstructionMutation delete_instruction_mutation;
         InClassInstructionMutation in_class_instruction_mutation;
         RandomInstructionMutation random_instruction_mutation;
         SwapInstructionMutation swap_instruction_mutation;
+        ResizeMutation resize_mutation;
         std::vector<ProgramMutation*> mutations;
 
         std::mt19937& generator;

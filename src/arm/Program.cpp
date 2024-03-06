@@ -147,6 +147,25 @@ namespace arm {
         }
     }
 
+    void Program::print_with_def_ins(std::ostream &os) const {
+        InstructionPrinter printer{os};
+
+        auto bb_count = instructions.size();
+        for (int i = 0; i < bb_count; i++) {
+            os << "BB" << i << ":\n";
+
+            int instruction_size = static_cast<int>(instructions[i].size());
+            def_ins[i][0].print_one_line(os);
+            os << std::endl;
+            for (int j = 0; j < instruction_size; j++) {
+                printer.visit_instruction(instructions[i][j]);
+                os << std::endl;
+                def_ins[i][j + 1].print_one_line(os);
+                os << std::endl;
+            }
+        }
+    }
+
     void Program::calc_def_ins_for_basic_block(int basic_block_id) {
         for (int i = 0; i < instructions[basic_block_id].size(); i++) {
             def_ins[basic_block_id][i + 1] = def_ins[basic_block_id][i];
@@ -309,5 +328,52 @@ namespace arm {
 
     const RegSet& Program::get_def_in(Program::ProgramPosition position) const {
         return get_def_in(position.basic_block_id, position.index);
+    }
+
+    std::optional<int> Program::has_nop_in_basic_block(int basic_block_id) const {
+        for (const auto& instruction: instructions[basic_block_id]) {
+            if (instruction.is_nop()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    std::optional<int> Program::random_nop_position_in_basic_block(int basic_block_id, int random_number) const {
+        std::vector<int> positions;
+        for (int i = 0; i < instructions[basic_block_id].size(); i++) {
+            const auto& instruction = instructions[basic_block_id][i];
+            if (instruction.is_nop()) {
+                positions.push_back(i);
+            }
+        }
+        if (positions.empty()) {
+            return {};
+        } else {
+            int index = random_number % positions.size();
+            return positions[index];
+        }
+    }
+
+    void Program::delete_instruction(int basic_block_id, int index) {
+        megumin::megumin_assert(basic_block_id < instructions.size());
+        megumin::megumin_assert(index < instructions[basic_block_id].size());
+        instructions[basic_block_id].erase(instructions[basic_block_id].begin() + index);
+    }
+
+    void Program::delete_instruction(ProgramPosition position) {
+        delete_instruction(position.basic_block_id, position.index);
+    }
+
+    void Program::insert_instruction(int basic_block_id, int index, const arm::Instruction &instruction) {
+        megumin::megumin_assert(basic_block_id < instructions.size());
+        megumin::megumin_assert(index <= instructions[basic_block_id].size());
+
+        auto begin = instructions[basic_block_id].begin();
+        instructions[basic_block_id].insert(begin + index, instruction);
+    }
+
+    void Program::insert_instruction(ProgramPosition position, const arm::Instruction &instruction) {
+        insert_instruction(position.basic_block_id, position.index, instruction);
     }
 }

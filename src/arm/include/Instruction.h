@@ -68,9 +68,13 @@ namespace arm {
 
         [[nodiscard]] std::optional<Reg> get_def_register() const;
         [[nodiscard]] int get_read_registers(Reg result[3]) const;
+
+        [[nodiscard]] bool is_branch_instruction() const;
+        /// when a branch is a branch with a relative offset (eg. b .L3)
+        /// this function set the jump target
+        void set_branch_target(int target);
     };
 }
-
 
 
 #endif //MEGUMIN_INSTRUCTION_H

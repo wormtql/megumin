@@ -110,6 +110,41 @@ namespace arm {
         gp.data0 = -1;
         fp.data0 = -1;
     }
+
+    void RegSet::print_one_line(std::ostream& os) const {
+        os << "gp: ";
+        std::vector<int> registers;
+        for (int i = 0; i < 32; i++) {
+            if (have_gp(i)) {
+                registers.push_back(i);
+            }
+        }
+        if (registers.empty()) {
+            os << "none ";
+        } else {
+            os << registers[0];
+            for (int i = 1; i < registers.size(); i++) {
+                os << ", " << registers[i];
+            }
+            os << " ";
+        }
+
+        registers.clear();
+        os << "fp: ";
+        for (int i = 0; i < 32; i++) {
+            if (have_fp(i)) {
+                registers.push_back(i);
+            }
+        }
+        if (registers.empty()) {
+            os << "none";
+        } else {
+            os << registers[0];
+            for (int i = 1; i < registers.size(); i++) {
+                os << ", " << registers[i];
+            }
+        }
+    }
 }
 
 namespace arm {

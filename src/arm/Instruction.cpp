@@ -116,4 +116,28 @@ namespace arm {
         }
         return get_read_register.size;
     }
+
+    bool Instruction::is_branch_instruction() const {
+        auto ty = get_type();
+        return ty == InstructionType::BranchExceptionSystem;
+    }
+
+    void Instruction::set_branch_target(int target) {
+        bits op0 = get_range(29, 32);
+        bits op1 = get_range(12, 26);
+
+        if (op0 == 0b010 && op1[{12, 14}] == 0b00) {
+            set_range(5, 24, target);
+        } else if (op0 == 0b110 && op1[13] == 1) {
+            // nothing
+        } else if (op0[{0, 2}] == 0) {
+            set_range(0, 26, target);
+        } else if (op0[{0, 2}] == 0b01 && op1[13] == 0) {
+            set_range(5, 24, target);
+        } else if (op0[{0, 2}] == 0b01 && op1[13] == 1) {
+            set_range(5, 19, target);
+        } else {
+            assert(false);
+        }
+    }
 }

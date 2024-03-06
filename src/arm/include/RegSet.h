@@ -34,7 +34,10 @@ namespace arm {
         [[nodiscard]] RegSet merge(const RegSet& other) const;
         [[nodiscard]] RegSet intersect(const RegSet& other) const;
 
+        /// set all the regs to 1111 1111 1111 1111 1111 1111 1111 1111
         void set_full();
+
+        void print_one_line(std::ostream& os = std::cout) const;
     };
 
     enum class RegType {

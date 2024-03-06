@@ -14,8 +14,21 @@ namespace megumin {
         int basic_block_size = program.get_basic_block_size();
         int basic_block1 = uniform_int(generator) % basic_block_size;
         int basic_block2 = uniform_int(generator) % basic_block_size;
-        int index1 = uniform_int(generator) % static_cast<int>(program.get_instruction_size(basic_block1));
-        int index2 = uniform_int(generator) % static_cast<int>(program.get_instruction_size(basic_block2));
+        int instruction_size1 = program.get_instruction_size(basic_block1);
+        int instruction_size2 = program.get_instruction_size(basic_block2);
+
+        int index1;
+        if (program.get_instruction_const(basic_block1, instruction_size1 - 1).is_branch_instruction()) {
+            index1 = uniform_int(generator) % (instruction_size1 - 1);
+        } else {
+            index1 = uniform_int(generator) % instruction_size1;
+        }
+        int index2;
+        if (program.get_instruction_const(basic_block2, instruction_size2 - 1).is_branch_instruction()) {
+            index2 = uniform_int(generator) % (instruction_size2 - 1);
+        } else {
+            index2 = uniform_int(generator) % instruction_size2;
+        }
         arm::Program::ProgramPosition position1 = {basic_block1, index1};
         arm::Program::ProgramPosition position2 = {basic_block2, index2};
 
