@@ -54,7 +54,7 @@ namespace arm {
         /// get the instruction count of the program
         [[nodiscard]] int get_size() const;
         [[nodiscard]] int get_basic_block_size() const;
-        [[nodiscard]] size_t get_instruction_size(int basic_block_id) const;
+        [[nodiscard]] int get_instruction_size(int basic_block_id) const;
         [[nodiscard]] int get_non_nop_size() const;
         int calculate_size() const;
         void add_instruction(int basic_block_id, const Instruction& instruction);
@@ -92,10 +92,16 @@ namespace arm {
         [[nodiscard]] RegSet get_minimum_def_ins() const;
 
         [[nodiscard]] bool is_all_integral_instructions() const;
+        [[nodiscard]] bool is_all_integral_instructions_except_branch() const;
         [[nodiscard]] bool is_all_fp_instructions() const;
+        [[nodiscard]] bool is_all_fp_instructions_except_branch() const;
         /// check if there is a nop instruction in a basic block
         [[nodiscard]] std::optional<int> has_nop_in_basic_block(int basic_block_id) const;
         [[nodiscard]] std::optional<int> random_nop_position_in_basic_block(int basic_block_id, int random_number) const;
+
+        /// return a program which have the same shape as this
+        /// but all instructions are set to nop
+        [[nodiscard]] Program clone_program_all_nop() const;
     };
 
     std::ostream& operator<<(std::ostream& os, const arm::Program& prog);

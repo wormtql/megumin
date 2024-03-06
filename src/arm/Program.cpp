@@ -59,8 +59,8 @@ namespace arm {
         return instructions.size();
     }
 
-    size_t Program::get_instruction_size(int basic_block_id) const {
-        return instructions[basic_block_id].size();
+    int Program::get_instruction_size(int basic_block_id) const {
+        return static_cast<int>(instructions[basic_block_id].size());
     }
 
     int Program::calculate_size() const {
@@ -301,11 +301,41 @@ namespace arm {
         return true;
     }
 
+    bool Program::is_all_integral_instructions_except_branch() const {
+        for (const auto & i : instructions) {
+            for (const auto& instruction: i) {
+                auto ty = instruction.get_type();
+                if (ty == InstructionType::DataProcessingSIMD || ty == InstructionType::SVE
+                    || ty == InstructionType::LoadAndStore || ty == InstructionType::Reserved
+                    || ty == InstructionType::Unallocated) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
     bool Program::is_all_fp_instructions() const {
         for (const auto & i : instructions) {
             for (const auto& instruction: i) {
                 auto ty = instruction.get_type();
                 if (ty != InstructionType::DataProcessingSIMD) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    bool Program::is_all_fp_instructions_except_branch() const {
+        for (const auto & i : instructions) {
+            for (const auto& instruction: i) {
+                auto ty = instruction.get_type();
+                if (ty == InstructionType::Unallocated || ty == InstructionType::Reserved
+                    || ty == InstructionType::LoadAndStore || ty == InstructionType::SVE
+                    || ty == InstructionType::DataProcessingImm || ty == InstructionType::DataProcessingReg) {
                     return false;
                 }
             }
@@ -375,5 +405,18 @@ namespace arm {
 
     void Program::insert_instruction(ProgramPosition position, const arm::Instruction &instruction) {
         insert_instruction(position.basic_block_id, position.index, instruction);
+    }
+
+    Program Program::clone_program_all_nop() const {
+        Program result{*this};
+        int basic_block_size = instructions.size();
+        for (int i = 0; i < basic_block_size; i++) {
+            int instruction_size = instructions[i].size();
+            for (int j = 0; j < instruction_size; j++) {
+                result.set_instruction(i, j, arm::Instruction::nop());
+            }
+        }
+        result.calculate_def_ins();
+        return result;
     }
 }

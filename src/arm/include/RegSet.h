@@ -20,11 +20,13 @@ namespace arm {
         RegSet() = default;
 
         [[nodiscard]] bool have_gp(int index) const;
-        bool have_fp(int index) const;
+        [[nodiscard]] bool have_fp(int index) const;
         void set_fp(int index, bool value);
         void set_gp(int index, bool value);
-        bool have_reg(const Reg& reg) const;
+        [[nodiscard]] bool have_reg(const Reg& reg) const;
         void add_reg(const Reg& other);
+        [[nodiscard]] bool has_any_gp() const;
+        [[nodiscard]] bool has_any_fp() const;
 
         RegSet operator|(const Reg& other);
 

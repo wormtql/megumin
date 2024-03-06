@@ -72,62 +72,74 @@ namespace megumin {
             random_functions.push_back(std::make_unique<RandomFPCompare>(generator));
         }
     }
-}
 
-megumin::MutationResult megumin::RandomInstructionMutation::mutate(arm::Program &program) {
-    int basic_block_size = program.get_basic_block_size();
-    int basic_block = uniform_int(generator) % basic_block_size;
-    int instruction_size = program.get_instruction_size(basic_block);
+    megumin::MutationResult megumin::RandomInstructionMutation::mutate(arm::Program &program) {
+        int basic_block_size = program.get_basic_block_size();
+        int basic_block = uniform_int(generator) % basic_block_size;
+        int instruction_size = program.get_instruction_size(basic_block);
 
-    int index = 0;
-    if (program.get_instruction_const(basic_block, instruction_size - 1).is_branch_instruction()) {
-        index = uniform_int(generator) % (instruction_size - 1);
-    } else {
-        index = uniform_int(generator) % instruction_size;
+        if (instruction_size == 0) {
+            return MutationResult::failed_result();
+        }
+
+        int index = 0;
+        if (program.get_instruction_const(basic_block, instruction_size - 1).is_branch_instruction()) {
+            if (instruction_size == 1) {
+                return MutationResult::failed_result();
+            }
+            index = uniform_int(generator) % (instruction_size - 1);
+        } else {
+            index = uniform_int(generator) % instruction_size;
+        }
+
+        int random_index = 0;
+        int random_function_size = (int) random_functions.size();
+        if (use_integral_instructions && use_fp_instructions) {
+            random_index = uniform_int(generator) % random_function_size;
+        } else if (use_integral_instructions) {
+            random_index = uniform_int(generator) % integral_instruction_bound;
+        } else if (use_fp_instructions) {
+            random_index = uniform_int(generator) % (random_function_size - integral_instruction_bound) + integral_instruction_bound;
+        } else {
+            // this should not happen
+            assert(false);
+            random_index = uniform_int(generator) % random_function_size;
+        }
+
+        arm::Program::ProgramPosition position = { .basic_block_id=basic_block, .index=index };
+        arm::Instruction instruction = random_functions[random_index]->random_instruction(program, position);
+
+        MutationResult result;
+        result.success = true;
+        result.mutation_index[0] = position;
+        result.mutation_instructions[0] = program.get_instruction_const(position);
+
+        program.set_instruction(position, instruction);
+        program.calculate_def_ins();
+
+        return result;
     }
 
-    int random_index = 0;
-    int random_function_size = (int) random_functions.size();
-    if (use_integral_instructions && use_fp_instructions) {
-        random_index = uniform_int(generator) % random_function_size;
-    } else if (use_integral_instructions) {
-        random_index = uniform_int(generator) % integral_instruction_bound;
-    } else if (use_fp_instructions) {
-        random_index = uniform_int(generator) % (random_function_size - integral_instruction_bound) + integral_instruction_bound;
-    } else {
-        // this should not happen
-        assert(false);
-        random_index = uniform_int(generator) % random_function_size;
+    void megumin::RandomInstructionMutation::undo(arm::Program &program, const megumin::MutationResult &result) {
+        if (!result.success) {
+            return;
+        }
+
+        int basic_block_id = result.mutation_index[0].basic_block_id;
+        int index = result.mutation_index[0].index;
+        megumin_assert(basic_block_id < program.get_basic_block_size());
+        megumin_assert(index < program.get_instruction_size(basic_block_id));
+
+        program.set_instruction(result.mutation_index[0], result.mutation_instructions[0]);
+        program.calculate_def_ins();
     }
 
-    arm::Program::ProgramPosition position = { .basic_block_id=basic_block, .index=index };
-    arm::Instruction instruction = random_functions[random_index]->random_instruction(program, position);
+    void megumin::RandomInstructionMutation::set_use_integral_instructions(bool value) {
+        this->use_integral_instructions = value;
+    }
 
-    MutationResult result;
-    result.success = true;
-    result.mutation_index[0] = position;
-    result.mutation_instructions[0] = program.get_instruction_const(position);
-
-    program.set_instruction(position, instruction);
-    program.calculate_def_ins();
-
-    return result;
+    void megumin::RandomInstructionMutation::set_use_fp_instructions(bool value) {
+        this->use_fp_instructions = value;
+    }
 }
 
-void megumin::RandomInstructionMutation::undo(arm::Program &program, const megumin::MutationResult &result) {
-    int basic_block_id = result.mutation_index[0].basic_block_id;
-    int index = result.mutation_index[0].index;
-    megumin_assert(basic_block_id < program.get_basic_block_size());
-    megumin_assert(index < program.get_instruction_size(basic_block_id));
-
-    program.set_instruction(result.mutation_index[0], result.mutation_instructions[0]);
-    program.calculate_def_ins();
-}
-
-void megumin::RandomInstructionMutation::set_use_integral_instructions(bool value) {
-    this->use_integral_instructions = value;
-}
-
-void megumin::RandomInstructionMutation::set_use_fp_instructions(bool value) {
-    this->use_fp_instructions = value;
-}

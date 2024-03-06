@@ -17,8 +17,15 @@ namespace megumin {
         int basic_block = uniform_int(generator) % basic_block_size;
         int instruction_size = program.get_instruction_size(basic_block);
 
+        if (instruction_size == 0) {
+            return MutationResult::failed_result();
+        }
+
         int index = 0;
         if (program.get_instruction_const(basic_block, instruction_size - 1).is_branch_instruction()) {
+            if (instruction_size == 1) {
+                return MutationResult::failed_result();
+            }
             index = uniform_int(generator) % (instruction_size - 1);
         } else {
             index = uniform_int(generator) % instruction_size;
@@ -42,6 +49,10 @@ namespace megumin {
     }
 
     void InClassInstructionMutation::undo(arm::Program &program, const MutationResult &result) {
+        if (!result.success) {
+            return;
+        }
+
         int basic_block_id = result.mutation_index[0].basic_block_id;
         int index = result.mutation_index[0].index;
         megumin_assert(basic_block_id < program.get_basic_block_size());

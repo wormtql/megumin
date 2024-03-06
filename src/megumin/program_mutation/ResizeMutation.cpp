@@ -46,9 +46,7 @@ namespace megumin {
             return result;
         } else {
             // do nothing
-            MutationResult result;
-            result.success = false;
-            return result;
+            return MutationResult::failed_result();
         }
     }
 

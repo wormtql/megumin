@@ -145,6 +145,24 @@ namespace arm {
             }
         }
     }
+
+    bool RegSet::has_any_gp() const {
+        for (int i = 0; i < 32; i++) {
+            if (have_gp(i)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    bool RegSet::has_any_fp() const {
+        for (int i = 0; i < 32; i++) {
+            if (have_fp(i)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
 
 namespace arm {

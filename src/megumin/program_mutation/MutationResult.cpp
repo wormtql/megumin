@@ -3,3 +3,11 @@
 //
 
 #include "MutationResult.h"
+
+namespace megumin {
+    MutationResult MutationResult::failed_result() {
+        MutationResult result;
+        result.success = false;
+        return result;
+    }
+}

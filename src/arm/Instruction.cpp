@@ -51,6 +51,7 @@ namespace arm {
     void Instruction::execute(MachineState &state) const {
         if (instruction.data0 == 0) {
             // nop
+            state.pc++;
             return;
         }
 

@@ -23,7 +23,7 @@ namespace megumin {
             int w_in_class_mutation = 1;
             int w_random_instruction = 1;
             int w_swap_instruction = 1;
-            int w_resize = 1;
+            int w_resize = 0;
         };
     private:
         DeleteInstructionMutation delete_instruction_mutation;

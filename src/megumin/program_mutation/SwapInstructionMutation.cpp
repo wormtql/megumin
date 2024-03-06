@@ -17,14 +17,24 @@ namespace megumin {
         int instruction_size1 = program.get_instruction_size(basic_block1);
         int instruction_size2 = program.get_instruction_size(basic_block2);
 
+        if (instruction_size1 == 0 || instruction_size2 == 0) {
+            return MutationResult::failed_result();
+        }
+
         int index1;
         if (program.get_instruction_const(basic_block1, instruction_size1 - 1).is_branch_instruction()) {
+            if (instruction_size1 == 1) {
+                return MutationResult::failed_result();
+            }
             index1 = uniform_int(generator) % (instruction_size1 - 1);
         } else {
             index1 = uniform_int(generator) % instruction_size1;
         }
         int index2;
         if (program.get_instruction_const(basic_block2, instruction_size2 - 1).is_branch_instruction()) {
+            if (instruction_size2 == 1) {
+                return MutationResult::failed_result();
+            }
             index2 = uniform_int(generator) % (instruction_size2 - 1);
         } else {
             index2 = uniform_int(generator) % instruction_size2;

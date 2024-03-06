@@ -44,6 +44,11 @@ f(int):
      mov w0, 1
 .L3
      nop
+
+ ideally this will optimize to:
+    cmp w0, 9
+    cset w0, gt
+
  */
 
 int main() {
