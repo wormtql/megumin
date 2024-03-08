@@ -78,6 +78,12 @@ namespace arm {
         while (state.current_basic_block < instructions.size() && state.pc < instructions[state.current_basic_block].size()) {
             const auto& instruction = instructions[state.current_basic_block][state.pc];
             instruction.execute(state);
+
+            if (state.pc >= instructions[state.current_basic_block].size()) {
+                // if pc exceeds the current BB size, goto next BB
+                state.current_basic_block++;
+                state.pc = 0;
+            }
         }
     }
 
