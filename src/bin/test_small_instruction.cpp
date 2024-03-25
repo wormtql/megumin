@@ -75,28 +75,28 @@ int main() {
     // auto program = megumin::aarch64_asm("fmov d1, d2; fmov d3, d2");
 //    auto program = megumin::aarch64_asm("add sp, x1, #10").value();
 //    auto program = megumin::aarch64_asm("smulh x0, x1, x2").value();
-    auto program = megumin::aarch64_asm(R"(ror	x10, x10, #32
-add	x15, x15, x18
-ror	x12, x12, #63
-ror	x13, x13, #63
-add	x9, x21, x9
-add	x17, x17, x5
-add	x16, x10, x16
-eor	x2, x9, x2
-add	x3, x3, x12
-add	x1, x1, x13
-eor	x11, x16, x11
-eor	x0, x3, x0
-eor	x4, x1, x4
-ror	x2, x2, #24
-mov	x24, x26
-mov	x26, x18
-ror	x11, x11, #24
-ror	x0, x0, #32
-ror	x4, x4, #32
-add	x15, x15, x2
-eor	x20, x15, x21)").value();
-//    auto program = megumin::aarch64_asm("madd x0, x1, x2, x3").value();
+//    auto program = megumin::aarch64_asm(R"(ror	x10, x10, #32
+//add	x15, x15, x18
+//ror	x12, x12, #63
+//ror	x13, x13, #63
+//add	x9, x21, x9
+//add	x17, x17, x5
+//add	x16, x10, x16
+//eor	x2, x9, x2
+//add	x3, x3, x12
+//add	x1, x1, x13
+//eor	x11, x16, x11
+//eor	x0, x3, x0
+//eor	x4, x1, x4
+//ror	x2, x2, #24
+//mov	x24, x26
+//mov	x26, x18
+//ror	x11, x11, #24
+//ror	x0, x0, #32
+//ror	x4, x4, #32
+//add	x15, x15, x2
+//eor	x20, x15, x21)").value();
+    auto program = megumin::aarch64_asm("madd x0, x1, x2, x3").value();
 //     auto program = megumin::aarch64_asm("and sp, x1, #16").value();
     // auto program = megumin::aarch64_asm("clz w1, w2; cls x3, x1");
 //     auto program = megumin::aarch64_asm("sub sp, sp, #1, lsl #12; sub sp, sp, #1744").value();
@@ -156,7 +156,7 @@ eor	x20, x15, x21)").value();
     }
 
 //    program.print();
-    f(program, test_cases, 1);
+    f(program, test_cases, 0);
 
 //    megumin::CorrectnessCost cost{program, std::move(test_cases)};
 //
