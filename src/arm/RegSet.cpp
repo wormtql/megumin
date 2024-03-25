@@ -54,6 +54,8 @@ namespace arm {
         int arr[32];
         int size = 0;
         uint64_t temp = (uint64_t) gp.data0;
+        // remove highest bit
+        temp = temp & (((uint64_t)1 << 63) - 1);
 
         int it = 0;
         while (temp > 0) {

@@ -29,7 +29,7 @@ namespace megumin {
 
         solver s(c);
         s.add(e);
-        cout << s << endl << std::flush;
+//        cout << s << endl << std::flush;
 
         switch (s.check()) {
             case unsat: {
