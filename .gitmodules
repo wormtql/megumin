@@ -16,3 +16,6 @@
 [submodule "3rd/catch2"]
 	path = 3rd/catch2
 	url = https://github.com/catchorg/Catch2.git
+[submodule "3rd/thread-pool"]
+	path = 3rd/thread-pool
+	url = https://github.com/bshoshany/thread-pool.git
