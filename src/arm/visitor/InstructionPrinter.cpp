@@ -555,21 +555,27 @@ namespace arm {
         bits op = op31.concat(bits::from_bools({o0}));
 
         bool use_ra = true;
+        auto reg = sf ? "x" : "w";
+        auto reg_op = reg;
         if (op == 0b0000) {
             os << "madd";
         } else if (op == 0b0001) {
             os << "msub";
         } else if (op == 0b0010) {
             os << "smaddl";
+            reg_op = "w";
         } else if (op == 0b0011) {
             os << "smsubl";
+            reg_op = "w";
         } else if (op == 0b0100) {
             os << "smulh";
             use_ra = false;
         } else if (op == 0b1010) {
             os << "umaddl";
+            reg_op = "w";
         } else if (op == 0b1011) {
             os << "umsubl";
+            reg_op = "w";
         } else if (op == 0b1100) {
             os << "umulh";
             use_ra = false;
@@ -577,10 +583,9 @@ namespace arm {
             megumin::megumin_assert(false);
         }
 
-        auto reg = sf ? "x" : "w";
         os << " " << reg << rd.as_i32() << ", "
-           << reg << rn.as_i32() << ", "
-           << reg << rm.as_i32();
+           << reg_op << rn.as_i32() << ", "
+           << reg_op << rm.as_i32();
         if (use_ra) {
             os << ", " << reg << ra.as_i32();
         }
