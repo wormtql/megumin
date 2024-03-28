@@ -572,4 +572,116 @@ namespace arm {
             state.set_gp(datasize, d, result, false);
         }
     }
+
+    void InstructionExecutionS::visit_dp_reg_3source(const Instruction &instruction) {
+        bool sf = instruction.is_set(31);
+        bits op54 = instruction.get_range(29, 31);
+        bits op31 = instruction.get_range(21, 24);
+        bits rm = instruction.get_rm();
+        bool o0 = instruction.is_set(15);
+        bits ra = instruction.get_range(10, 15);
+        bits rn = instruction.get_rn();
+        bits rd = instruction.get_rd();
+        bits op = op31.concat(bits::from_bools({o0}));
+
+        megumin::megumin_assert(op54 == 0);
+
+        int d = rd.as_i32();
+        int n = rn.as_i32();
+        int m = rm.as_i32();
+        int a = ra.as_i32();
+        int datasize = sf ? 64 : 32;
+
+        expr operand1 = state.get_gp(datasize, n, false, true);
+        expr operand2 = state.get_gp(datasize, m, false, true);
+        expr operand3 = state.get_gp(datasize, a, false, true);
+
+        if (op == 0b0000) {
+            // madd
+            if (datasize == 32) {
+                expr result = operand3 + operand1 * operand2;
+                state.set_gp(datasize, d, result, false);
+            } else if (datasize == 64) {
+                expr result = operand3 + operand1 * operand2;
+                state.set_gp(datasize, d, result, false);
+            }
+        } else if (op == 0b0001) {
+            // msub
+            if (datasize == 32) {
+                expr result = operand3 - operand1 * operand2;;
+                state.set_gp(32, d, result, false);
+            } else if (datasize == 64) {
+                expr result = operand3 - operand1 * operand2;
+                state.set_gp(datasize, d, result, false);
+            }
+        } else if (op == 0b0010) {
+            // smaddl
+            megumin::megumin_assert(datasize == 64);
+
+            expr op1 = state.get_gp(32, n, false, true);
+            op1 = sext(op1, 32);
+            expr op2 = state.get_gp(32, m, false, true);
+            op2 = sext(op2, 32);
+            expr op3 = state.get_gp(64, a, false, true);
+
+            expr result = op3 + op1 * op2;
+            state.set_gp(64, d, result, false);
+        } else if (op == 0b0011) {
+            // smsubl
+            megumin::megumin_assert(datasize == 64);
+
+            expr op1 = state.get_gp(32, n, false, true);
+            op1 = sext(op1, 32);
+            expr op2 = state.get_gp(32, m, false, true);
+            op2 = sext(op2, 32);
+            expr op3 = state.get_gp(64, a, false, true);
+
+            expr result = op3 - op1 * op2;
+            state.set_gp(64, d, result, false);
+        } else if (op == 0b0100) {
+            // smulh
+            megumin::megumin_assert(datasize == 64);
+
+            expr op1 = sext(operand1, 64);
+            expr op2 = sext(operand2, 64);
+            expr result = (op1 * op2).extract(127, 64);
+
+            state.set_gp(64, d, result, false);
+        } else if (op == 0b1010) {
+            // umaddl
+            megumin::megumin_assert(datasize == 64);
+
+            expr op1 = state.get_gp(32, n, false, true);
+            op1 = zext(op1, 32);
+            expr op2 = state.get_gp(32, m, false, true);
+            op2 = zext(op2, 32);
+            expr op3 = state.get_gp(64, a, false, true);
+
+            expr result = op3 + op1 * op2;
+            state.set_gp(64, d, result, false);
+        } else if (op == 0b1011) {
+            // umsubl
+            megumin::megumin_assert(datasize == 64);
+
+            expr op1 = state.get_gp(32, n, false, true);
+            op1 = zext(op1, 32);
+            expr op2 = state.get_gp(32, m, false, true);
+            op2 = zext(op2, 32);
+            expr op3 = state.get_gp(64, a, false, true);
+
+            expr result = op3 - op1 * op2;
+            state.set_gp(64, d, result, false);
+        } else if (op == 0b1100) {
+            // umulh
+            megumin::megumin_assert(datasize == 64);
+
+            expr op1 = zext(operand1, 64);
+            expr op2 = zext(operand2, 64);
+            expr result = (op1 * op2).extract(127, 64);
+
+            state.set_gp(64, d, result, false);
+        } else {
+            megumin::megumin_assert(false);
+        }
+    }
 }

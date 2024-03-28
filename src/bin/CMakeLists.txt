@@ -12,6 +12,8 @@ function(add_megumin_executable name)
     if (NOT WIN32)
         target_link_libraries(${name} keystone)
     endif()
+
+    target_include_directories(${name} PRIVATE ${PROJECT_SOURCE_DIR}/3rd/thread-pool/include)
 endfunction()
 
 add_megumin_executable(apply_opt)
@@ -28,6 +30,7 @@ add_megumin_executable(test_small_instruction)
 add_megumin_executable(test_synthesize)
 add_megumin_executable(debug_single_block)
 add_megumin_executable(statistics)
+add_megumin_executable(optimize_single_bb)
 
 # add_executable(playground main.cpp)
 # add_executable(main2 main2.cpp)

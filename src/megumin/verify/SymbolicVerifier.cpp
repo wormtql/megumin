@@ -6,6 +6,7 @@
 #include <iostream>
 #include "SymbolicVerifier.h"
 #include <symbol/MachineStateS.h>
+#include "megumin_utils.h"
 
 using namespace z3;
 using std::cout;
@@ -15,9 +16,11 @@ namespace megumin {
     VerifyResult megumin::SymbolicVerifier::verify(const arm::Program &target, const arm::Program &rewrite) {
         context c;
 
+        // symbolic state after execution of target
         arm::MachineStateS state1{c, "s"};
-
+        // symbolic state after execution of rewrite
         arm::MachineStateS state2{state1};
+        // the state before any execution
         arm::MachineStateS original_state{state1};
 
         target.execute(state1);
@@ -48,27 +51,25 @@ namespace megumin {
                     std::cout << v.name() << " = " << model.get_const_interp(v) << "\n";
                 }
 
+                /// counter example, before any execution
                 arm::MachineState counter_example = original_state.to_machine_state(model);
+                /// the x31 must be 0
                 counter_example.gp.get_mut_ref(31) = arm::bits{64, 0};
 
+                /// counter example after execution by target
                 arm::MachineState test_state1{counter_example};
+                /// counter example after execution by rewrite
+                /// since it's a counter example, we expect test_state1 and test_state2 are not same
                 arm::MachineState test_state2{counter_example};
                 target.execute(test_state1);
                 rewrite.execute(test_state2);
 
+                /// counter example after execution by symbolic execution of target
                 arm::MachineState symbolic_state1 = state1.to_machine_state(model);
+                /// counter example after execution by symbolic execution of rewrite
                 arm::MachineState symbolic_state2 = state2.to_machine_state(model);
 
-//                auto temp1 = state2.get_gp(64, 26, false, true);
-//                cout << model.eval(temp1) << endl;
-//                cout << model.eval(z3::shl(temp1, 52)) << endl;
-//                cout << model.eval(~z3::shl(temp1, 52)) << endl;
-//                auto temp3 = ~z3::shl(temp1, 52);
-//                auto g27 = state2.get_gp(64, 27, false, true);
-//                cout << model.eval(g27) << endl;
-//                cout << model.eval()
-
-                auto print_error_message = [&] () {
+                auto setup_error_message = [&] () {
                     SymbolicVerifyDebugInfo debug_info;
 
                     cout << "==== impossible" << endl;
@@ -87,14 +88,18 @@ namespace megumin {
                     debug_info.symbolic_state2 = symbolic_state2;
                     debug_info.target = target;
                     debug_info.rewrite = rewrite;
+
+                    error_debug_info = debug_info;
                 };
 
                 bool x = false;
-                assert(test_state1 == symbolic_state1);
-                assert(test_state2 == symbolic_state2);
+                /// if this assertion fails, the actual execution and symbolic execution differs, we have to check
+//                assert(test_state1 == symbolic_state1);
+//                assert(test_state2 == symbolic_state2);
+                /// test_state1 == test_state2: the SMT found a counter example, but the actual execution end up with same results
                 if (test_state1 == test_state2 || test_state1 != symbolic_state1 || test_state2 != symbolic_state2) {
-                    print_error_message();
-                    assert(false);
+                    setup_error_message();
+//                    assert(false);
                     cout << "impossible" << endl;
                     x = symbolic_state1 == symbolic_state2;
                     bool y = model.eval(e);
@@ -132,6 +137,7 @@ namespace megumin {
 
     ostream& operator<<(ostream& os, const SymbolicVerifier::SymbolicVerifyDebugInfo& debug_info) {
         os << "counter example:" << endl;
+        os << "reason: " << debug_info.reason << endl;
         os << debug_info.counter_example << endl;
         os << "test state 1:" << endl;
         os << debug_info.test_state1 << endl;

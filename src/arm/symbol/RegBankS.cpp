@@ -46,6 +46,7 @@ namespace arm {
         return temp.extract(31, 0);
     }
 
+    /// get an expr with length equals to size
     expr GPRegBankS::get(int size, int index) const {
         if (size == 32) {
             return get32(index);

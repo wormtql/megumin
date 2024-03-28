@@ -36,6 +36,8 @@ namespace arm {
         void visit_dp_reg_add_sub_with_carry(const Instruction &instruction) override;
 
         void visit_dp_reg_cond_select(const Instruction &instruction) override;
+
+        void visit_dp_reg_3source(const Instruction &instruction) override;
     };
 }
 

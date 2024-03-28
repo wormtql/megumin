@@ -28,6 +28,8 @@
 #include <argparse/argparse.hpp>
 #include <search/SearchResult.h>
 
+#include <BS_thread_pool.hpp>
+
 using namespace std;
 using namespace arm;
 using namespace megumin;
@@ -133,86 +135,90 @@ struct GlobalData {
     int total_bb = 0;
 };
 
-void worker(promise<vector<SearchResult>> && p, const BasicBlock* bb_ptr, int bb_size, int time_per_opt, GlobalData* global_data) {
-    vector<SearchResult> results;
+optional<SearchResult> worker(const BasicBlock* bb_ptr, int time_per_opt, GlobalData* global_data) {
+    bool success = false;
+    const BasicBlock& basic_block = *bb_ptr;
+    Program prog = basic_block.to_program();
 
-    for (int i = 0; i < bb_size; i++) {
-        bool success = false;
-        auto prog = bb_ptr[i].to_program();
-        cout << bb_ptr[i];
-
-        std::vector<MachineState> test_cases;
-        int initial_test_cases_count = 1;
-        // set initial test case
-        for (int ii = 0; ii < initial_test_cases_count; ii++) {
-            test_cases.emplace_back(MachineState{});
-            test_cases[ii].fill_gp_random();
-            test_cases[ii].fill_fp_random();
-            test_cases[ii].fill_nzcv_random();
-            test_cases[ii].fill_sp_random();
-        }
-
-        int max_test_case_count = 200;
-        while (!success && test_cases.size() <= max_test_case_count) {
-            int init_mode = 1;
-            auto result = opt_once(prog, test_cases, time_per_opt, init_mode);
-            if (result.has_value()) {
-                // find a solution
-                auto rewrite = result.value();
-                auto verifier = megumin::SymbolicVerifier();
-                auto verify_result = verifier.verify(prog, rewrite);
-
-                // there is an error which is not expected
-                if (verifier.error_debug_info.has_value()) {
-                    lock_guard<mutex> guard(g_error_stream);
-                    (*global_data->error_stream) << verifier.error_debug_info.value() << endl;
-                }
-
-                if (verify_result.success) {
-                    success = true;
-
-                    SearchResult search_result{ prog, rewrite, bb_ptr[i].get_start(), bb_ptr[i].get_end() };
-                    results.push_back(search_result);
-
-                    // write correct stream
-                    {
-                        lock_guard<mutex> guard(g_correct_stream);
-
-                        ostream& cs = *global_data->correct_stream;
-
-                        cs << "[optimization success]" << endl;
-                        cs << bb_ptr[i].get_start() << ", " << bb_ptr[i].get_end() << endl;
-                        prog.print(cs);
-                        cs << endl << ">>>" << endl;
-                        rewrite.print(cs);
-                        cs << "\n\n";
-                        cs.flush();
-                    }
-
-                    cout << "[optimization success]" << endl;
-                    prog.print(cout);
-                    cout << endl << ">>>" << endl;
-                    rewrite.print(cout);
-                    cout << "\n\n";
-                } else {
-                    if (verify_result.counter_example.has_value()) {
-                        cout << "found counter example" << endl;
-                        test_cases.push_back(verify_result.counter_example.value());
-                    }
-                }
-            } else {
-                // did not find a solution
-                break;
-            }
-        }
-
+    {
         lock_guard<mutex> progress_guard(g_progress_data);
-        global_data->finished_bb++;
-        printf("progress: %d/%d(%.2lf%%)\n", global_data->finished_bb, global_data->total_bb, (double)global_data->finished_bb / global_data->total_bb * 100);
-        (*global_data->progress_stream) << bb_ptr[i].get_start() << " " << bb_ptr[i].get_end() << endl;
+        cout << basic_block;
     }
 
-    p.set_value(move(results));
+    optional<SearchResult> ret_value;
+
+    std::vector<MachineState> test_cases;
+    int initial_test_cases_count = 1;
+    // set initial test case
+    for (int ii = 0; ii < initial_test_cases_count; ii++) {
+        test_cases.emplace_back(MachineState{});
+        test_cases[ii].fill_gp_random();
+        test_cases[ii].fill_fp_random();
+        test_cases[ii].fill_nzcv_random();
+        test_cases[ii].fill_sp_random();
+    }
+
+    int max_test_case_count = 200;
+    while (!success && test_cases.size() <= max_test_case_count) {
+        int init_mode = 1;
+        auto result = opt_once(prog, test_cases, time_per_opt, init_mode);
+        if (result.has_value()) {
+            // find a solution
+            auto rewrite = result.value();
+            auto verifier = megumin::SymbolicVerifier();
+            auto verify_result = verifier.verify(prog, rewrite);
+
+            // there is an error which is not expected
+            if (verifier.error_debug_info.has_value()) {
+                lock_guard<mutex> guard(g_error_stream);
+                (*global_data->error_stream) << verifier.error_debug_info.value() << endl;
+            }
+
+            if (verify_result.success) {
+                success = true;
+
+                SearchResult search_result{ prog, rewrite, basic_block.get_start(), basic_block.get_end() };
+                ret_value = search_result;
+
+                // write correct stream
+                {
+                    lock_guard<mutex> guard(g_correct_stream);
+
+                    ostream& cs = *global_data->correct_stream;
+
+                    cs << "[optimization success]" << endl;
+                    cs << basic_block.get_start() << ", " << basic_block.get_end() << endl;
+                    prog.print(cs);
+                    cs << endl << ">>>" << endl;
+                    rewrite.print(cs);
+                    cs << "\n\n";
+                    cs.flush();
+                }
+
+                // write standard output
+                cout << "[optimization success]" << endl;
+                prog.print(cout);
+                cout << endl << ">>>" << endl;
+                rewrite.print(cout);
+                cout << "\n\n";
+            } else {
+                if (verify_result.counter_example.has_value()) {
+                    cout << "found counter example" << endl;
+                    test_cases.push_back(verify_result.counter_example.value());
+                }
+            }
+        } else {
+            // did not find a solution
+            break;
+        }
+    }
+
+    lock_guard<mutex> progress_guard(g_progress_data);
+    global_data->finished_bb++;
+    printf("progress: %d/%d(%.2lf%%)\n", global_data->finished_bb, global_data->total_bb, (double)global_data->finished_bb / global_data->total_bb * 100);
+    (*global_data->progress_stream) << basic_block.get_start() << " " << basic_block.get_end() << endl;
+
+    return ret_value;
 }
 
 int main(int argc, char* argv[]) {
@@ -227,6 +233,7 @@ int main(int argc, char* argv[]) {
     program.add_argument("--time-per-opt").default_value(10000).scan<'i', int>();
     // threads used
     program.add_argument("--thread-count").default_value(1).scan<'i', int>();
+    program.add_argument("--seed").default_value(10086).scan<'i', int>();
 
     program.parse_args(argc, argv);
 
@@ -249,7 +256,7 @@ int main(int argc, char* argv[]) {
     }
 
     extractor.set_max_bb(-1);
-    auto bbs = extractor.extract_basic_blocks();
+    vector<BasicBlock> bbs = extractor.extract_basic_blocks();
 
     vector<BasicBlock> viable_bbs;
     for (const auto& bb: bbs) {
@@ -258,46 +265,26 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    int viable_bb_size = viable_bbs.size();
+    int viable_bb_size = static_cast<int>(viable_bbs.size());
     cout << "viable basic block count: " << viable_bb_size << endl;
 
     int thread_count = program.get<int>("--thread-count");
-    int blocks_per_thread = viable_bb_size / thread_count;
-    int last_block_count = viable_bb_size - blocks_per_thread * (thread_count - 1);
-
-    int offset = 0;
     int time_per_opt = program.get<int>("--time-per-opt");
-
-    vector<thread> threads;
-    vector<future<vector<SearchResult>>> futures;
+    int seed = program.get<int>("--seed");
     GlobalData global_data = {
-            .error_stream = dynamic_pointer_cast<ostream>(error_file),
-            .correct_stream = dynamic_pointer_cast<ostream>(correct_file),
-            .progress_stream = dynamic_pointer_cast<ostream>(progress_file),
-            .finished_bb = 0,
-            .total_bb = viable_bb_size
+        .error_stream = dynamic_pointer_cast<ostream>(error_file),
+        .correct_stream = dynamic_pointer_cast<ostream>(correct_file),
+        .progress_stream = dynamic_pointer_cast<ostream>(progress_file),
+        .finished_bb = 0,
+        .total_bb = viable_bb_size
     };
 
-    for (int i = 0; i < thread_count; i++) {
-        promise<vector<SearchResult>> prom;
-        auto f = prom.get_future();
+    BS::thread_pool pool{static_cast<unsigned int>(thread_count)};
+    const auto fut = pool.submit_loop(0, viable_bb_size, [&] (int i) {
+        worker(&viable_bbs[i], time_per_opt, &global_data);
+    }, viable_bb_size);
 
-        int size = blocks_per_thread;
-        if (i == thread_count - 1) {
-            size = last_block_count;
-        }
-
-        thread t(&worker, move(prom), viable_bbs.data() + offset, size, time_per_opt, &global_data);
-
-        futures.push_back(move(f));
-        threads.push_back(move(t));
-
-        offset += size;
-    }
-
-    for (thread& t: threads) {
-        t.join();
-    }
+    fut.wait();
 
     return 0;
 }
