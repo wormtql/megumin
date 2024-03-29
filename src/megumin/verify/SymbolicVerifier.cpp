@@ -16,23 +16,20 @@ namespace megumin {
     VerifyResult megumin::SymbolicVerifier::verify(const arm::Program &target, const arm::Program &rewrite) {
         context c;
 
-        // symbolic state after execution of target
+        /// symbolic state after execution of target
         arm::MachineStateS state1{c, "s"};
-        // symbolic state after execution of rewrite
+        /// symbolic state after execution of rewrite
         arm::MachineStateS state2{state1};
-        // the state before any execution
+        /// the state before any execution
         arm::MachineStateS original_state{state1};
 
         target.execute(state1);
         rewrite.execute(state2);
 
-//        cout << state2.p_state.c << endl;
-
         expr e = state1 != state2;
 
         solver s(c);
         s.add(e);
-//        cout << s << endl << std::flush;
 
         switch (s.check()) {
             case unsat: {

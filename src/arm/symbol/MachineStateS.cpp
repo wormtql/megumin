@@ -38,6 +38,16 @@ namespace arm {
 //        result.v = m.eval(this->v, true).get_numeral_uint64();
         return result;
     }
+
+    PStateS PStateS::from_pstate_literal(z3::context& context, const PState &lit) {
+        PStateS ret{context, "temp"};
+        ret.n = context.bool_val(lit.n);
+        ret.z = context.bool_val(lit.z);
+        ret.c = context.bool_val(lit.c);
+        ret.v = context.bool_val(lit.v);
+
+        return ret;
+    }
 }
 
 namespace arm {
@@ -116,5 +126,14 @@ namespace arm {
         result.sp = bits{64, (int64_t) m.eval(sp, true).get_numeral_uint64()};
 
         return result;
+    }
+
+    MachineStateS MachineStateS::from_machine_state_literal(z3::context &context, const MachineState &lit) {
+        MachineStateS ret{context, "temp"};
+        ret.p_state = PStateS::from_pstate_literal(context, lit.p_state);
+        ret.gp = GPRegBankS::from_gp_reg_bank_literal(context, lit.gp);
+        ret.sp = context.bv_val(lit.sp.data0, lit.sp.size);
+
+        return ret;
     }
 }

@@ -151,6 +151,10 @@ namespace arm {
                 set64(index, data);
             }
         }
+
+        void set_raw_i64(int index, int64_t data) {
+            bank[index].data0 = data;
+        }
     };
 
     std::ostream& operator<<(std::ostream& os, const arm::FPRegBank& reg);

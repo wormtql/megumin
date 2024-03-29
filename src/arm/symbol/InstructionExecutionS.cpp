@@ -363,11 +363,12 @@ namespace arm {
                 result = z3::ite(
                         operand2 == 0,
                         c.bv_val(0, datasize),
-                        z3::ite(
-                                z3::bvsdiv_no_overflow(operand1, operand2),
-                                result,
-                                c.bv_val(0, datasize)
-                                )
+                        result
+//                        z3::ite(
+//                                z3::bvsdiv_no_overflow(operand1, operand2),
+//                                result,
+//                                c.bv_val(0, datasize)
+//                                )
                         );
                 state.set_gp(datasize, d, result, false);
             } else if ((opc >> 2) == 0b10) {

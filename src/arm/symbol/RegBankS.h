@@ -18,7 +18,6 @@ namespace arm {
     class GPRegBankS {
     private:
         std::vector<expr> bank;
-        context ctx;
     public:
         GPRegBankS(z3::context& context, const string& prefix);
         GPRegBankS(const GPRegBankS& other);
@@ -32,12 +31,10 @@ namespace arm {
         expr operator!=(const GPRegBankS&& other) const;
 
         GPRegBank to_gp_reg_bank(const z3::model& m) const;
+
+        static GPRegBankS from_gp_reg_bank_literal(z3::context& context, const GPRegBank& lit);
     };
 }
-
-class RegBankS {
-
-};
 
 
 #endif //MEGUMIN_REGBANKS_H

@@ -81,4 +81,12 @@ namespace arm {
 
         return result;
     }
+
+    GPRegBankS GPRegBankS::from_gp_reg_bank_literal(z3::context &context, const GPRegBank &lit) {
+        GPRegBankS ret{context, "temp"};
+        for (int i = 0; i < ret.bank.size(); i++) {
+            ret.bank[i] = context.bv_val(lit.get_ref(i).data0, 64);
+        }
+        return ret;
+    }
 }

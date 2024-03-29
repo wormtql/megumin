@@ -31,6 +31,7 @@ add_megumin_executable(test_synthesize)
 add_megumin_executable(debug_single_block)
 add_megumin_executable(statistics)
 add_megumin_executable(optimize_single_bb)
+add_megumin_executable(debug_error)
 
 # add_executable(playground main.cpp)
 # add_executable(main2 main2.cpp)

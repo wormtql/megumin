@@ -158,7 +158,7 @@ optional<SearchResult> worker(const BasicBlock* bb_ptr, int time_per_opt, Global
         test_cases[ii].fill_sp_random();
     }
 
-    int max_test_case_count = 200;
+    int max_test_case_count = 2000;
     while (!success && test_cases.size() <= max_test_case_count) {
         int init_mode = 1;
         auto result = opt_once(prog, test_cases, time_per_opt, init_mode);

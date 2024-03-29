@@ -72,21 +72,31 @@ void f(const arm::Program& target, vector<MachineState> test_cases, int init_mod
 }
 
 int main() {
-    auto target = megumin::aarch64_asm(R"(madd x26, x3, x12, x31
-add x27, x23, x26
-add x28, x4, x26
-add x27, x21, x27
-add x28, x21, x28
-subs x31, x28, x27
+    auto target = megumin::aarch64_asm(R"(subs x9, x12, x14
+csinc w13, w31, w31, le
+subs x9, x12, x14
+subs x15, x12, x14
+csinc w15, w31, w31, ge
+and w15, w15, #1
+ands w15, w15, #1
+csel x2, x12, x14, ne
+mov x12, x31
+and w13, w13, #1
+ands w13, w13, #1
+csel x9, x9, x12, ne
 )").value();
-    auto rewrite = megumin::aarch64_asm(R"(
-madd x26, x3, x12, x31
-add x27, x23, x26
-add x28, x4, x26
-adds x27, x21, x27
-add x28, x21, x28
+    auto rewrite = megumin::aarch64_asm(R"(csel x2, x12, x14, le
 nop
-)").value();
+nop
+nop
+cls x15, x2
+nop
+nop
+sub x9, x12, x2
+nop
+ands w13, w12, w14, lsr #31
+sdiv w12, w9, w1
+nop)").value();
 
     SymbolicVerifier verifier{};
     VerifyResult result = verifier.verify(target, rewrite);

@@ -38,7 +38,9 @@ namespace arm {
         expr operator==(const PStateS& other) const;
         expr operator!=(const PStateS& other) const;
 
-        PState to_p_state(const z3::model& m) const;
+        [[nodiscard]] PState to_p_state(const z3::model& m) const;
+
+        static PStateS from_pstate_literal(z3::context& context, const PState& lit);
     };
 
     class MachineStateS {
@@ -60,7 +62,9 @@ namespace arm {
         expr operator==(const MachineStateS& other) const;
         expr operator!=(const MachineStateS& other) const;
 
-        MachineState to_machine_state(const z3::model& m) const;
+        [[nodiscard]] MachineState to_machine_state(const z3::model& m) const;
+
+        static MachineStateS from_machine_state_literal(z3::context& context, const MachineState& lit);
     };
 }
 
