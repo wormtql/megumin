@@ -954,7 +954,12 @@ namespace arm {
             int64_t op1 = operand1.as_i64();
             int64_t op2 = operand2.as_i64();
 
-            absl::int128 temp = absl::MakeInt128(0, op1) * absl::MakeInt128(0, op2);
+            bool sign1 = operand1.is_set(63);
+            bool sign2 = operand2.is_set(63);
+            int64_t high1 = sign1 ? -1 : 0;
+            int64_t high2 = sign2 ? -1 : 0;
+
+            absl::int128 temp = absl::MakeInt128(high1, op1) * absl::MakeInt128(high2, op2);
             int64_t high = absl::Int128High64(temp);
             state.set_gp(64, d, bits{64, high}, false);
         } else if (op == 0b1010) {

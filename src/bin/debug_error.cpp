@@ -22,36 +22,47 @@ using namespace megumin;
 using namespace std;
 
 int main() {
-    auto target = megumin::aarch64_asm(R"(subs x9, x12, x14
-csinc w13, w31, w31, le
-subs x9, x12, x14
-subs x15, x12, x14
-csinc w15, w31, w31, ge
-and w15, w15, #1
-ands w15, w15, #1
-csel x2, x12, x14, ne
-mov x12, x31
-and w13, w13, #1
-ands w13, w13, #1
-csel x9, x9, x12, ne
+    auto target = megumin::aarch64_asm(R"(lsr x13, x11, #3
+subs w8, w8, #0
+csinc w0, w31, w31, lt
+subs x8, x12, #1
+madd x18, x8, x16, x31
+mov x8, x31
+and w0, w0, #1
+ands w0, w0, #1
+csel x18, x18, x8, ne
+add x10, x10, x18
+subs x16, x16, #1
+and w17, w17, #1
+ands w17, w17, #1
+csel x16, x16, x8, ne
+add x10, x10, x16
+subs x11, x11, #8
+csinc w11, w31, w31, cs
 )").value();
-    auto rewrite = megumin::aarch64_asm(R"(csel x2, x12, x14, le
+    auto rewrite = megumin::aarch64_asm(R"(lsr x13, x11, #3
+csneg w11, w31, w16, le
+nop
+nop
+add x16, x16, x16, asr #48
+smulh x10, x16, x10
 nop
 nop
 nop
-cls x15, x2
 nop
 nop
-sub x9, x12, x2
 nop
-ands w13, w12, w14, lsr #31
-sdiv w12, w9, w1
-nop)").value();
+cls w8, w12
+rbit x0, x8
+nop
+udiv x17, x13, x1
+lslv w18, w0, w10)").value();
 
     MachineState counter_example{};
-    counter_example.gp.set_raw_i64(1, 4294967295);
-    counter_example.gp.set_raw_i64(12, -8633209815772166145);
-    counter_example.gp.set_raw_i64(14, -1873567812463884289);
+    counter_example.gp.set_raw_i64(1, 1);
+    counter_example.gp.set_raw_i64(10, -1613671628938316361);
+    counter_example.gp.set_raw_i64(12, -5604949622140432320);
+    counter_example.gp.set_raw_i64(16, -3691816049807715643);
     MachineState actual_target_state{counter_example};
     MachineState actual_rewrite_state{counter_example};
     target.execute(actual_target_state);
