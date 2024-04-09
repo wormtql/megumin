@@ -358,18 +358,23 @@ namespace arm {
                         int64_t op2 = operand2.as_i64();
 
                         if (op1 == std::numeric_limits<int64_t>::min() && op2 == -1) {
-                            // prevent overflow
-                            state.gp.set(datasize, d, bits{datasize, 0});
+                            // as per convention, an overflow division will result in -1
+                            // see https://stackoverflow.com/questions/30394086/integer-division-overflows
+                            state.gp.set(datasize, d, bits{datasize, -1});
                         } else {
                             int64_t result = op1 / op2;
                             state.gp.set(datasize, d, bits{datasize, result});
                         }
                     } else {
-                        auto op1 = (int64_t) operand1.as_i32();
-                        auto op2 = (int64_t) operand2.as_i32();
+                        auto op1 = (int32_t) operand1.as_i32();
+                        auto op2 = (int32_t) operand2.as_i32();
 
-                        int64_t result = op1 / op2;
-                        state.gp.set(datasize, d, bits{datasize, result});
+                        if (op1 == std::numeric_limits<int32_t>::min() && op2 == -1) {
+                            state.gp.set(datasize, d, bits{datasize, -1});
+                        } else {
+                            int64_t result = op1 / op2;
+                            state.gp.set(datasize, d, bits{datasize, result});
+                        }
                     }
                 }
             } else if ((opc >> 2) == 0b10) {
