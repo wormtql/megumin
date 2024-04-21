@@ -22,42 +22,30 @@ using namespace megumin;
 using namespace std;
 
 int main() {
-    auto target = megumin::aarch64_asm(R"(add x10, x10, x11
-add x11, x11, #1
-sub x13, x9, x10
-eor x12, x10, x9
-eor x10, x13, x10
-orr x10, x10, x12
-sub x12, x5, x11
-eor x10, x10, x9
-bic x12, x12, x5
-orr x10, x10, x12
-orn x10, x31, x10
-sbfm x7, x10, #63, #63
-and x10, x11, x7
-sub x9, x9, x10
+    auto target = megumin::aarch64_asm(R"(extr x0, x16, x14, #32
+extr x16, x17, x16, #32
+subs x13, x13, x0
+csinc w0, w31, w31, cs
+sub x0, x15, x0
+subs x31, x0, x15
+csinc w15, w31, w31, ls
+subs x16, x0, x16
 )").value();
-    auto rewrite = megumin::aarch64_asm(R"(add x10, x10, x11
-sub x13, x9, x10
-sdiv x12, x10, x13
-add x11, x11, #1
-eon x10, x12, x10, asr #62
-sub x12, x5, x11
+    auto rewrite = megumin::aarch64_asm(R"(extr x0, x16, x14, #32
+extr x16, x17, x16, #32
+subs x13, x13, x0
+sbc x0, x15, x31
 nop
-bic x12, x12, x5
 nop
-eor x7, x31, x10, asr #63
-and x10, x11, x7, ror #59
-nop
-sub x9, x9, x10
-nop
+subs x16, x0, x16
+sdiv x15, x0, x16
 )").value();
 
     MachineState counter_example{};
-    counter_example.gp.set_raw_i64(5, 1099511627775);
-    counter_example.gp.set_raw_i64(9, 9223372036854775807);
-    counter_example.gp.set_raw_i64(10, -9223372036854775807);
-    counter_example.gp.set_raw_i64(11, -1);
+    counter_example.gp.set_raw_i64(13, -2);
+    counter_example.gp.set_raw_i64(15, -9223372036854775808);
+    counter_example.gp.set_raw_i64(16, 4294967296);
+    counter_example.gp.set_raw_i64(17, 2147483648);
 //    counter_example.gp.set_raw_i64(13, -17979214137393153);
     MachineState actual_target_state{counter_example};
     MachineState actual_rewrite_state{counter_example};

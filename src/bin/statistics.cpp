@@ -61,6 +61,14 @@ vector<OptItem> extract_opt_item(istream& is) {
     return std::move(opt_items);
 }
 
+vector<OptItem>::size_type get_vbb_instruction_count(const vector<OptItem>& items) {
+    vector<OptItem>::size_type result = 0;
+    for (const auto& item: items) {
+        result += item.target_program.size();
+    }
+    return result;
+}
+
 int get_nop_count(const vector<OptItem>& items) {
     int result = 0;
     for (const auto& item: items) {
@@ -96,7 +104,10 @@ int main(int argc, char* argv[]) {
 
     vector<OptItem> opt_items = extract_opt_item(input_file);
     cout << "optimization count: " << opt_items.size() << endl;
-    cout << "nop count: " << get_nop_count(opt_items) << endl;
+    int nop_count = get_nop_count(opt_items);
+    cout << "nop count: " << nop_count << endl;
+    int vbb_instruction_count = get_vbb_instruction_count(opt_items);
+    cout << "vbb instruction count: " << vbb_instruction_count << endl;
 
     map<int, int> bb_length_map = get_basic_block_length_map(opt_items);
     cout << "length count:" << endl;

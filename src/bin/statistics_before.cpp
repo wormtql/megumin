@@ -58,6 +58,7 @@ int main(int argc, char* argv[]) {
     }
     double average_bb_size = static_cast<double>(total_length) / viable_bbs.size();
 
+    cout << "total length: " << total_length << endl;
     cout << "viable bbs: " << viable_bbs.size() << endl;
     cout << "average bb size: " << average_bb_size << endl;
     for (const auto entry: length_to_count) {
