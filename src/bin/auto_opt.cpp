@@ -133,6 +133,7 @@ struct GlobalData {
     shared_ptr<ostream> progress_stream;
     int finished_bb = 0;
     int total_bb = 0;
+    vector<int> restart_times;
 };
 
 optional<SearchResult> worker(const BasicBlock* bb_ptr, int time_per_opt, GlobalData* global_data) {
@@ -159,7 +160,9 @@ optional<SearchResult> worker(const BasicBlock* bb_ptr, int time_per_opt, Global
     }
 
     int max_test_case_count = 2000;
+    int iter_count = 0;
     while (!success && test_cases.size() <= max_test_case_count) {
+        iter_count++;
         int init_mode = 1;
         auto result = opt_once(prog, test_cases, time_per_opt, init_mode);
         if (result.has_value()) {
@@ -216,6 +219,7 @@ optional<SearchResult> worker(const BasicBlock* bb_ptr, int time_per_opt, Global
     lock_guard<mutex> progress_guard(g_progress_data);
     global_data->finished_bb++;
     printf("progress: %d/%d(%.2lf%%)\n", global_data->finished_bb, global_data->total_bb, (double)global_data->finished_bb / global_data->total_bb * 100);
+    global_data->restart_times.push_back(iter_count);
     (*global_data->progress_stream) << basic_block.get_start() << " " << basic_block.get_end() << endl;
 
     return ret_value;
@@ -285,6 +289,14 @@ int main(int argc, char* argv[]) {
     }, viable_bb_size);
 
     fut.wait();
+
+    // calculate average restart times
+    int sum = 0;
+    for (int t: global_data.restart_times) {
+        sum += t;
+    }
+    double avg = (double)sum / (double)global_data.restart_times.size();
+    cout << "average restart time: " << avg << endl;
 
     return 0;
 }
