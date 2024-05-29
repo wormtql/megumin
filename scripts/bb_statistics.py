@@ -2,6 +2,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 import math
+from matplotlib.font_manager import FontProperties
 
 data_string = '''
 5: 2624
@@ -99,7 +100,7 @@ for line in data_string.splitlines():
         continue
     # print(line)
     s = line.split(":")
-    print(s)
+    # print(s)
     basic_block_size = int(s[0])
     basic_block_count = int(s[1])
     datax.append(basic_block_size)
@@ -107,13 +108,29 @@ for line in data_string.splitlines():
     datay.append(math.log(basic_block_count) + 1)
     # data[basic_block_size] = basic_block_count
 
+# font_songti = FontProperties(fname=r"c:\windows\fonts\simsun.ttc")
+
+mpl.rcParams['font.family'] = ["Times New Roman", "simsun"]
+# mpl.rcParams["font.family"] = "Times New Roman"
+# mpl.rcParams["font.family"] = u"宋体"
+fig, ax = plt.subplots()
+# ax.spines['top'].set_visible(False)
+# ax.spines['right'].set_visible(False)
+ax.bar(datax, datay, color=(0.1, 0.2, 0.3), width=1.1)
+tick = [0, 50, 100, 150, 200, 250, 300, 350, 400]
+plt.xticks(ticks=tick, fontsize=15)
+plt.xlabel("基本块长度", fontsize=15)
+plt.ylabel("数量（log(y)+1）", fontsize=15)
+# ax.set(xticks=range(100))
+plt.show()
+
 # ax = sns.
 
-mpl.rcParams["font.family"] = "Times New Roman"
-# sns.set(font="Times New Roman")
-p = sns.barplot({"x": datax, "y": datay}, x="x", y="y", native_scale=True)
-p.set(xlabel="Basic Block Size", ylabel="Basic Block Count (log(y)+1)")
-# p.set_xticks(range(100))
-# tick = [5, 10, 15, 20, 50]
-# plt.xticks(tick, tick)
-plt.show()
+# mpl.rcParams["font.family"] = "Times New Roman"
+# # sns.set(font="宋体", rc=mpl.rcParams)
+# p = sns.barplot({"x": datax, "y": datay}, x="x", y="y", native_scale=True)
+# p.set(xlabel=u"基本块长度", ylabel=u"数量（y'）")
+# # p.set_xticks(range(100))
+# # tick = [5, 10, 15, 20, 50]
+# # plt.xticks(tick, tick)
+# plt.show()

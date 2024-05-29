@@ -6,10 +6,13 @@
 #define MEGUMIN_SEARCH_H
 
 #include <random>
+#include <vector>
 
 #include "program_mutation/ProgramMutation.h"
 #include "cost/CostFunction.h"
 #include "program_mutation/WeightedProgramMutation.h"
+
+using std::vector;
 
 namespace megumin {
     class SearchState {
@@ -24,6 +27,8 @@ namespace megumin {
         double current_cost;
 
         bool success = false;
+
+        vector<double> cost_over_iterations;
     };
 
     class Search {

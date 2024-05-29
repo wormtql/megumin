@@ -35,7 +35,7 @@ namespace megumin {
 
             const bool is_correct = new_cost_result.first == CostFunction::CorrectState::Correct;
             const double new_cost = new_cost_result.second;
-
+            state.cost_over_iterations.push_back(new_cost);
 
             if (new_cost > max_cost) {
                 program_mutation->undo(program, mutation_result);

@@ -33,6 +33,7 @@ add_megumin_executable(statistics)
 add_megumin_executable(optimize_single_bb)
 add_megumin_executable(debug_error)
 add_megumin_executable(statistics_before)
+add_megumin_executable(cost_statistics)
 # get nop count / viable bb instruction size
 add_megumin_executable(statistics_after)
 
