@@ -4,6 +4,7 @@
 
 #include <random>
 #include <iostream>
+#include <vector>
 
 #include <random_instruction/RandomInstruction.h>
 #include <random_instruction/RandomDataProcessingImm.h>
@@ -18,6 +19,10 @@ using namespace std;
 void print_instruction(const Instruction& ins) {
     InstructionPrinter printer{cout};
     printer.visit_instruction(ins);
+}
+
+void get_emulator_reg_result(const Program& program, const MachineState& init_state) {
+
 }
 
 int main() {
