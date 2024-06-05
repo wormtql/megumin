@@ -119,3 +119,22 @@ void megumin::RandomInstructionMutation::set_use_integral_instructions(bool valu
 void megumin::RandomInstructionMutation::set_use_fp_instructions(bool value) {
     this->use_fp_instructions = value;
 }
+
+arm::Instruction megumin::RandomInstructionMutation::generate_instruction() {
+    int random_index = 0;
+    int random_function_size = (int) random_functions.size();
+    if (use_integral_instructions && use_fp_instructions) {
+        random_index = uniform_int(generator) % random_function_size;
+    } else if (use_integral_instructions) {
+        random_index = uniform_int(generator) % integral_instruction_bound;
+    } else if (use_fp_instructions) {
+        random_index = uniform_int(generator) % (random_function_size - integral_instruction_bound) + integral_instruction_bound;
+    } else {
+        // this should not happen
+        assert(false);
+        random_index = uniform_int(generator) % random_function_size;
+    }
+
+    arm::Instruction instruction = random_functions[random_index]->random_instruction();
+    return instruction;
+}

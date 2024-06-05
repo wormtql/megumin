@@ -22,6 +22,7 @@ namespace megumin {
         virtual ~RandomInstruction() = default;
 
         virtual arm::Instruction random_instruction(const arm::Program& program, int index) = 0;
+        virtual arm::Instruction random_instruction() = 0;
     };
 }
 

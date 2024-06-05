@@ -18,6 +18,7 @@ namespace megumin {
     public:
         explicit RandomAddSubImm(std::mt19937& generator);
         arm::Instruction random_instruction(const arm::Program& program, int index) override;
+        arm::Instruction random_instruction() override;
     };
 
     class RandomDataProcessingImmLogical: public RandomInstruction {
@@ -27,6 +28,7 @@ namespace megumin {
     public:
         explicit RandomDataProcessingImmLogical(std::mt19937& generator): generator(generator) {}
         arm::Instruction random_instruction(const arm::Program& program, int index) override;
+        arm::Instruction random_instruction() override;
     };
 
     class RandomMoveWideImm: public RandomInstruction {
@@ -37,6 +39,7 @@ namespace megumin {
         explicit RandomMoveWideImm(std::mt19937& generator): generator(generator) {}
 
         arm::Instruction random_instruction(const arm::Program& program, int index) override;
+        arm::Instruction random_instruction() override;
     };
 
     class RandomBitfield: public RandomInstruction {
@@ -47,6 +50,7 @@ namespace megumin {
         explicit RandomBitfield(std::mt19937& generator): generator(generator) {}
 
         arm::Instruction random_instruction(const arm::Program& program, int index) override;
+        arm::Instruction random_instruction() override;
     };
 
     class RandomExtract: public RandomInstruction {
@@ -57,6 +61,7 @@ namespace megumin {
         explicit RandomExtract(std::mt19937& generator): generator(generator) {}
 
         arm::Instruction random_instruction(const arm::Program& program, int index) override;
+        arm::Instruction random_instruction() override;
     };
 }
 

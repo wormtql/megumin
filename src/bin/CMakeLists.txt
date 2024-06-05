@@ -36,7 +36,7 @@ add_megumin_executable(statistics_before)
 add_megumin_executable(cost_statistics)
 # get nop count / viable bb instruction size
 add_megumin_executable(statistics_after)
-
+add_megumin_executable(auto_debug)
 # add_executable(playground main.cpp)
 # add_executable(main2 main2.cpp)
 # add_executable(main3 main3.cpp)

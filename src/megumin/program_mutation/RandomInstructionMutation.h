@@ -48,6 +48,8 @@ namespace megumin {
     public:
         explicit RandomInstructionMutation(std::mt19937& generator, RandomInstructionWeight weight);
 
+        arm::Instruction generate_instruction();
+
         MutationResult mutate(arm::Program &program) override;
 
         void undo(arm::Program &program, const MutationResult &result) override;
